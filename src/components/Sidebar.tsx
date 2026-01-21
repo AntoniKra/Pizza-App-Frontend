@@ -13,7 +13,7 @@ const crustOptions = [
   "Grube",
   "Z wypełnionymi brzegami",
 ];
-const shapeOptions = ["Okrągła", "Prostokątna"];
+
 const styleOptions = [
   "Neapolitańska",
   "Amerykańska",
@@ -187,25 +187,128 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
         </div>
       </div>
 
-      <div className="mb-8">
-        <div className="flex justify-between text-sm mb-2 text-gray-300">
-          <span className="font-semibold">Średnica (Min)</span>
-          <span className="text-xs text-gray-500">cm</span>
-        </div>
-        <input
-          type="range"
-          min="20"
-          max="60"
-          step="2"
-          value={diameter}
-          onChange={(e) => setDiameter(Number(e.target.value))}
-          className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-white hover:accent-gray-200"
-        />
-        <div className="flex justify-between mt-2 text-xs text-gray-400 font-mono">
-          <span>{diameter} cm</span>
-          <span>60 cm</span>
+      <div className="mb-6">
+        <h4 className="text-sm font-semibold text-gray-300 mb-3">Kształt</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => {
+              if (selectedShapes.includes("Okrągła")) {
+                setSelectedShapes([]);
+                setDiameter(20);
+              } else {
+                setSelectedShapes(["Okrągła"]);
+              }
+            }}
+            className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
+              selectedShapes.includes("Okrągła")
+                ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]"
+                : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+            }`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className={`w-8 h-8 mb-2 transition-colors ${
+                selectedShapes.includes("Okrągła")
+                  ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
+                  : "text-gray-500 group-hover:text-gray-300"
+              }`}
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+            <span
+              className={`text-xs font-bold uppercase tracking-wider transition-colors ${
+                selectedShapes.includes("Okrągła")
+                  ? "text-white"
+                  : "text-gray-500 group-hover:text-gray-300"
+              }`}
+            >
+              Okrągła
+            </span>
+
+            {selectedShapes.includes("Okrągła") && (
+              <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
+            )}
+          </button>
+
+          <button
+            onClick={() => {
+              if (selectedShapes.includes("Prostokątna")) {
+                setSelectedShapes([]);
+              } else {
+                setSelectedShapes(["Prostokątna"]);
+                setDiameter(20);
+              }
+            }}
+            className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
+              selectedShapes.includes("Prostokątna")
+                ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]"
+                : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+            }`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className={`w-8 h-8 mb-2 transition-colors ${
+                selectedShapes.includes("Prostokątna")
+                  ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
+                  : "text-gray-500 group-hover:text-gray-300"
+              }`}
+            >
+              <rect
+                x="4"
+                y="5"
+                width="16"
+                height="14"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+            <span
+              className={`text-xs font-bold uppercase tracking-wider transition-colors ${
+                selectedShapes.includes("Prostokątna")
+                  ? "text-white"
+                  : "text-gray-500 group-hover:text-gray-300"
+              }`}
+            >
+              Prostokątna
+            </span>
+
+            {selectedShapes.includes("Prostokątna") && (
+              <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
+            )}
+          </button>
         </div>
       </div>
+
+      {selectedShapes.includes("Okrągła") && (
+        <div className="mb-8 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="flex justify-between text-sm mb-2 text-gray-300">
+            <span className="font-semibold">Średnica (Min)</span>
+            <span className="text-xs text-gray-500">cm</span>
+          </div>
+          <input
+            type="range"
+            min="20"
+            max="60"
+            step="2"
+            value={diameter}
+            onChange={(e) => setDiameter(Number(e.target.value))}
+            className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-white hover:accent-gray-200"
+          />
+          <div className="flex justify-between mt-2 text-xs text-gray-400 font-mono">
+            <span>{diameter} cm</span>
+            <span>60 cm</span>
+          </div>
+        </div>
+      )}
 
       <CheckboxGroup
         title="Restauracja"
@@ -226,13 +329,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
         options={doughOptions}
         selected={selectedDoughs}
         setSelected={setSelectedDoughs}
-      />
-
-      <CheckboxGroup
-        title="Kształt"
-        options={shapeOptions}
-        selected={selectedShapes}
-        setSelected={setSelectedShapes}
       />
 
       <div className="mb-6">

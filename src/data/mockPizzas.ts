@@ -10,9 +10,12 @@ export interface Pizza {
   shape: string;
   style: string;
   sauce: string;
-  diameter: number;
+  diameter?: number;
+  width?: number;
+  length?: number;
+
   weight: number;
-  pricePer100g: number;
+  kcal: number;
 }
 
 export const pizzas: Pizza[] = [
@@ -32,7 +35,7 @@ export const pizzas: Pizza[] = [
     sauce: "Pomidorowy",
     diameter: 32,
     weight: 350,
-    pricePer100g: 7.11,
+    kcal: 850,
   },
   {
     id: 2,
@@ -50,7 +53,7 @@ export const pizzas: Pizza[] = [
     sauce: "Pomidorowy",
     diameter: 30,
     weight: 400,
-    pricePer100g: 8.12,
+    kcal: 1100,
   },
   {
     id: 3,
@@ -67,7 +70,7 @@ export const pizzas: Pizza[] = [
     sauce: "Śmietanowy (Biały)",
     diameter: 40,
     weight: 450,
-    pricePer100g: 6.66,
+    kcal: 920,
   },
   {
     id: 4,
@@ -84,24 +87,25 @@ export const pizzas: Pizza[] = [
     sauce: "BBQ",
     diameter: 35,
     weight: 420,
-    pricePer100g: 8.57,
+    kcal: 1050,
   },
   {
     id: 5,
-    name: "Carbonara",
+    name: "Carbonara Rect",
     pizzeria: "Da Grasso",
     price: 31.5,
     image:
       "https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?w=800&auto=format&fit=crop&q=60",
-    description: "Biały sos, boczek, cebula i duuużo sera.",
+    description: "Biały sos, boczek, cebula i duuużo sera. Wersja prostokątna.",
     dough: "Na zakwasie",
     crust: "Cienkie",
     shape: "Prostokątna",
     style: "Sycylijska",
     sauce: "Śmietanowy (Biały)",
-    diameter: 42,
+    width: 30,
+    length: 40,
     weight: 480,
-    pricePer100g: 6.56,
+    kcal: 1250,
   },
   {
     id: 6,
@@ -118,7 +122,7 @@ export const pizzas: Pizza[] = [
     sauce: "Krem truflowy",
     diameter: 32,
     weight: 360,
-    pricePer100g: 11.66,
+    kcal: 780,
   },
   {
     id: 7,
@@ -135,6 +139,6 @@ export const pizzas: Pizza[] = [
     sauce: "Ostry pomidorowy",
     diameter: 32,
     weight: 380,
-    pricePer100g: 7.36,
+    kcal: 900,
   },
 ];

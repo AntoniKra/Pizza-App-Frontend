@@ -1,12 +1,26 @@
 import Header from "./components/Header";
 import PizzaCard from "./components/PizzaCard";
-import { pizzas } from "./data/mockPizzas";
+import { pizzas, type Pizza } from "./data/mockPizzas";
 import { useState } from "react";
 import Sidebar, { type FilterValues } from "./components/Sidebar";
 
 function App() {
   const [data, setData] = useState(pizzas);
   const [sortOption, setSortOption] = useState("default");
+
+  const calculatePricePerCm2 = (pizza: Pizza) => {
+    let area = 0;
+
+    if (pizza.shape === "Okrągła" && pizza.diameter) {
+      const radius = pizza.diameter / 2;
+      area = Math.PI * radius * radius;
+    } else if (pizza.shape === "Prostokątna" && pizza.width && pizza.length) {
+      area = pizza.width * pizza.length;
+    }
+
+    if (area === 0) return 0;
+    return pizza.price / area;
+  };
 
   const sortPizzas = (items: typeof pizzas, option: string) => {
     const sortedItems = [...items];
@@ -17,6 +31,16 @@ function App() {
     if (option === "price_desc") {
       return sortedItems.sort((a, b) => b.price - a.price);
     }
+
+    if (option === "profitability") {
+      return sortedItems.sort((a, b) => {
+        const pricePerCm2A = calculatePricePerCm2(a);
+        const pricePerCm2B = calculatePricePerCm2(b);
+
+        return pricePerCm2A - pricePerCm2B;
+      });
+    }
+
     return sortedItems;
   };
 
@@ -28,9 +52,11 @@ function App() {
         pizza.price >= filters.minPrice && pizza.price <= filters.maxPrice,
     );
 
-    filteredPizzas = filteredPizzas.filter(
-      (pizza) => pizza.diameter >= filters.minDiameter,
-    );
+    filteredPizzas = filteredPizzas.filter((pizza) => {
+      if (pizza.shape === "Prostokątna") return true;
+
+      return (pizza.diameter || 0) >= filters.minDiameter;
+    });
 
     if (filters.pizzerias.length > 0) {
       filteredPizzas = filteredPizzas.filter((pizza) =>
@@ -93,6 +119,9 @@ function App() {
                 className="bg-[#1E1E1E] border border-gray-700 text-white text-sm rounded-lg p-2.5 outline-none focus:border-[#FF6B6B]"
               >
                 <option value="default">Domyślnie</option>
+                <option value="profitability">
+                  🔥 Najbardziej opłacalne (zł/cm²)
+                </option>
                 <option value="price_asc">Cena: od najniższej</option>
                 <option value="price_desc">Cena: od najwyższej</option>
               </select>
