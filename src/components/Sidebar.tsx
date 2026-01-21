@@ -1,46 +1,289 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Sidebar: React.FC = () => {
-  const pizzerias = ["Da Grasso", "Pizza Hut", "Dominos"];
-  return (
-    <aside className="w-64 p-4 hidden md:block">
-      <h3 className="text-xl font-bold mb-6">Filtrowanie</h3>
-      <div className="mb-6">
-        <h4 className="font-bold mb-3 text-gray-400">Restauracja</h4>
-        <div className="space-y-2">
-          {pizzerias.map((pizzeria) => (
-            <label
-              key={pizzeria}
-              className="flex items-center gap-2 cursor-pointer hover:text-[#FF6B6B]"
-            >
+const pizzeriaOptions = ["Da Grasso", "Pizza Hut", "Dominos", "Local Pizzeria"];
+const doughOptions = [
+  "Pszenne",
+  "Pełnoziarniste",
+  "Bezglutenowe",
+  "Na zakwasie",
+];
+const crustOptions = [
+  "Cienkie",
+  "Tradycyjne",
+  "Grube",
+  "Z wypełnionymi brzegami",
+];
+const shapeOptions = ["Okrągła", "Prostokątna"];
+const styleOptions = [
+  "Neapolitańska",
+  "Amerykańska",
+  "Chicago Style",
+  "Sycylijska",
+  "Rzymska",
+  "Calzone",
+];
+const sauceOptions = [
+  "Pomidorowy",
+  "Śmietanowy (Biały)",
+  "BBQ",
+  "Pesto",
+  "Ostry pomidorowy",
+  "Krem truflowy",
+];
+
+export interface FilterValues {
+  pizzerias: string[];
+  doughs: string[];
+  crusts: string[];
+  shapes: string[];
+  styles: string[];
+  sauces: string[];
+  minPrice: number;
+  maxPrice: number;
+  minDiameter: number;
+}
+
+interface SidebarProps {
+  onFilterChange: (filters: FilterValues) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
+  const [minPrice, setMinPrice] = useState<number>(15);
+  const [maxPrice, setMaxPrice] = useState<number>(120);
+  const [diameter, setDiameter] = useState<number>(30);
+
+  const [selectedPizzerias, setSelectedPizzerias] = useState<string[]>([]);
+  const [selectedDoughs, setSelectedDoughs] = useState<string[]>([]);
+  const [selectedCrusts, setSelectedCrusts] = useState<string[]>([]);
+  const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
+
+  useEffect(() => {
+    onFilterChange({
+      pizzerias: selectedPizzerias,
+      doughs: selectedDoughs,
+      crusts: selectedCrusts,
+      shapes: selectedShapes,
+      styles: selectedStyles,
+      sauces: selectedSauces,
+      minPrice,
+      maxPrice,
+      minDiameter: diameter,
+    });
+  }, [
+    minPrice,
+    maxPrice,
+    diameter,
+    selectedPizzerias,
+    selectedDoughs,
+    selectedCrusts,
+    selectedShapes,
+    selectedStyles,
+    selectedSauces,
+  ]);
+
+  const handleReset = () => {
+    setMinPrice(15);
+    setMaxPrice(120);
+    setDiameter(30);
+    setSelectedPizzerias([]);
+    setSelectedDoughs([]);
+    setSelectedCrusts([]);
+    setSelectedShapes([]);
+    setSelectedStyles([]);
+    setSelectedSauces([]);
+  };
+
+  const toggleFilter = (
+    item: string,
+    currentList: string[],
+    setFunction: (list: string[]) => void,
+  ) => {
+    const isSelected = currentList.includes(item);
+    const newSelection = isSelected
+      ? currentList.filter((i) => i !== item)
+      : [...currentList, item];
+    setFunction(newSelection);
+  };
+
+  const CheckboxGroup = ({
+    title,
+    options,
+    selected,
+    setSelected,
+  }: {
+    title: string;
+    options: string[];
+    selected: string[];
+    setSelected: (l: string[]) => void;
+  }) => (
+    <div className="mb-6">
+      <h4 className="text-sm font-semibold text-gray-300 mb-3">{title}</h4>
+      <div className="space-y-2">
+        {options.map((option) => (
+          <label
+            key={option}
+            className="flex items-center gap-3 cursor-pointer group"
+          >
+            <div className="relative flex items-center">
               <input
                 type="checkbox"
-                className="rounded border-gray-600 bg-[#1E1E1E]"
+                className="peer appearance-none w-5 h-5 border-2 border-gray-600 rounded bg-transparent checked:bg-[#FF6B6B] checked:border-[#FF6B6B] transition-colors"
+                checked={selected.includes(option)}
+                onChange={() => toggleFilter(option, selected, setSelected)}
               />
-              <span>{pizzeria}</span>
-            </label>
-          ))}
+              <svg
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"
+                viewBox="0 0 14 10"
+                fill="none"
+              >
+                <path
+                  d="M1 5L4.5 8.5L13 1"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
+              {option}
+            </span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <aside className="w-72 p-6 hidden md:block border-r border-red-400 ">
+      <div className="flex justify-between items-center mb-8">
+        <h3 className="text-xl font-bold text-white">Filtry</h3>
+        <button
+          onClick={handleReset}
+          className="text-xs text-[#FF6B6B] hover:text-red-400 font-medium transition"
+        >
+          Reset all
+        </button>
+      </div>
+
+      <div className="mb-8">
+        <div className="flex justify-between text-sm mb-2 text-gray-300">
+          <span className="font-semibold">Cena (Max)</span>
+          <span className="text-xs text-gray-500">PLN</span>
+        </div>
+        <input
+          type="range"
+          min="15"
+          max="150"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(Number(e.target.value))}
+          className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#FF6B6B] hover:accent-red-400"
+        />
+        <div className="flex justify-between mt-2 text-xs text-gray-400 font-mono">
+          <span>0 zł</span>
+          <span>{maxPrice} zł</span>
         </div>
       </div>
+
+      <div className="mb-8">
+        <div className="flex justify-between text-sm mb-2 text-gray-300">
+          <span className="font-semibold">Średnica (Min)</span>
+          <span className="text-xs text-gray-500">cm</span>
+        </div>
+        <input
+          type="range"
+          min="20"
+          max="60"
+          step="2"
+          value={diameter}
+          onChange={(e) => setDiameter(Number(e.target.value))}
+          className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-white hover:accent-gray-200"
+        />
+        <div className="flex justify-between mt-2 text-xs text-gray-400 font-mono">
+          <span>{diameter} cm</span>
+          <span>60 cm</span>
+        </div>
+      </div>
+
+      <CheckboxGroup
+        title="Restauracja"
+        options={pizzeriaOptions}
+        selected={selectedPizzerias}
+        setSelected={setSelectedPizzerias}
+      />
+
+      <CheckboxGroup
+        title="Grubość ciasta"
+        options={crustOptions}
+        selected={selectedCrusts}
+        setSelected={setSelectedCrusts}
+      />
+
+      <CheckboxGroup
+        title="Rodzaj ciasta"
+        options={doughOptions}
+        selected={selectedDoughs}
+        setSelected={setSelectedDoughs}
+      />
+
+      <CheckboxGroup
+        title="Kształt"
+        options={shapeOptions}
+        selected={selectedShapes}
+        setSelected={setSelectedShapes}
+      />
+
       <div className="mb-6">
-        <h4 className="font-bold mb-3 text-gray-400">Cena (PLN)</h4>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="Od"
-            className="w-full bg-[#1E1E1E] border border-gray-600 rounded p-2 text-white"
-          />
-          <input
-            type="number"
-            placeholder="Do"
-            className="w-full bg-[#1E1E1E] border border-gray-600 rounded p-2 text-white"
-          />
+        <h4 className="text-sm font-semibold text-gray-300 mb-3">Styl pizzy</h4>
+        <div className="flex flex-wrap gap-2">
+          {styleOptions.map((style) => {
+            const isActive = selectedStyles.includes(style);
+            return (
+              <button
+                key={style}
+                onClick={() =>
+                  toggleFilter(style, selectedStyles, setSelectedStyles)
+                }
+                className={`px-3 py-1.5 rounded-full text-xs border transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#FF6B6B]/20 border-[#FF6B6B] text-[#FF6B6B]"
+                    : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                }`}
+              >
+                {style}
+              </button>
+            );
+          })}
         </div>
       </div>
-      <button className="w-full mt-6 bg-[#2A2A2A] text-white p-2 rounded hover:bg-[#333] transition">
-        Wyczyść filtry
-      </button>
+
+      <div className="mb-6">
+        <h4 className="text-sm font-semibold text-gray-300 mb-3">
+          Sos / Dodatki
+        </h4>
+        <div className="flex flex-wrap gap-2">
+          {sauceOptions.map((sauce) => {
+            const isActive = selectedSauces.includes(sauce);
+            return (
+              <button
+                key={sauce}
+                onClick={() =>
+                  toggleFilter(sauce, selectedSauces, setSelectedSauces)
+                }
+                className={`px-3 py-1.5 rounded-full text-xs border transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#FF6B6B] border-[#FF6B6B] text-white shadow-[0_0_10px_rgba(255,107,107,0.3)]"
+                    : "bg-[#1E1E1E] border-gray-700 text-gray-400 hover:border-gray-500"
+                }`}
+              >
+                {sauce}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </aside>
   );
 };
