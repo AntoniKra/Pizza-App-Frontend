@@ -1,12 +1,25 @@
 import Header from "./components/Header";
 import PizzaCard from "./components/PizzaCard";
 import { pizzas, type Pizza } from "./data/mockPizzas";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar, { type FilterValues } from "./components/Sidebar";
 
 function App() {
   const [data, setData] = useState(pizzas);
   const [sortOption, setSortOption] = useState("default");
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentFilters, setCurrentFilters] = useState<FilterValues>({
+    pizzerias: [],
+    doughs: [],
+    crusts: [],
+    shapes: [],
+    styles: [],
+    sauces: [],
+    minPrice: 0,
+    maxPrice: 200,
+    minDiameter: 0,
+  });
 
   const calculatePricePerCm2 = (pizza: Pizza) => {
     let area = 0;
@@ -44,58 +57,66 @@ function App() {
     return sortedItems;
   };
 
-  const handleFilterChange = (filters: FilterValues) => {
-    let filteredPizzas = pizzas;
+  useEffect(() => {
+    let result = pizzas;
 
-    filteredPizzas = filteredPizzas.filter(
+    if (searchTerm) {
+      const lowerTerm = searchTerm.toLowerCase();
+      result = result.filter(
+        (pizza) =>
+          pizza.name.toLowerCase().includes(lowerTerm) ||
+          pizza.pizzeria.toLowerCase().includes(lowerTerm),
+      );
+    }
+
+    result = result.filter(
       (pizza) =>
-        pizza.price >= filters.minPrice && pizza.price <= filters.maxPrice,
+        pizza.price >= currentFilters.minPrice &&
+        pizza.price <= currentFilters.maxPrice,
     );
 
-    filteredPizzas = filteredPizzas.filter((pizza) => {
+    result = result.filter((pizza) => {
       if (pizza.shape === "Prostokątna") return true;
-
-      return (pizza.diameter || 0) >= filters.minDiameter;
+      return (pizza.diameter || 0) >= currentFilters.minDiameter;
     });
 
-    if (filters.pizzerias.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.pizzerias.includes(pizza.pizzeria),
+    if (currentFilters.pizzerias.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.pizzerias.includes(pizza.pizzeria),
+      );
+    }
+    if (currentFilters.doughs.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.doughs.includes(pizza.dough),
+      );
+    }
+    if (currentFilters.crusts.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.crusts.includes(pizza.crust),
+      );
+    }
+    if (currentFilters.shapes.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.shapes.includes(pizza.shape),
+      );
+    }
+    if (currentFilters.styles.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.styles.includes(pizza.style),
+      );
+    }
+    if (currentFilters.sauces.length > 0) {
+      result = result.filter((pizza) =>
+        currentFilters.sauces.includes(pizza.sauce),
       );
     }
 
-    if (filters.doughs.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.doughs.includes(pizza.dough),
-      );
-    }
-
-    if (filters.crusts.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.crusts.includes(pizza.crust),
-      );
-    }
-
-    if (filters.shapes.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.shapes.includes(pizza.shape),
-      );
-    }
-
-    if (filters.styles.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.styles.includes(pizza.style),
-      );
-    }
-
-    if (filters.sauces.length > 0) {
-      filteredPizzas = filteredPizzas.filter((pizza) =>
-        filters.sauces.includes(pizza.sauce),
-      );
-    }
-
-    const finalResult = sortPizzas(filteredPizzas, sortOption);
+    const finalResult = sortPizzas(result, sortOption);
     setData(finalResult);
+  }, [searchTerm, currentFilters, sortOption]);
+
+  const handleFilterChange = (filters: FilterValues) => {
+    setCurrentFilters(filters);
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -105,7 +126,7 @@ function App() {
   };
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
-      <Header />
+      <Header onSearch={(term) => setSearchTerm(term)} />
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
         <Sidebar onFilterChange={handleFilterChange} />
         <div className="flex-1">

@@ -1,6 +1,10 @@
 import React from "react";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onSearch: (term: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-[#1A1A1A] border-b border-gray-800 sticky top-0 z-50">
       <div className="flex items-center gap-3">
@@ -18,6 +22,7 @@ const Header: React.FC = () => {
           type="text"
           placeholder="Search for pizza, pizzeria..."
           className="bg-transparent text-gray-200 w-full outline-none px-3 placeholder-gray-500"
+          onChange={(e) => onSearch(e.target.value)}
         />
 
         <div className="flex items-center border-l border-gray-600 pl-3 gap-3">
