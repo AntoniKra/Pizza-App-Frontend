@@ -7,8 +7,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const navigate = useNavigate();
+  
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-[#1A1A1A] border-b border-gray-800 sticky top-0 z-50">
+      {/* LEWA STRONA: LOGO */}
       <div
         onClick={() => navigate("/")}
         className="cursor-pointer hover:opacity-80 flex items-center gap-3"
@@ -42,7 +44,16 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         </div>
       </div>
 
+      {/* PRAWA STRONA: LINKI I POWIADOMIENIA */}
       <div className="flex items-center gap-6 text-gray-400 text-sm font-medium">
+        <button 
+          onClick={() => navigate("/restaurant")}
+          className="text-[#FF6B6B] hover:text-white transition border border-[#FF6B6B]/30 px-3 py-1 rounded hover:bg-[#FF6B6B]/10"
+        >
+          Restauracja (Widok)
+        </button>
+        {/* ----------------------------------------- */}
+
         <a href="#" className="hover:text-white transition">
           Deals
         </a>

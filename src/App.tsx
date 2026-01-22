@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
+import RestaurantView from "./components/RestaurantView";
 import LandingPage from "./components/LandingPage";
 import PizzaSearch from "./components/PizzaSearch";
 import PizzaDetails from "./components/PizzaDetails";
+
 
 function App() {
   return (
@@ -15,6 +17,9 @@ function App() {
 
         {/* 3. Szczegóły konkretnej pizzy */}
         <Route path="/pizza/:id" element={<PizzaDetails />} />
+
+        {/* 4. Menu konkretnej pizzeri */}
+        <Route path="/restaurant" element={<RestaurantView />} />
       </Routes>
     </div>
   );
