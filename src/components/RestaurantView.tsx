@@ -3,7 +3,7 @@ import Header from "./Header";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
 import type { Pizza } from "../data/mockPizzas";
 
-// --- DANE MENU ---
+// DANE MENU
 const pizzaHutMenu: Pizza[] = [
   {
     id: 201,
@@ -91,7 +91,7 @@ const RestaurantView = () => {
 
       <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         
-        {/* --- HERO SECTION --- */}
+        {/* HERO SECTION */}
         <RestaurantHero />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

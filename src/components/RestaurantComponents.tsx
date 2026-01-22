@@ -1,7 +1,7 @@
 import { MapPin, Bike, ShoppingBasket, Clock, Star } from "lucide-react";
 import type { Pizza } from "../data/mockPizzas";
 
-// --- 1. NAGŁÓWEK RESTAURACJI (HERO) ---
+// NAGŁÓWEK RESTAURACJI
 export const RestaurantHero = () => {
   return (
     // UŻYWAMY SIATKI (GRID): Lewa kolumna zajmuje 2 miejsca, prawa 1 miejsce.
@@ -92,7 +92,7 @@ export const RestaurantHero = () => {
 };
 
 
-// --- 2. KARTA MENU (PIZZA) ---
+// KARTA MENU
 export const MenuCard = ({ data }: { data: Pizza }) => {
   const isSpicy = data.style === "Spicy" || data.name.includes("Diavola") || data.name.includes("Texas");
   const isVegetarian = data.style === "Vegetarian" || data.name.includes("Vegetariańska");
@@ -153,12 +153,12 @@ export const MenuCard = ({ data }: { data: Pizza }) => {
 };
 
 
-// --- 3. PRAWY SIDEBAR ---
+// PRAWY SIDEBAR
 export const RightSidebar = () => {
   return (
     <div className="space-y-6 sticky top-6">
         
-      {/* 1. SEKCJA OPINII */}
+      {/* SEKCJA OPINII */}
       <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] shadow-xl">
         <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -181,7 +181,7 @@ export const RightSidebar = () => {
             </div>
         </div>
 
-        {/* --- KOMENTARZ WIKTORA W. --- */}
+        {/* KOMENTARZ */}
         <div className="bg-[#252525] p-4 rounded-xl border border-[#333] relative">
             <div className="absolute -top-2 left-6 w-4 h-4 bg-[#252525] border-l border-t border-[#333] transform rotate-45"></div>
             
@@ -200,7 +200,7 @@ export const RightSidebar = () => {
         </div>
       </div>
 
-      {/* 2. SEKCJA MAPY */}
+      {/* SEKCJA MAPY */}
       <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden h-56 relative group cursor-pointer shadow-xl">
           <img 
             src="https://media.wired.com/photos/59269cd37034dc5f91becd80/master/w_2560%2Cc_limit/GoogleMapTA.jpg" 

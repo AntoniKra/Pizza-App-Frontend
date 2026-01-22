@@ -23,7 +23,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         </span>
       </div>
 
-      {/* ŚRODEK: WYSZUKIWARKA (To działka reszty grupy) */}
       <div className="flex-1 max-w-2xl mx-8 bg-[#252525] rounded-lg flex items-center p-1.5 border border-gray-700 focus-within:border-gray-500 transition-colors">
         <div className="pl-3 text-gray-400">🔍</div>
         <input
@@ -39,7 +38,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             <span className="font-medium">Warsaw, PL</span>
             <span className="text-[10px] ml-1">▼</span>
           </div>
-          {/* Ten przycisk jest teraz "czysty" dla reszty grupy */}
           <button className="bg-[#FF6B6B] hover:bg-red-500 text-white px-6 py-2 rounded font-semibold transition shadow-md shadow-red-500/20">
             Search
           </button>
@@ -48,8 +46,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
 
       {/* PRAWA STRONA: LINKI I POWIADOMIENIA */}
       <div className="flex items-center gap-6 text-gray-400 text-sm font-medium">
-        
-        {/* --- NOWY PRZYCISK DLA WASZEGO ZESPOŁU --- */}
         <button 
           onClick={() => navigate("/restaurant")}
           className="text-[#FF6B6B] hover:text-white transition border border-[#FF6B6B]/30 px-3 py-1 rounded hover:bg-[#FF6B6B]/10"
