@@ -1,13 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   onSearch: (term: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+  const navigate = useNavigate();
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-[#1A1A1A] border-b border-gray-800 sticky top-0 z-50">
-      <div className="flex items-center gap-3">
+      <div
+        onClick={() => navigate("/")}
+        className="cursor-pointer hover:opacity-80 flex items-center gap-3"
+      >
         <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20">
           <span className="text-xl">🍕</span>
         </div>
