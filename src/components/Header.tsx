@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   onSearch: (term: string) => void;
+  address?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
   const navigate = useNavigate();
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-[#1A1A1A] border-b border-gray-800 sticky top-0 z-50">
@@ -33,7 +34,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
         <div className="flex items-center border-l border-gray-600 pl-3 gap-3">
           <div className="flex items-center gap-1 text-gray-300 text-sm cursor-pointer hover:text-white transition">
             <span>📍</span>
-            <span className="font-medium">Warsaw, PL</span>
+            <span className="font-medium">
+              {address || "Wybierz lokalizację"}
+            </span>
             <span className="text-[10px] ml-1">▼</span>
           </div>
           <button className="bg-[#FF6B6B] hover:bg-red-500 text-white px-6 py-2 rounded font-semibold transition shadow-md shadow-red-500/20">
