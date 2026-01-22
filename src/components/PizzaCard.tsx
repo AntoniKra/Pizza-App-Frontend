@@ -3,9 +3,10 @@ import { type Pizza } from "../data/mockPizzas";
 
 interface PizzaCardProps {
   data: Pizza;
+  onClick: () => void;
 }
 
-const PizzaCard: React.FC<PizzaCardProps> = ({ data }) => {
+const PizzaCard: React.FC<PizzaCardProps> = ({ data, onClick }) => {
   const getPricePerCm2 = () => {
     let area = 0;
     if (data.shape === "Okrągła" && data.diameter) {
@@ -18,7 +19,10 @@ const PizzaCard: React.FC<PizzaCardProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-[#1E1E1E] rounded-xl overflow-hidden shadow-lg border border-gray-800 hover:border-gray-600 transition duration-300 flex flex-col h-full">
+    <div
+      onClick={onClick}
+      className="cursor-pointer bg-[#1E1E1E] rounded-xl overflow-hidden shadow-lg border border-gray-800 hover:border-gray-600 transition duration-300 flex flex-col h-full"
+    >
       <div className="h-48 overflow-hidden relative group">
         <img
           src={data.image}
