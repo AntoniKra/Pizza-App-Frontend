@@ -1,6 +1,6 @@
-import Header from "./Header"; // <-- Usunięto "components/"
-import PizzaCard from "./PizzaCard"; // <-- Usunięto "components/"
-import Sidebar, { type FilterValues } from "./Sidebar"; // <-- Usunięto "components/"
+import Header from "./Header";
+import PizzaCard from "./PizzaCard";
+import Sidebar, { type FilterValues } from "./Sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { pizzas, type Pizza } from "../data/mockPizzas";
 import { useState, useEffect } from "react";
@@ -70,6 +70,15 @@ function PizzaSearch() {
   useEffect(() => {
     let result = pizzas;
 
+    if (userAddress) {
+      const lowerAddress = userAddress.toLowerCase();
+      result = result.filter((pizza) =>
+        // Sprawdzamy, czy w wpisanym adresie (np. "Warszawa, Centrum")
+        // znajduje się nazwa miasta pizzy (np. "warszawa")
+        lowerAddress.includes(pizza.city.toLowerCase()),
+      );
+    }
+
     if (searchTerm) {
       const lowerTerm = searchTerm.toLowerCase();
       result = result.filter(
@@ -123,7 +132,7 @@ function PizzaSearch() {
 
     const finalResult = sortPizzas(result, sortOption);
     setData(finalResult);
-  }, [searchTerm, currentFilters, sortOption]);
+  }, [searchTerm, currentFilters, sortOption, userAddress]);
 
   const handleFilterChange = (filters: FilterValues) => {
     setCurrentFilters(filters);
@@ -179,7 +188,11 @@ function PizzaSearch() {
                   key={pizza.id}
                   data={pizza}
                   // Dodajemy akcję kliknięcia:
-                  onClick={() => navigate(`/pizza/${pizza.id}`)}
+                  onClick={() =>
+                    navigate(`/pizza/${pizza.id}`, {
+                      state: { address: userAddress },
+                    })
+                  }
                 />
               ))}
             </div>

@@ -2,6 +2,7 @@ export interface Pizza {
   id: number;
   name: string;
   pizzeria: string;
+  city: string; // <--- Nowe pole!
   price: number;
   image: string;
   description: string;
@@ -13,16 +14,17 @@ export interface Pizza {
   diameter?: number;
   width?: number;
   length?: number;
-
   weight: number;
   kcal: number;
 }
 
 export const pizzas: Pizza[] = [
+  // --- WARSZAWA ---
   {
     id: 1,
     name: "Margherita",
     pizzeria: "Da Grasso",
+    city: "Warszawa",
     price: 24.9,
     image:
       "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&auto=format&fit=crop&q=60",
@@ -41,6 +43,7 @@ export const pizzas: Pizza[] = [
     id: 2,
     name: "Pepperoni Feast",
     pizzeria: "Pizza Hut",
+    city: "Warszawa",
     price: 32.5,
     image:
       "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&auto=format&fit=crop&q=60",
@@ -59,6 +62,7 @@ export const pizzas: Pizza[] = [
     id: 3,
     name: "Vege Delight",
     pizzeria: "Dominos",
+    city: "Warszawa",
     price: 29.99,
     image:
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=60",
@@ -72,10 +76,13 @@ export const pizzas: Pizza[] = [
     weight: 450,
     kcal: 920,
   },
+
+  // --- WROCŁAW ---
   {
     id: 4,
     name: "BBQ Chicken",
     pizzeria: "Dominos",
+    city: "Wrocław",
     price: 36.0,
     image:
       "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=60",
@@ -93,6 +100,7 @@ export const pizzas: Pizza[] = [
     id: 5,
     name: "Carbonara Rect",
     pizzeria: "Da Grasso",
+    city: "Wrocław",
     price: 31.5,
     image:
       "https://images.unsplash.com/photo-1600028068383-ea11a7a101f3?w=800&auto=format&fit=crop&q=60",
@@ -108,9 +116,31 @@ export const pizzas: Pizza[] = [
     kcal: 1250,
   },
   {
+    id: 8,
+    name: "Hawajska",
+    pizzeria: "Pizza Station",
+    city: "Wrocław",
+    price: 27.5,
+    image:
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=60",
+    description:
+      "Kontrowersyjna, ale kochana. Szynka i ananas na cienkim cieście.",
+    dough: "Pszenne",
+    crust: "Cienkie",
+    shape: "Okrągła",
+    style: "Włoska",
+    sauce: "Pomidorowy",
+    diameter: 32,
+    weight: 390,
+    kcal: 880,
+  },
+
+  // --- KRAKÓW ---
+  {
     id: 6,
     name: "Truffle & Mushroom",
     pizzeria: "Pizza Hut",
+    city: "Kraków",
     price: 42.0,
     image:
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=60",
@@ -124,10 +154,12 @@ export const pizzas: Pizza[] = [
     weight: 360,
     kcal: 780,
   },
+
   {
     id: 7,
     name: "Diablo",
     pizzeria: "Da Grasso",
+    city: "Gdańsk",
     price: 28.0,
     image:
       "https://images.unsplash.com/photo-1593560708920-6316e4e6d0e5?w=800&auto=format&fit=crop&q=60",
@@ -140,5 +172,23 @@ export const pizzas: Pizza[] = [
     diameter: 32,
     weight: 380,
     kcal: 900,
+  },
+  {
+    id: 9,
+    name: "Morska Uczta",
+    pizzeria: "Portowa Pizza",
+    city: "Gdańsk",
+    price: 39.9,
+    image:
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=60",
+    description: "Krewetki, małże i czosnek na białym sosie.",
+    dough: "Pszenne",
+    crust: "Grube",
+    shape: "Okrągła",
+    style: "Włoska",
+    sauce: "Biały",
+    diameter: 30,
+    weight: 410,
+    kcal: 850,
   },
 ];
