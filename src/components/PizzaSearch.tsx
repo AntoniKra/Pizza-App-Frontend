@@ -1,16 +1,23 @@
-import Header from "./Header"; // <-- Usunięto "components/"
-import PizzaCard from "./PizzaCard"; // <-- Usunięto "components/"
-import Sidebar, { type FilterValues } from "./Sidebar"; // <-- Usunięto "components/"
-import { useNavigate } from "react-router-dom";
+import Header from "./Header";
+import PizzaCard from "./PizzaCard";
+import Sidebar, { type FilterValues } from "./Sidebar";
+import { useNavigate, useLocation } from "react-router-dom";
 import { pizzas, type Pizza } from "../data/mockPizzas";
 import { useState, useEffect } from "react";
 
 function PizzaSearch() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [data, setData] = useState(pizzas);
   const [sortOption, setSortOption] = useState("default");
 
+  // 1. Odbieramy miasto, ale trzymamy je jako "adres dostawy"
+  const [userAddress, setUserAddress] = useState(
+    location.state?.city || "Warszawa, PL",
+  );
+
+  // 2. SearchTerm zostawiamy pusty (chyba że chcesz szukać konkretnej pizzy)
   const [searchTerm, setSearchTerm] = useState("");
   const [currentFilters, setCurrentFilters] = useState<FilterValues>({
     pizzerias: [],
@@ -62,6 +69,15 @@ function PizzaSearch() {
 
   useEffect(() => {
     let result = pizzas;
+
+    if (userAddress) {
+      const lowerAddress = userAddress.toLowerCase();
+      result = result.filter((pizza) =>
+        // Sprawdzamy, czy w wpisanym adresie (np. "Warszawa, Centrum")
+        // znajduje się nazwa miasta pizzy (np. "warszawa")
+        lowerAddress.includes(pizza.city.toLowerCase()),
+      );
+    }
 
     if (searchTerm) {
       const lowerTerm = searchTerm.toLowerCase();
@@ -116,7 +132,7 @@ function PizzaSearch() {
 
     const finalResult = sortPizzas(result, sortOption);
     setData(finalResult);
-  }, [searchTerm, currentFilters, sortOption]);
+  }, [searchTerm, currentFilters, sortOption, userAddress]);
 
   const handleFilterChange = (filters: FilterValues) => {
     setCurrentFilters(filters);
@@ -129,7 +145,10 @@ function PizzaSearch() {
   };
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
-      <Header onSearch={(term) => setSearchTerm(term)} />
+      <Header
+        onSearch={(term) => setSearchTerm(term)}
+        address={userAddress} // <--- Przekazujemy adres z Landing Page'a
+      />
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
         <Sidebar onFilterChange={handleFilterChange} />
         <div className="flex-1">
@@ -169,7 +188,11 @@ function PizzaSearch() {
                   key={pizza.id}
                   data={pizza}
                   // Dodajemy akcję kliknięcia:
-                  onClick={() => navigate(`/pizza/${pizza.id}`)}
+                  onClick={() =>
+                    navigate(`/pizza/${pizza.id}`, {
+                      state: { address: userAddress },
+                    })
+                  }
                 />
               ))}
             </div>
