@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
 
 interface HeaderProps {
   onSearch: (term: string) => void;
@@ -59,14 +60,18 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
         >
           Restauracja (Widok)
         </button>
-        {/* ----------------------------------------- */}
+        
+        <a href="#" className="hover:text-white transition">Deals</a>
+        <a href="#" className="hover:text-white transition">Rankings</a>
 
-        <a href="#" className="hover:text-white transition">
-          Deals
-        </a>
-        <a href="#" className="hover:text-white transition">
-          Rankings
-        </a>
+        {/* NOWY BUTTON: Account */}
+        <button 
+            onClick={() => navigate("/account")}
+            className="flex items-center gap-2 hover:text-white transition"
+        >
+            <User size={20} />
+            <span>Account</span>
+        </button>
 
         <button className="hover:text-white transition relative">
           🔔
