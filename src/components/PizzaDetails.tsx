@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { pizzas } from "../data/mockPizzas";
 import Header from "./Header";

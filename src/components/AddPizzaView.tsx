@@ -40,6 +40,7 @@ const AddPizzaView = ({ onAdd }: AddPizzaViewProps) => {
         weight: parseInt(formData.weight),
         kcal: 0, // Mock
         pizzeria: "Pizza Hut",
+        city: "Warszawa",
         dough: "Classic",
         crust: "Classic",
         shape: "Okrągła",

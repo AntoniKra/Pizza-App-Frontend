@@ -11,13 +11,10 @@ function PizzaSearch() {
 
   const [data, setData] = useState(pizzas);
   const [sortOption, setSortOption] = useState("default");
-
-  // 1. Odbieramy miasto, ale trzymamy je jako "adres dostawy"
-  const [userAddress, setUserAddress] = useState(
+  const [userAddress] = useState(
     location.state?.city || "Warszawa, PL",
   );
 
-  // 2. SearchTerm zostawiamy pusty (chyba że chcesz szukać konkretnej pizzy)
   const [searchTerm, setSearchTerm] = useState("");
   const [currentFilters, setCurrentFilters] = useState<FilterValues>({
     pizzerias: [],
@@ -70,12 +67,12 @@ function PizzaSearch() {
   useEffect(() => {
     let result = pizzas;
 
+    // Filtrowanie po adresie (mieście)
     if (userAddress) {
       const lowerAddress = userAddress.toLowerCase();
       result = result.filter((pizza) =>
-        // Sprawdzamy, czy w wpisanym adresie (np. "Warszawa, Centrum")
-        // znajduje się nazwa miasta pizzy (np. "warszawa")
-        lowerAddress.includes(pizza.city.toLowerCase()),
+        // Upewnij się, że w mockPizzas.ts każda pizza ma pole 'city'
+        pizza.city && lowerAddress.includes(pizza.city.toLowerCase())
       );
     }
 
@@ -143,11 +140,12 @@ function PizzaSearch() {
     setSortOption(newOption);
     setData(sortPizzas(data, newOption));
   };
+
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
       <Header
         onSearch={(term) => setSearchTerm(term)}
-        address={userAddress} // <--- Przekazujemy adres z Landing Page'a
+        address={userAddress}
       />
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
         <Sidebar onFilterChange={handleFilterChange} />
@@ -187,7 +185,6 @@ function PizzaSearch() {
                 <PizzaCard
                   key={pizza.id}
                   data={pizza}
-                  // Dodajemy akcję kliknięcia:
                   onClick={() =>
                     navigate(`/pizza/${pizza.id}`, {
                       state: { address: userAddress },

@@ -1,10 +1,13 @@
 import { MapPin, Bike, ShoppingBasket, Clock, Star } from "lucide-react";
 import type { Pizza } from "../data/mockPizzas";
+import MapComponent from "./MapComponent";
 
-// NAGŁÓWEK RESTAURACJI
+// --- 1. NAGŁÓWEK RESTAURACJI (HERO) ---
 export const RestaurantHero = () => {
+  // Link do mapy Google z Twoimi współrzędnymi
+  const mapLink = "https://www.google.com/maps?q=52.20064825424179,20.931893529706343";
+
   return (
-    // UŻYWAMY SIATKI (GRID): Lewa kolumna zajmuje 2 miejsca, prawa 1 miejsce.
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
       
       {/* LEWA STRONA (2/3): Info o restauracji + Zdjęcie */}
@@ -25,14 +28,22 @@ export const RestaurantHero = () => {
                 <div className="flex items-center gap-3 mb-2">
                     <h1 className="text-4xl font-extrabold text-white tracking-tight">Pizza Hut</h1>
                     <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs font-bold uppercase tracking-wider rounded-full border border-green-500/30">
-                    ● Open Now
+                    ● Otwarte teraz
                     </span>
                 </div>
 
                 <p className="text-gray-400 flex items-center gap-2 mb-4 text-sm">
                     <MapPin size={16} className="text-[#FF6B6B]" />
                     Al. Jerozolimskie 54, Warszawa
-                    <span className="text-[#FF6B6B] font-bold cursor-pointer hover:underline ml-2">View Map</span>
+                    {/* ZMIANA TUTAJ: Link zamiast spana */}
+                    <a 
+                      href={mapLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[#FF6B6B] font-bold cursor-pointer hover:underline ml-2"
+                    >
+                      Zobacz na mapie
+                    </a>
                 </p>
 
                 <p className="text-gray-500 text-sm leading-relaxed mb-6">
@@ -42,26 +53,26 @@ export const RestaurantHero = () => {
 
             {/* Statystyki */}
             <div className="flex flex-wrap gap-3">
-                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-1 min-w-[120px]">
+                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-1 min-w-[140px]">
                     <Bike className="text-[#FF6B6B]" size={20} />
                     <div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Delivery</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Dostawa</p>
                         <p className="text-white font-bold text-sm">6.99 zł</p>
                     </div>
                 </div>
 
-                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-1 min-w-[120px]">
+                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-1 min-w-[140px]">
                     <ShoppingBasket className="text-[#FF6B6B]" size={20} />
                     <div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Min. Order</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Min. zamówienie</p>
                         <p className="text-white font-bold text-sm">35.00 zł</p>
                     </div>
                 </div>
 
-                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-1 min-w-[120px]">
+                <div className="bg-[#252525] px-4 py-2 rounded-lg flex items-center gap-3 border border-[#333] flex-grow-[2] min-w-[200px]">
                     <Clock className="text-[#FF6B6B]" size={20} />
                     <div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Time</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Szacowany czas dostawy</p>
                         <p className="text-white font-bold text-sm">30-40 min</p>
                     </div>
                 </div>
@@ -70,21 +81,20 @@ export const RestaurantHero = () => {
       </div>
 
       {/* PRAWA STRONA (1/3): Godziny Otwarcia */}
-      {/* To jest osobny kafelek w Gridzie, więc wyrówna się z sidebarem poniżej */}
       <div className="hidden lg:flex flex-col justify-center bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] shadow-xl h-full">
          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-            <Clock className="text-[#FF6B6B]" size={20} /> Opening Hours
+            <Clock className="text-[#FF6B6B]" size={20} /> Godziny otwarcia
          </h3>
          <ul className="space-y-3 text-sm text-gray-400">
-            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Monday</span><span>11:00 - 22:00</span></li>
-            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Tuesday</span><span>11:00 - 22:00</span></li>
-            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Wednesday</span><span>11:00 - 22:00</span></li>
-            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Thursday</span><span>11:00 - 22:00</span></li>
+            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Poniedziałek</span><span>11:00 - 22:00</span></li>
+            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Wtorek</span><span>11:00 - 22:00</span></li>
+            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Środa</span><span>11:00 - 22:00</span></li>
+            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Czwartek</span><span>11:00 - 22:00</span></li>
             <li className="flex justify-between text-white font-bold bg-white/5 px-2 -mx-2 py-1 rounded">
-                <span>Friday</span><span>11:00 - 23:00</span>
+                <span>Piątek</span><span>11:00 - 23:00</span>
             </li>
-            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Saturday</span><span>12:00 - 23:00</span></li>
-            <li className="flex justify-between"><span>Sunday</span><span>12:00 - 23:00</span></li>
+            <li className="flex justify-between border-b border-[#2A2A2A] pb-1"><span>Sobota</span><span>12:00 - 23:00</span></li>
+            <li className="flex justify-between"><span>Niedziela</span><span>12:00 - 23:00</span></li>
          </ul>
       </div>
     </div>
@@ -92,14 +102,14 @@ export const RestaurantHero = () => {
 };
 
 
-// KARTA MENU
+// --- 2. KARTA MENU (PIZZA) ---
 export const MenuCard = ({ data }: { data: Pizza }) => {
-  const isSpicy = data.style === "Spicy" || data.name.includes("Diavola") || data.name.includes("Texas");
+  const isSpicy = data.style === "Spicy" || data.name.includes("Diavola") || data.name.includes("Texas") || data.sauce === "Ostry pomidorowy";
   const isVegetarian = data.style === "Vegetarian" || data.name.includes("Vegetariańska");
 
   return (
-    <div className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-[#2A2A2A] hover:border-[#333] transition-all duration-300 flex group h-36 relative shadow-lg">
-      <div className="w-36 h-full flex-shrink-0 overflow-hidden relative">
+    <div className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-[#2A2A2A] hover:border-[#333] transition-all duration-300 flex group min-h-[144px] relative shadow-lg">
+      <div className="w-36 h-auto flex-shrink-0 overflow-hidden relative">
         <img
           src={data.image}
           alt={data.name}
@@ -110,25 +120,26 @@ export const MenuCard = ({ data }: { data: Pizza }) => {
       
       <div className="flex-1 p-5 flex justify-between items-center">
         <div className="flex flex-col justify-center h-full pr-4">
-          <h3 className="text-xl font-bold text-white mb-1">{data.name}</h3>
-          <p className="text-gray-500 text-xs mb-3 line-clamp-2 max-w-sm leading-relaxed">
+          <h3 className="text-xl font-bold text-white mb-2">{data.name}</h3>
+          
+          <p className="text-gray-500 text-xs mb-3 max-w-sm leading-relaxed">
             {data.description}
           </p>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
              {isSpicy && (
                 <span className="bg-red-900/20 text-red-400 border border-red-900/30 text-[10px] font-bold px-2 py-1 rounded uppercase">
-                    🌶️ Spicy
+                    🌶️ Pikantna
                 </span>
              )}
              {isVegetarian && (
                 <span className="bg-green-900/20 text-green-400 border border-green-900/30 text-[10px] font-bold px-2 py-1 rounded uppercase">
-                    🌿 Vege
+                    🌿 Wege
                 </span>
              )}
              {!isSpicy && !isVegetarian && (
                  <span className="bg-[#2A2A2A] text-gray-400 border border-[#333] text-[10px] font-bold px-2 py-1 rounded uppercase">
-                    {data.dough || "Classic"}
+                    {data.dough || "Klasyczna"}
                  </span>
              )}
           </div>
@@ -153,18 +164,21 @@ export const MenuCard = ({ data }: { data: Pizza }) => {
 };
 
 
-// PRAWY SIDEBAR
+// --- 3. PRAWY SIDEBAR ---
 export const RightSidebar = () => {
+  // Ten sam link co w nagłówku
+  const mapLink = "https://www.google.com/maps?q=52.20064825424179,20.931893529706343";
+
   return (
     <div className="space-y-6 sticky top-6">
         
-      {/* SEKCJA OPINII */}
+      {/* 1. SEKCJA OPINII */}
       <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] shadow-xl">
         <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Star className="text-[#FF6B6B] fill-[#FF6B6B]" size={18} /> Reviews
+                <Star className="text-[#FF6B6B] fill-[#FF6B6B]" size={18} /> Opinie
             </h3>
-            <a href="#" className="text-xs text-[#FF6B6B] font-bold hover:underline">View all 1,204</a>
+            <a href="#" className="text-xs text-[#FF6B6B] font-bold hover:underline">Zobacz 1,204</a>
         </div>
 
         <div className="flex items-end gap-4 mb-6">
@@ -177,11 +191,11 @@ export const RightSidebar = () => {
                     <Star size={16} fill="currentColor" />
                     <Star size={16} fill="currentColor" className="opacity-50" />
                 </div>
-                <p className="text-xs text-gray-500 font-medium">Based on Google ratings</p>
+                <p className="text-xs text-gray-500 font-medium">Na podstawie Google</p>
             </div>
         </div>
 
-        {/* KOMENTARZ */}
+        {/* --- KOMENTARZ WIKTORA W. --- */}
         <div className="bg-[#252525] p-4 rounded-xl border border-[#333] relative">
             <div className="absolute -top-2 left-6 w-4 h-4 bg-[#252525] border-l border-t border-[#333] transform rotate-45"></div>
             
@@ -191,7 +205,7 @@ export const RightSidebar = () => {
                 </div>
                 <div>
                     <p className="font-bold text-white text-sm">Wiktor W.</p>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">2 days ago</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">2 dni temu</p>
                 </div>
             </div>
             <p className="text-gray-300 text-sm italic leading-relaxed pl-13">
@@ -200,17 +214,22 @@ export const RightSidebar = () => {
         </div>
       </div>
 
-      {/* SEKCJA MAPY */}
-      <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden h-56 relative group cursor-pointer shadow-xl">
-          <img 
-            src="https://media.wired.com/photos/59269cd37034dc5f91becd80/master/w_2560%2Cc_limit/GoogleMapTA.jpg" 
-            alt="Map Location" 
-            className="w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity duration-500 filter grayscale group-hover:grayscale-0"
+      {/* 2. SEKCJA MAPY - INTERAKTYWNA */}
+      <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden h-56 relative shadow-xl z-0">
+          <MapComponent 
+            coords={[52.20064825424179, 20.931893529706343]} 
+            popupText="Pizza Hut - Al. Jerozolimskie 54" 
           />
-          <div className="absolute inset-0 flex items-center justify-center">
-              <button className="bg-[#1A1A1A] text-white px-5 py-2.5 rounded-full flex items-center gap-2 font-bold text-sm shadow-xl border border-[#333] group-hover:bg-[#FF6B6B] group-hover:border-[#FF6B6B] transition-all transform group-hover:-translate-y-1">
-                  <MapPin size={16} /> Show on Map
-              </button>
+          
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-[400]">
+              <a 
+                href={mapLink} 
+                target="_blank"
+                rel="noreferrer"
+                className="bg-[#1A1A1A] text-white px-4 py-2 rounded-full flex items-center gap-2 font-bold text-xs shadow-xl border border-[#333] hover:bg-[#FF6B6B] hover:border-[#FF6B6B] transition-all"
+              >
+                  <MapPin size={14} /> Nawiguj
+              </a>
           </div>
       </div>
 
