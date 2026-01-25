@@ -3,13 +3,13 @@ import Header from "./Header";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
 import type { Pizza } from "../data/mockPizzas";
 
-
+// Teraz komponent przyjmuje props 'menu'
 interface RestaurantViewProps {
   menu: Pizza[];
 }
 
 const RestaurantView = ({ menu }: RestaurantViewProps) => {
-  const [activeTab, setActiveTab] = useState("Pizzas");
+  const [activeTab, setActiveTab] = useState("Pizze");
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
@@ -21,7 +21,7 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="flex gap-8 border-b border-[#2A2A2A] mb-8 sticky top-0 bg-[#121212] z-20 pt-2">
-              {["Pizzas", "Drinks", "Promotions"].map((tab) => (
+              {["Pizze", "Promocje"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -31,9 +31,8 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
                       : "text-gray-500 hover:text-gray-300"
                   }`}
                 >
-                  {tab === "Pizzas" && <span className="mr-2">🍕</span>}
-                  {tab === "Drinks" && <span className="mr-2">🍸</span>}
-                  {tab === "Promotions" && <span className="mr-2">⚡</span>}
+                  {tab === "Pizze" && <span className="mr-2">🍕</span>}
+                  {tab === "Promocje" && <span className="mr-2">⚡</span>}
                   {tab}
                   {activeTab === tab && (
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 shadow-[0_0_10px_#ef4444]"></span>
@@ -44,14 +43,14 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
 
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* UŻYWAMY DANYCH PRZEKAZANYCH Z APP.TSX */}
-              {activeTab === "Pizzas" && menu.map((pizza) => (
+              {activeTab === "Pizze" && menu.map((pizza) => (
                 <MenuCard key={pizza.id} data={pizza} />
               ))}
               
-              {activeTab !== "Pizzas" && (
+              {activeTab !== "Pizze" && (
                 <div className="text-center py-20 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] text-gray-500">
-                  <p className="text-xl font-bold mb-2">Coming soon...</p>
-                  <p className="text-sm">We are working on adding {activeTab.toLowerCase()} to the menu.</p>
+                  <p className="text-xl font-bold mb-2">Wkrótce...</p>
+                  <p className="text-sm">Pracujemy nad dodaniem tej sekcji do menu.</p>
                 </div>
               )}
             </div>
