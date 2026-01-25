@@ -9,7 +9,8 @@ import AddPizzaView from "./components/AddPizzaView";
 import LoginView from "./components/LoginView";
 import ManageRestaurantsView from "./components/ManageRestaurantsView";
 import AddRestaurantView from "./components/AddRestaurantView";
-import EditRestaurantView from "./components/EditRestaurantView"; // To naprawi błąd
+import EditRestaurantView from "./components/EditRestaurantView";
+import NewPizzaPreviewView from "./components/NewPizzaPreviewView"; // Import podglądu
 import type { Pizza } from "./data/mockPizzas";
 
 // --- DANE PIZZ ---
@@ -30,41 +31,9 @@ const INITIAL_MENU: Pizza[] = [
     style: "Classic",
     sauce: "Pomidorowy",
   },
-  {
-    id: 202,
-    name: "Texas",
-    pizzeria: "Pizza Hut",
-    city: "Warszawa",
-    price: 44.99,
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=500",
-    description: "Kurczak grillowany, czerwona cebula, kukurydza i sos BBQ zamiast pomidorowego.",
-    weight: 580,
-    kcal: 1350,
-    dough: "Tradycyjne",
-    crust: "Ze słonecznikiem",
-    shape: "Okrągła",
-    style: "Spicy",
-    sauce: "BBQ",
-  },
-  {
-    id: 203,
-    name: "Supreme",
-    pizzeria: "Pizza Hut",
-    city: "Warszawa",
-    price: 46.99,
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=500",
-    description: "Wszystko co najlepsze: wołowina, pepperoni, szynka, papryka, pieczarki i cebula.",
-    weight: 620,
-    kcal: 1500,
-    dough: "PAN (Grube)",
-    crust: "Grube",
-    shape: "Okrągła",
-    style: "Meat Lover",
-    sauce: "Pomidorowy",
-  },
+  // ... (reszta Twoich pizz - nie usuwaj ich)
 ];
 
-// --- DANE RESTAURACJI ---
 const INITIAL_RESTAURANTS = [
     {
         id: 1,
@@ -87,28 +56,25 @@ const INITIAL_RESTAURANTS = [
 
 function App() {
   const [restaurantMenu, setRestaurantMenu] = useState<Pizza[]>(INITIAL_MENU);
-  
-  // Stan Restauracji
   const [myRestaurants, setMyRestaurants] = useState(INITIAL_RESTAURANTS);
   const navigate = useNavigate();
 
+  // Funkcja dodawania pizzy (wywoływana teraz przez NewPizzaPreviewView)
   const handleAddPizza = (newPizza: Pizza) => {
     setRestaurantMenu((prevMenu) => [...prevMenu, newPizza]);
   };
 
-  // Dodawanie restauracji z flagą isNew
+  // Logika restauracji (bez zmian)
   const handleAddRestaurant = (newRestaurant: any) => {
       setMyRestaurants(prev => [...prev, { ...newRestaurant, id: Date.now(), isNew: true, status: "Otwarte", rating: 0 }]);
       navigate("/manage-restaurants");
   };
 
-  // Edycja restauracji
   const handleEditRestaurant = (updatedRestaurant: any) => {
       setMyRestaurants(prev => prev.map(rest => rest.id === updatedRestaurant.id ? { ...rest, ...updatedRestaurant } : rest));
       navigate("/manage-restaurants");
   };
 
-  // Usuwanie restauracji
   const handleDeleteRestaurant = (id: number) => {
       setMyRestaurants(prev => prev.filter(rest => rest.id !== id));
   };
@@ -123,9 +89,20 @@ function App() {
         <Route path="/restaurant" element={<RestaurantView menu={restaurantMenu} />} />
         
         <Route path="/account" element={<AccountView />} />
-        <Route path="/add-pizza" element={<AddPizzaView onAdd={handleAddPizza} />} />
         
-        {/* Zarządzanie restauracjami */}
+        {/* --- POPRAWIONA TRASA ADD-PIZZA (Usunięto onAdd) --- */}
+        <Route 
+            path="/add-pizza" 
+            element={<AddPizzaView restaurants={myRestaurants} />} 
+        />
+
+        {/* --- TRASA PODGLĄDU (Tutaj przekazujemy onConfirm) --- */}
+        <Route 
+            path="/pizza-preview" 
+            element={<NewPizzaPreviewView onConfirm={handleAddPizza} />} 
+        />
+        
+        {/* Restauracje */}
         <Route 
             path="/manage-restaurants" 
             element={<ManageRestaurantsView restaurants={myRestaurants} onDelete={handleDeleteRestaurant} />} 
@@ -138,7 +115,6 @@ function App() {
             path="/edit-restaurant/:id" 
             element={<EditRestaurantView restaurants={myRestaurants} onEdit={handleEditRestaurant} />} 
         />
-
       </Routes>
     </div>
   );
