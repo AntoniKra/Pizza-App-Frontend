@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, Briefcase } from "lucide-react";
+import { UserCircle, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const userRole =
+    user?.role ||
+    (user as any)?.[
+      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    ];
+  const isPartner =
+    userRole === "Partner" || userRole === "Owner" || userRole === "partner";
   const [address, setAddress] = useState("");
 
   const handleSearch = () => {
@@ -13,31 +22,48 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center text-white relative overflow-hidden">
-      
       {/* PRZYCISKI LOGOWANIA (TOP RIGHT) */}
       <div className="absolute top-6 right-6 z-20 flex flex-col gap-3">
-        
-        {/* 1. STREFA PARTNERA */}
-        <button 
-            onClick={() => navigate("/login", { state: { role: "partner" } })}
-            className="w-48 flex items-center justify-center gap-2 text-white bg-[#FF6B6B] hover:bg-[#ff5252] px-5 py-2.5 rounded-full shadow-lg shadow-red-900/20 transition-all transform hover:scale-105"
-        >
-            <Briefcase size={18} />
-            <span className="text-sm font-bold">Strefa Partnera</span>
-        </button>
-
-        {/* 2. ZALOGUJ (USER) */}
-        <button 
-            onClick={() => navigate("/login", { state: { role: "user" } })}
-            className="w-48 flex items-center justify-center gap-2 text-white bg-[#1E1E1E] border border-[#FF6B6B] hover:bg-[#FF6B6B]/10 px-5 py-2 rounded-full shadow-md transition-all"
-        >
-            <UserCircle size={18} className="text-[#FF6B6B]" />
+        {isAuthenticated ? (
+          // --- WARIANT ZALOGOWANY (Pastylka) ---
+          <button
+            onClick={() => isPartner && navigate("/account")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#FF6B6B] bg-[#1E1E1E] transition-all group shadow-lg
+                    ${
+                      isPartner
+                        ? "hover:bg-[#FF6B6B] cursor-pointer"
+                        : "cursor-default"
+                    }`}
+          >
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors
+                    ${isPartner ? "bg-white text-[#FF6B6B]" : "bg-[#FF6B6B] text-white"}`}
+            >
+              <User size={14} />
+            </div>
+            <span
+              className={`text-sm font-medium transition-colors ${isPartner ? "text-white group-hover:text-white" : "text-gray-300"}`}
+            >
+              {user?.email || "Twój Profil"}
+            </span>
+          </button>
+        ) : (
+          // --- WARIANT NIEZALOGOWANY (Przycisk) ---
+          <button
+            onClick={() => navigate("/login")}
+            className="w-48 flex items-center justify-center gap-2 text-white bg-[#1E1E1E] border border-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white px-5 py-2 rounded-full shadow-md transition-all group"
+          >
+            <UserCircle
+              size={18}
+              className="text-[#FF6B6B] group-hover:text-white transition-colors"
+            />
             <span className="text-sm font-medium">Zaloguj się</span>
-        </button>
+          </button>
+        )}
       </div>
 
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-[#1a0505] to-[#2b0a0a] z-0"></div>
-      
+
       <div className="z-10 text-center px-4">
         <div className="w-20 h-20 bg-[#FF6B6B] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(255,107,107,0.4)] mx-auto mb-6">
           <span className="text-4xl">🍕</span>

@@ -8,6 +8,7 @@ export default defineConfig({
       schemas: "src/api/model",
       client: "axios",
       mock: true,
+      clean: true,
       prettier: true,
     },
     input: {
