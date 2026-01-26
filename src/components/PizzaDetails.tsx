@@ -75,17 +75,6 @@ const PizzaDetails = () => {
             {/* Overlay gradient na dole zdjęcia */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent opacity-60"></div>
           </div>
-
-          {/* Tu w przyszłości dodamy galerię miniaturek */}
-          <div className="grid grid-cols-4 gap-4">
-            {/* Placeholdery na dodatkowe zdjęcia */}
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-xl bg-[#1E1E1E] border border-gray-800"
-              ></div>
-            ))}
-          </div>
         </div>
 
         {/* PRAWA KOLUMNA - DANE */}
@@ -93,17 +82,18 @@ const PizzaDetails = () => {
           <div className="flex justify-between items-start">
             <div>
               <div className="mb-2 text-[#FF6B6B] font-medium tracking-wide text-sm uppercase flex items-center gap-2">
-                <span>📍 {pizza.city}</span>
-                <span className="text-gray-600">•</span>
-                <span>{pizza.pizzeria}</span>
+                📍 {pizza.city}
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 {pizza.name}
               </h1>
             </div>
             {/* Mock odległości - wymagane w PDF (str. 5) */}
-            <div className="bg-[#1E1E1E] px-3 py-1 rounded-lg border border-gray-700 text-xs text-gray-400">
-              ~2.5 km stąd
+            <div
+              onClick={() => navigate("/restaurant")}
+              className="bg-[#1E1E1E] px-3 py-1 rounded-lg border border-gray-700 text-[#FF6B6B] font-medium tracking-wide text-m cursor-pointer hover:bg-[#FF6B6B] hover:text-white transition-colors"
+            >
+              <span>{pizza.pizzeria}</span>
             </div>
           </div>
 
@@ -197,7 +187,10 @@ const PizzaDetails = () => {
           </div>
 
           {/* DANE PIZZERII (Mock mapy) */}
-          <div className="bg-[#1E1E1E] p-4 rounded-xl flex items-center gap-4 border border-gray-800 mb-10">
+          <div
+            onClick={() => navigate("/restaurant")} // Dodajemy nawigację
+            className="bg-[#1E1E1E] p-4 rounded-xl flex items-center gap-4 border border-gray-800 mb-10 cursor-pointer hover:border-[#FF6B6B]/50 transition-colors" // Dodajemy kursor i hover
+          >
             <div className="w-16 h-16 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden relative">
               {/* Atrapa mapy */}
               <div className="absolute inset-0 bg-gray-600 opacity-50"></div>

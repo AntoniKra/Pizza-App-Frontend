@@ -21,8 +21,10 @@ const INITIAL_MENU: Pizza[] = [
     pizzeria: "Pizza Hut",
     city: "Warszawa",
     price: 39.99,
-    image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=500",
-    description: "Klasyk gatunku. Podwójna porcja salami pepperoni i ser mozzarella. Ciasto PAN.",
+    image:
+      "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=500",
+    description:
+      "Klasyk gatunku. Podwójna porcja salami pepperoni i ser mozzarella. Ciasto PAN.",
     weight: 550,
     kcal: 1400,
     dough: "PAN (Grube)",
@@ -35,23 +37,24 @@ const INITIAL_MENU: Pizza[] = [
 ];
 
 const INITIAL_RESTAURANTS = [
-    {
-        id: 1,
-        name: "Pizza Hut Centrum",
-        address: "Al. Jerozolimskie 54, Warszawa",
-        status: "Otwarte",
-        rating: 4.5,
-        isNew: false,
-        description: "Najpopularniejsza sieć pizzerii na świecie.",
-        deliveryPrice: "6.99",
-        minOrder: "35.00",
-        time: "30",
-        image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1000",
-        weekdayOpen: "11:00",
-        weekdayClose: "22:00",
-        weekendOpen: "12:00",
-        weekendClose: "23:00"
-    }
+  {
+    id: 1,
+    name: "Pizza Hut Centrum",
+    address: "Al. Jerozolimskie 54, Warszawa",
+    status: "Otwarte",
+    rating: 4.5,
+    isNew: false,
+    description: "Najpopularniejsza sieć pizzerii na świecie.",
+    deliveryPrice: "6.99",
+    minOrder: "35.00",
+    time: "30",
+    image:
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1000",
+    weekdayOpen: "11:00",
+    weekdayClose: "22:00",
+    weekendOpen: "12:00",
+    weekendClose: "23:00",
+  },
 ];
 
 function App() {
@@ -66,17 +69,32 @@ function App() {
 
   // Logika restauracji (bez zmian)
   const handleAddRestaurant = (newRestaurant: any) => {
-      setMyRestaurants(prev => [...prev, { ...newRestaurant, id: Date.now(), isNew: true, status: "Otwarte", rating: 0 }]);
-      navigate("/manage-restaurants");
+    setMyRestaurants((prev) => [
+      ...prev,
+      {
+        ...newRestaurant,
+        id: Date.now(),
+        isNew: true,
+        status: "Otwarte",
+        rating: 0,
+      },
+    ]);
+    navigate("/manage-restaurants");
   };
 
   const handleEditRestaurant = (updatedRestaurant: any) => {
-      setMyRestaurants(prev => prev.map(rest => rest.id === updatedRestaurant.id ? { ...rest, ...updatedRestaurant } : rest));
-      navigate("/manage-restaurants");
+    setMyRestaurants((prev) =>
+      prev.map((rest) =>
+        rest.id === updatedRestaurant.id
+          ? { ...rest, ...updatedRestaurant }
+          : rest,
+      ),
+    );
+    navigate("/manage-restaurants");
   };
 
   const handleDeleteRestaurant = (id: number) => {
-      setMyRestaurants(prev => prev.filter(rest => rest.id !== id));
+    setMyRestaurants((prev) => prev.filter((rest) => rest.id !== id));
   };
 
   return (
@@ -86,34 +104,47 @@ function App() {
         <Route path="/login" element={<LoginView />} />
         <Route path="/search" element={<PizzaSearch />} />
         <Route path="/pizza/:id" element={<PizzaDetails />} />
-        <Route path="/restaurant" element={<RestaurantView menu={restaurantMenu} />} />
-        
+        <Route
+          path="/restaurant"
+          element={<RestaurantView menu={restaurantMenu} />}
+        />
+
         <Route path="/account" element={<AccountView />} />
-        
+
         {/* --- POPRAWIONA TRASA ADD-PIZZA (Usunięto onAdd) --- */}
-        <Route 
-            path="/add-pizza" 
-            element={<AddPizzaView restaurants={myRestaurants} />} 
+        <Route
+          path="/add-pizza"
+          element={<AddPizzaView restaurants={myRestaurants} />}
         />
 
         {/* --- TRASA PODGLĄDU (Tutaj przekazujemy onConfirm) --- */}
-        <Route 
-            path="/pizza-preview" 
-            element={<NewPizzaPreviewView onConfirm={handleAddPizza} />} 
+        <Route
+          path="/pizza-preview"
+          element={<NewPizzaPreviewView onConfirm={handleAddPizza} />}
         />
-        
+
         {/* Restauracje */}
-        <Route 
-            path="/manage-restaurants" 
-            element={<ManageRestaurantsView restaurants={myRestaurants} onDelete={handleDeleteRestaurant} />} 
+        <Route
+          path="/manage-restaurants"
+          element={
+            <ManageRestaurantsView
+              restaurants={myRestaurants}
+              onDelete={handleDeleteRestaurant}
+            />
+          }
         />
-        <Route 
-            path="/add-restaurant" 
-            element={<AddRestaurantView onAdd={handleAddRestaurant} />} 
+        <Route
+          path="/add-restaurant"
+          element={<AddRestaurantView onAdd={handleAddRestaurant} />}
         />
-        <Route 
-            path="/edit-restaurant/:id" 
-            element={<EditRestaurantView restaurants={myRestaurants} onEdit={handleEditRestaurant} />} 
+        <Route
+          path="/edit-restaurant/:id"
+          element={
+            <EditRestaurantView
+              restaurants={myRestaurants}
+              onEdit={handleEditRestaurant}
+            />
+          }
         />
       </Routes>
     </div>
