@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import RestaurantView from "./components/RestaurantView";
 import LandingPage from "./components/LandingPage";
 import PizzaSearch from "./components/PizzaSearch";
@@ -13,6 +13,7 @@ import EditRestaurantView from "./components/EditRestaurantView";
 import NewPizzaPreviewView from "./components/NewPizzaPreviewView"; // Import podglądu
 import type { Pizza } from "./data/mockPizzas";
 import RestaurantsList from "./components/RestaurantsList";
+import Header from "./components/Header";
 
 // --- DANE PIZZ ---
 const INITIAL_MENU: Pizza[] = [
@@ -63,6 +64,35 @@ function App() {
   const [myRestaurants, setMyRestaurants] = useState(INITIAL_RESTAURANTS);
   const navigate = useNavigate();
 
+  // 1. Sprawdzamy gdzie jesteśmy (np. czy to strona "/")
+  const location = useLocation();
+
+  // 2. To jest nasza "Pamięć Globalna". Tu trzymamy miasto, niezależnie od strony.
+  const [selectedCity, setSelectedCity] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
+  // 3. Funkcja: "Szefie, klient wybrał miasto na Landing Page!"
+  // Zapisujemy miasto w pamięci i przenosimy klienta do wyszukiwarki.
+  const handleCitySelect = (city: { id: string; name: string }) => {
+    setSelectedCity(city);
+    // Przekazujemy miasto w 'state' nawigacji, żeby PizzaSearch od razu wiedział co robić
+    navigate("/search", { state: { cityId: city.id, cityName: city.name } });
+  };
+
+  // 4. Funkcja: "Szefie, klient wpisał coś w lupkę w Headerze!"
+  // Używamy zapamiętanego miasta (selectedCity) i szukamy.
+  const handleHeaderSearch = (term: string) => {
+    navigate("/search", {
+      state: {
+        searchTerm: term,
+        cityId: selectedCity?.id, // Szef wyciąga ID miasta z pamięci
+        cityName: selectedCity?.name, // i nazwę też
+      },
+    });
+  };
+
   // Funkcja dodawania pizzy (wywoływana teraz przez NewPizzaPreviewView)
   const handleAddPizza = (newPizza: Pizza) => {
     setRestaurantMenu((prevMenu) => [...prevMenu, newPizza]);
@@ -100,8 +130,23 @@ function App() {
 
   return (
     <div className="bg-[#121212] min-h-screen text-white">
+      {/* 👇 TU JEST GLOBALNY HEADER */}
+      {/* Logika: Jeśli NIE jesteśmy na stronie głównej ("/") I NIE na logowaniu... */}
+      {location.pathname !== "/" && location.pathname !== "/login" && (
+        <Header
+          onSearch={handleHeaderSearch} // Przekazujemy funkcję szukania
+          address={selectedCity?.name} // Przekazujemy nazwę miasta do wyświetlenia
+          cityId={selectedCity?.id}
+        />
+      )}
+
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* 👇 ZMIANA W LANDING PAGE */}
+        {/* Przekazujemy funkcję handleCitySelect, żeby LandingPage mógł zameldować wybór miasta */}
+        <Route
+          path="/"
+          element={<LandingPage onCitySelect={handleCitySelect} />}
+        />
         <Route path="/login" element={<LoginView />} />
         <Route path="/search" element={<PizzaSearch />} />
         <Route path="/restaurants" element={<RestaurantsList />} />

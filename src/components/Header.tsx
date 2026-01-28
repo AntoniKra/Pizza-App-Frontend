@@ -7,9 +7,12 @@ import { useAuth } from "../context/AuthContext";
 interface HeaderProps {
   onSearch: (term: string) => void;
   address?: string;
+  // --- POPRAWKA 1: Dodajemy cityId do propsów, żeby Header mógł je przekazywać dalej ---
+  cityId?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
+// --- POPRAWKA 2: Odbieramy cityId ---
+const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
   const navigate = useNavigate();
   // 2. Wyciągamy dane użytkownika i funkcję wylogowania
   const { isAuthenticated, user, logout } = useAuth();
@@ -38,6 +41,16 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
     } else {
       console.log("Kliknięto, ale nie jesteś rozpoznany jako Partner.");
     }
+  };
+
+  // Funkcja pomocnicza do nawigacji z zachowaniem miasta
+  const navigateWithCity = (path: string) => {
+    navigate(path, {
+      state: {
+        cityId: cityId, // Przekazujemy ID miasta
+        cityName: address, // Przekazujemy nazwę miasta
+      },
+    });
   };
 
   return (
@@ -76,7 +89,11 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
               {address || "Lokalizacja"}
             </span>
           </div>
-          <button className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] hover:from-[#ff5252] hover:to-[#ff7b3b] text-white px-5 py-2 rounded-full font-semibold transition shadow-lg shadow-red-900/40 text-sm whitespace-nowrap">
+          <button
+            // --- POPRAWKA 3: Guzik szukaj też powinien pamiętać miasto ---
+            onClick={() => navigateWithCity("/search")}
+            className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] hover:from-[#ff5252] hover:to-[#ff7b3b] text-white px-5 py-2 rounded-full font-semibold transition shadow-lg shadow-red-900/40 text-sm whitespace-nowrap"
+          >
             Szukaj
           </button>
         </div>
@@ -86,16 +103,18 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
       <div className="flex items-center gap-4 text-sm font-medium">
         {/* 1. Znajdź Pizzę (PizzaSearch) */}
         <button
-          onClick={() => navigate("/search")}
+          // --- POPRAWKA 4: Używamy nowej funkcji zamiast zwykłego navigate ---
+          onClick={() => navigateWithCity("/search")}
           className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg"
         >
           <UtensilsCrossed size={18} className="text-[#FF6B6B]" />
           <span>Znajdź Pizzę</span>
         </button>
 
-        {/* 2. Restauracje (Placeholder - czekamy na widok od kolegi) */}
+        {/* 2. Restauracje */}
         <button
-          onClick={() => navigate("/restaurants")}
+          // --- POPRAWKA 5: Restauracje też dostaną miasto (w przyszłości się przyda) ---
+          onClick={() => navigateWithCity("/restaurants")}
           className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg"
         >
           <Map size={18} className="text-gray-400" />
@@ -108,10 +127,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
         {isAuthenticated ? (
           // --- WIDOK ZALOGOWANEGO UŻYTKOWNIKA ---
           <>
-            {/* Przycisk Konta (z Emailem) */}
+            {/* Przycisk Konta */}
             <button
               onClick={handleProfileClick}
-              // Logika wyglądu: Partner ma "rączkę" i podświetlenie, User ma zwykły kursor
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-700 transition-all
                     ${
                       isPartner
@@ -137,9 +155,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
             </button>
           </>
         ) : (
-          // NIEZALOGOWANY:
+          // NIEZALOGOWANY
           <>
-            {/* Otwiera logowanie od razu na zakładce Partner */}
             <button
               onClick={() => navigate("/login", { state: { role: "partner" } })}
               className="hidden lg:block text-[#FF6B6B] hover:text-white transition px-3 py-1 whitespace-nowrap"
@@ -147,7 +164,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
               Strefa Partnera
             </button>
 
-            {/* Otwiera logowanie domyślnie (zakładka User) */}
             <button
               onClick={() => navigate("/login")}
               className="bg-white text-black px-4 py-1.5 rounded-full font-bold hover:bg-gray-200 transition text-sm shadow-[0_0_10px_rgba(255,255,255,0.2)]"

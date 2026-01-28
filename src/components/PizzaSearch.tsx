@@ -93,12 +93,6 @@ function PizzaSearch() {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
-      {/* Naprawiono: przekazujemy initialCityName zamiast błędu userAddress */}
-      <Header
-        onSearch={(term) => setSearchTerm(term)}
-        address={initialCityName}
-      />
-
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
         {filters && (
           <Sidebar filters={filters} onFilterChange={handleFilterChange} />
