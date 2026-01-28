@@ -2,14 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { pizzaService } from "../api/pizzaService";
-import type { City } from "../types/apiTypes";
 import { getCity } from "../api/endpoints/city/city";
 import type { CityDto } from "../api/model";
 
-const LandingPage = () => {
+interface LandingPageProps {
+  onCitySelect?: (city: { id: string; name: string }) => void;
+}
+
+const LandingPage = ({ onCitySelect }: LandingPageProps) => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+
   const userRole =
     user?.role ||
     (user as any)?.[
@@ -17,60 +20,58 @@ const LandingPage = () => {
     ];
   const isPartner =
     userRole === "Partner" || userRole === "Owner" || userRole === "partner";
+
   const [address, setAddress] = useState("");
-  // --- NOWE: Stan dla listy miast ---
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [cities, setCities] = useState<CityDto[]>([]);
 
-  const [cities, setCities] = useState<CityDto[]>([]); // To zastępuje POPULAR_CITIES (jako źródło danych)
-  const [isLoadingCities, setIsLoadingCities] = useState(false);
-
-  // Lista nazw do wyróżnienia (opcjonalnie, jeśli chcesz zachować sekcję "Popularne")
-  const POPULAR_CITY_NAMES = ["Warszawa", "Wrocław", "Gdańsk", "Kraków"];
-
-  // --- DODAJ TEN USEEFFECT ---
   useEffect(() => {
     fetchCities();
   }, []);
 
   const fetchCities = async () => {
     try {
-      setIsLoadingCities(true);
       const data = (await getCity().getApiCityGetAll()).data;
       setCities(data);
     } catch (error) {
       console.error("Błąd pobierania miast:", error);
-    } finally {
-      setIsLoadingCities(false);
     }
   };
 
   const handleSearch = () => {
     if (!address.trim()) return;
 
-    // Znajdź miasto w pobranych danych (ignorując wielkość liter)
-    const matchedCity = cities.find(
-      (c) => c.name.toLowerCase() === address.toLowerCase(),
-    );
+    const searchTerm = address.trim().toLowerCase();
 
-    if (matchedCity) {
-      // Przekazujemy ID miasta do wyszukiwarki
-      navigate("/search", {
-        state: {
-          cityId: matchedCity.id,
-          cityName: matchedCity.name,
-        },
-      });
+    // Szukamy dokładnego dopasowania
+    const matchedCity = cities.find((c) => c.name.toLowerCase() === searchTerm);
+
+    if (matchedCity && matchedCity.id) {
+      if (onCitySelect) {
+        onCitySelect({
+          id: matchedCity.id,
+          name: matchedCity.name,
+        });
+      } else {
+        navigate("/search", {
+          state: { cityId: matchedCity.id, cityName: matchedCity.name },
+        });
+      }
     } else {
       alert("Wybierz miasto z listy!");
     }
   };
+
+  // Filtrowanie listy do dropdowna
+  const filteredCities = cities.filter((city) =>
+    city.name.toLowerCase().includes(address.toLowerCase()),
+  );
 
   return (
     <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center text-white relative overflow-hidden">
       {/* PRZYCISKI LOGOWANIA (TOP RIGHT) */}
       <div className="absolute top-6 right-6 z-20 flex flex-col gap-3">
         {isAuthenticated ? (
-          // --- WARIANT ZALOGOWANY (Pastylka) ---
           <button
             onClick={() => isPartner && navigate("/account")}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#FF6B6B] bg-[#1E1E1E] transition-all group shadow-lg
@@ -93,7 +94,6 @@ const LandingPage = () => {
             </span>
           </button>
         ) : (
-          // --- WARIANT NIEZALOGOWANY (Przycisk) ---
           <button
             onClick={() => navigate("/login")}
             className="w-48 flex items-center justify-center gap-2 text-white bg-[#1E1E1E] border border-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white px-5 py-2 rounded-full shadow-md transition-all group"
@@ -141,13 +141,14 @@ const LandingPage = () => {
           >
             Szukaj ➔
           </button>
+
           {/* --- LISTA MIAST (DROPDOWN) --- */}
-          {isDropdownOpen && cities.length > 0 && (
+          {isDropdownOpen && filteredCities.length > 0 && (
             <div className="absolute top-full left-0 w-full mt-2 bg-[#1E1E1E] border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
               <div className="py-2 max-h-60 overflow-y-auto custom-scrollbar">
-                {cities.map((city) => (
+                {filteredCities.map((city, index) => (
                   <button
-                    key={city.id}
+                    key={city.id || index}
                     onClick={() => {
                       setAddress(city.name);
                       setIsDropdownOpen(false);

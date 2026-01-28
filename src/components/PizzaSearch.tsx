@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import Header from "./Header";
 import Sidebar, { type FilterValues } from "./Sidebar";
 import { pizzaService } from "../api/pizzaService";
 import type { PizzaSearchResult, PizzaSearchCriteria } from "../types/apiTypes";
@@ -93,12 +92,6 @@ function PizzaSearch() {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
-      {/* Naprawiono: przekazujemy initialCityName zamiast błędu userAddress */}
-      <Header
-        onSearch={(term) => setSearchTerm(term)}
-        address={initialCityName}
-      />
-
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
         {filters && (
           <Sidebar filters={filters} onFilterChange={handleFilterChange} />

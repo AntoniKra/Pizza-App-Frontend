@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Header from "./Header";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
 import type { Pizza } from "../data/mockPizzas";
 
@@ -13,8 +12,6 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
-      <Header onSearch={() => {}} />
-
       <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <RestaurantHero />
 
@@ -43,14 +40,15 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
 
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* UŻYWAMY DANYCH PRZEKAZANYCH Z APP.TSX */}
-              {activeTab === "Pizze" && menu.map((pizza) => (
-                <MenuCard key={pizza.id} data={pizza} />
-              ))}
-              
+              {activeTab === "Pizze" &&
+                menu.map((pizza) => <MenuCard key={pizza.id} data={pizza} />)}
+
               {activeTab !== "Pizze" && (
                 <div className="text-center py-20 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] text-gray-500">
                   <p className="text-xl font-bold mb-2">Wkrótce...</p>
-                  <p className="text-sm">Pracujemy nad dodaniem tej sekcji do menu.</p>
+                  <p className="text-sm">
+                    Pracujemy nad dodaniem tej sekcji do menu.
+                  </p>
                 </div>
               )}
             </div>
