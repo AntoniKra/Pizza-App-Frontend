@@ -12,6 +12,7 @@ import AddRestaurantView from "./components/AddRestaurantView";
 import EditRestaurantView from "./components/EditRestaurantView";
 import NewPizzaPreviewView from "./components/NewPizzaPreviewView"; // Import podglądu
 import type { Pizza } from "./data/mockPizzas";
+import RestaurantsList from "./components/RestaurantsList";
 
 // --- DANE PIZZ ---
 const INITIAL_MENU: Pizza[] = [
@@ -103,6 +104,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/search" element={<PizzaSearch />} />
+        <Route path="/restaurants" element={<RestaurantsList />} />
         <Route path="/pizza/:id" element={<PizzaDetails />} />
         <Route
           path="/restaurant"

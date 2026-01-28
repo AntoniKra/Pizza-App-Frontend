@@ -94,7 +94,10 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
         </button>
 
         {/* 2. Restauracje (Placeholder - czekamy na widok od kolegi) */}
-        <button className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg">
+        <button
+          onClick={() => navigate("/restaurants")}
+          className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg"
+        >
           <Map size={18} className="text-gray-400" />
           <span>Restauracje</span>
         </button>
