@@ -19,11 +19,11 @@ import type {
 
 
   export const getIngredient = () => {
-const getApiIngredient = <TData = AxiosResponse<IngredientDto[]>>(
-     options?: AxiosRequestConfig
+const getApiIngredientId = <TData = AxiosResponse<IngredientDto[]>>(
+    id: string, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
-      `/api/Ingredient`,options
+      `/api/Ingredient/${id}`,options
     );
   }
 const postApiIngredient = <TData = AxiosResponse<IngredientDto>>(
@@ -34,6 +34,14 @@ const postApiIngredient = <TData = AxiosResponse<IngredientDto>>(
       createIngredientDto,options
     );
   }
-return {getApiIngredient,postApiIngredient}};
-export type GetApiIngredientResult = AxiosResponse<IngredientDto[]>
+const getApiIngredientGetAll = <TData = AxiosResponse<IngredientDto[]>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/api/Ingredient/GetAll`,options
+    );
+  }
+return {getApiIngredientId,postApiIngredient,getApiIngredientGetAll}};
+export type GetApiIngredientIdResult = AxiosResponse<IngredientDto[]>
 export type PostApiIngredientResult = AxiosResponse<IngredientDto>
+export type GetApiIngredientGetAllResult = AxiosResponse<IngredientDto[]>

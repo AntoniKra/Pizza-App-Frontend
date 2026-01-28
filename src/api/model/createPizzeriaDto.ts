@@ -4,10 +4,11 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { LookUpItemDto } from './lookUpItemDto';
 import type { PizzeriaAddressRequest } from './pizzeriaAddressRequest';
 
 export interface CreatePizzeriaDto {
-  brandId: string;
+  brand: LookUpItemDto;
   /** @maxLength 100 */
   name: string;
   phoneNumber: string;

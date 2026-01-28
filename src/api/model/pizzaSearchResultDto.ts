@@ -8,11 +8,24 @@
 export interface PizzaSearchResultDto {
   id?: string;
   name: string;
+  brandName?: string;
   /** @nullable */
   description?: string | null;
   /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
   price?: number | string;
   /** @nullable */
   imageUrl?: string | null;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$ */
+  weightGrams?: number | string;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$ */
+  kcal?: number | string;
+  /**
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
+   */
+  diameterCm?: number | string | null;
+  styleName?: string;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
+  pricePerSqCm?: number | string;
   ingredientNames?: string[];
 }

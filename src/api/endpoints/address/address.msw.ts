@@ -23,24 +23,68 @@ import type {
 } from '../../model';
 
 
+export const getGetApiAddressIdResponseCountryMock = (overrideResponse: Partial<Country> = {}): Country => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isoCode: faker.string.alpha({length: {min: 10, max: 20}}), phonePrefix: faker.string.alpha({length: {min: 10, max: 20}})}, ...overrideResponse});
+
+export const getGetApiAddressIdResponseCityMock = (overrideResponse: Partial<City> = {}): City => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), region: faker.string.alpha({length: {min: 10, max: 20}}), countryId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), country: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressIdResponseCountryMock()},]), undefined])}, ...overrideResponse});
+
+export const getGetApiAddressIdResponseMock = (overrideResponse: Partial< Address > = {}): Address => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), street: faker.string.alpha({length: {min: 10, max: 20}}), buildingNumber: faker.string.alpha({length: {min: 10, max: 20}}), apartmentNumber: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), zipCode: faker.string.alpha({length: {min: 10, max: 20}}), latitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), longitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), cityId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), city: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressIdResponseCityMock()},]), undefined]), ...overrideResponse})
+
+export const getPostApiAddressResponseCountryMock = (overrideResponse: Partial<Country> = {}): Country => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isoCode: faker.string.alpha({length: {min: 10, max: 20}}), phonePrefix: faker.string.alpha({length: {min: 10, max: 20}})}, ...overrideResponse});
+
+export const getPostApiAddressResponseCityMock = (overrideResponse: Partial<City> = {}): City => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), region: faker.string.alpha({length: {min: 10, max: 20}}), countryId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), country: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getPostApiAddressResponseCountryMock()},]), undefined])}, ...overrideResponse});
+
+export const getPostApiAddressResponseMock = (overrideResponse: Partial< Address > = {}): Address => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), street: faker.string.alpha({length: {min: 10, max: 20}}), buildingNumber: faker.string.alpha({length: {min: 10, max: 20}}), apartmentNumber: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), zipCode: faker.string.alpha({length: {min: 10, max: 20}}), latitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), longitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), cityId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), city: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getPostApiAddressResponseCityMock()},]), undefined]), ...overrideResponse})
+
 export const getGetApiAddressGetAllResponseCountryMock = (overrideResponse: Partial<Country> = {}): Country => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isoCode: faker.string.alpha({length: {min: 10, max: 20}}), phonePrefix: faker.string.alpha({length: {min: 10, max: 20}})}, ...overrideResponse});
 
 export const getGetApiAddressGetAllResponseCityMock = (overrideResponse: Partial<City> = {}): City => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), region: faker.string.alpha({length: {min: 10, max: 20}}), countryId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), country: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressGetAllResponseCountryMock()},]), undefined])}, ...overrideResponse});
 
 export const getGetApiAddressGetAllResponseMock = (): Address[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), street: faker.string.alpha({length: {min: 10, max: 20}}), buildingNumber: faker.string.alpha({length: {min: 10, max: 20}}), apartmentNumber: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), zipCode: faker.string.alpha({length: {min: 10, max: 20}}), latitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), longitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), cityId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), city: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressGetAllResponseCityMock()},]), undefined])})))
 
-export const getGetApiAddressGetAdressIdResponseCountryMock = (overrideResponse: Partial<Country> = {}): Country => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isoCode: faker.string.alpha({length: {min: 10, max: 20}}), phonePrefix: faker.string.alpha({length: {min: 10, max: 20}})}, ...overrideResponse});
 
-export const getGetApiAddressGetAdressIdResponseCityMock = (overrideResponse: Partial<City> = {}): City => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), region: faker.string.alpha({length: {min: 10, max: 20}}), countryId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), country: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressGetAdressIdResponseCountryMock()},]), undefined])}, ...overrideResponse});
+export const getGetApiAddressIdMockHandler = (overrideResponse?: Address | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Address> | Address), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Address/:id', async (info) => {
+  
+    return new HttpResponse(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetApiAddressIdResponseMock(),
+      { status: 200,
+        headers: { 'Content-Type': 'text/plain' }
+      })
+  }, options)
+}
 
-export const getGetApiAddressGetAdressIdResponseMock = (overrideResponse: Partial< Address > = {}): Address => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), street: faker.string.alpha({length: {min: 10, max: 20}}), buildingNumber: faker.string.alpha({length: {min: 10, max: 20}}), apartmentNumber: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), zipCode: faker.string.alpha({length: {min: 10, max: 20}}), latitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), longitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), cityId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), city: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getGetApiAddressGetAdressIdResponseCityMock()},]), undefined]), ...overrideResponse})
+export const getPutApiAddressIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.put('*/api/Address/:id', async (info) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
 
-export const getPostApiAddressCreateResponseCountryMock = (overrideResponse: Partial<Country> = {}): Country => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isoCode: faker.string.alpha({length: {min: 10, max: 20}}), phonePrefix: faker.string.alpha({length: {min: 10, max: 20}})}, ...overrideResponse});
+export const getDeleteApiAddressIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/api/Address/:id', async (info) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
 
-export const getPostApiAddressCreateResponseCityMock = (overrideResponse: Partial<City> = {}): City => ({...{id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), region: faker.string.alpha({length: {min: 10, max: 20}}), countryId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), country: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getPostApiAddressCreateResponseCountryMock()},]), undefined])}, ...overrideResponse});
-
-export const getPostApiAddressCreateResponseMock = (overrideResponse: Partial< Address > = {}): Address => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), street: faker.string.alpha({length: {min: 10, max: 20}}), buildingNumber: faker.string.alpha({length: {min: 10, max: 20}}), apartmentNumber: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), zipCode: faker.string.alpha({length: {min: 10, max: 20}}), latitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), longitude: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), cityId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), city: faker.helpers.arrayElement([faker.helpers.arrayElement([null,{...getPostApiAddressCreateResponseCityMock()},]), undefined]), ...overrideResponse})
-
+export const getPostApiAddressMockHandler = (overrideResponse?: Address | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<Address> | Address), options?: RequestHandlerOptions) => {
+  return http.post('*/api/Address', async (info) => {
+  
+    return new HttpResponse(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostApiAddressResponseMock(),
+      { status: 200,
+        headers: { 'Content-Type': 'text/plain' }
+      })
+  }, options)
+}
 
 export const getGetApiAddressGetAllMockHandler = (overrideResponse?: Address[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Address[]> | Address[]), options?: RequestHandlerOptions) => {
   return http.get('*/api/Address/GetAll', async (info) => {
@@ -53,53 +97,9 @@ export const getGetApiAddressGetAllMockHandler = (overrideResponse?: Address[] |
       })
   }, options)
 }
-
-export const getGetApiAddressGetAdressIdMockHandler = (overrideResponse?: Address | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Address> | Address), options?: RequestHandlerOptions) => {
-  return http.get('*/api/Address/GetAdress/:id', async (info) => {
-  
-    return new HttpResponse(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetApiAddressGetAdressIdResponseMock(),
-      { status: 200,
-        headers: { 'Content-Type': 'text/plain' }
-      })
-  }, options)
-}
-
-export const getPostApiAddressCreateMockHandler = (overrideResponse?: Address | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<Address> | Address), options?: RequestHandlerOptions) => {
-  return http.post('*/api/Address/Create', async (info) => {
-  
-    return new HttpResponse(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getPostApiAddressCreateResponseMock(),
-      { status: 200,
-        headers: { 'Content-Type': 'text/plain' }
-      })
-  }, options)
-}
-
-export const getPutApiAddressUpdateIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.put('*/api/Address/Update/:id', async (info) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 200,
-        
-      })
-  }, options)
-}
-
-export const getDeleteApiAddressDeleteIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.delete('*/api/Address/Delete/:id', async (info) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 200,
-        
-      })
-  }, options)
-}
 export const getAddressMock = () => [
-  getGetApiAddressGetAllMockHandler(),
-  getGetApiAddressGetAdressIdMockHandler(),
-  getPostApiAddressCreateMockHandler(),
-  getPutApiAddressUpdateIdMockHandler(),
-  getDeleteApiAddressDeleteIdMockHandler()]
+  getGetApiAddressIdMockHandler(),
+  getPutApiAddressIdMockHandler(),
+  getDeleteApiAddressIdMockHandler(),
+  getPostApiAddressMockHandler(),
+  getGetApiAddressGetAllMockHandler()]

@@ -5,8 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBrandDto {
+export interface CountryDto {
+  id?: string;
   name: string;
-  /** @nullable */
-  logo?: string | null;
+  isoCode: string;
+  phonePrefix: string;
 }

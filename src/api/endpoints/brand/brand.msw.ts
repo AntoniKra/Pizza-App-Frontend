@@ -22,27 +22,17 @@ import type {
 } from '../../model';
 
 
-export const getGetApiBrandResponseMock = (): BrandDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}})})))
+export const getGetApiBrandGetAllResponseMock = (): BrandDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}})})))
 
 export const getGetApiBrandIdResponseMock = (overrideResponse: Partial< BrandDetailsDto > = {}): BrandDetailsDto => ({logo: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), pizzerias: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), city: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])})), undefined]), id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
 
-export const getPostApiBrandMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/api/Brand', async (info) => {
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 200,
-        
-      })
-  }, options)
-}
-
-export const getGetApiBrandMockHandler = (overrideResponse?: BrandDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<BrandDto[]> | BrandDto[]), options?: RequestHandlerOptions) => {
-  return http.get('*/api/Brand', async (info) => {
+export const getGetApiBrandGetAllMockHandler = (overrideResponse?: BrandDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<BrandDto[]> | BrandDto[]), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Brand/GetAll', async (info) => {
   
     return new HttpResponse(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetApiBrandResponseMock(),
+    : getGetApiBrandGetAllResponseMock(),
       { status: 200,
         headers: { 'Content-Type': 'text/plain' }
       })
@@ -70,8 +60,18 @@ export const getDeleteApiBrandIdMockHandler = (overrideResponse?: void | ((info:
       })
   }, options)
 }
+
+export const getPostApiBrandMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.post('*/api/Brand', async (info) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
 export const getBrandMock = () => [
-  getPostApiBrandMockHandler(),
-  getGetApiBrandMockHandler(),
+  getGetApiBrandGetAllMockHandler(),
   getGetApiBrandIdMockHandler(),
-  getDeleteApiBrandIdMockHandler()]
+  getDeleteApiBrandIdMockHandler(),
+  getPostApiBrandMockHandler()]

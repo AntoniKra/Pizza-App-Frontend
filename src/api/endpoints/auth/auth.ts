@@ -23,7 +23,7 @@ const postApiAuthRegister = <TData = AxiosResponse<void>>(
     registerDto: RegisterDto, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.post(
-      `/api/Auth/register`,
+      `/api/Auth/Register`,
       registerDto,options
     );
   }
@@ -31,7 +31,7 @@ const postApiAuthLogin = <TData = AxiosResponse<void>>(
     loginDto: LoginDto, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.post(
-      `/api/Auth/login`,
+      `/api/Auth/Login`,
       loginDto,options
     );
   }

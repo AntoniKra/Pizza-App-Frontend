@@ -1,4 +1,13 @@
 import React, { useState, useEffect } from "react";
+import type {
+  GetApiPizzaSearchParams,
+  LookUpItemDto,
+  PizzaDetailsDto,
+  PizzaFiltersDto,
+  PizzaSearchResultDto,
+  PizzaShapeEnum,
+} from "../api/model";
+import type { PizzaSearchCriteria } from "../types/apiTypes";
 
 const pizzeriaOptions = ["Da Grasso", "Pizza Hut", "Dominos", "Local Pizzeria"];
 const doughOptions = [
@@ -44,32 +53,34 @@ export interface FilterValues {
 }
 
 interface SidebarProps {
-  onFilterChange: (filters: FilterValues) => void;
+  onFilterChange: (filters: GetApiPizzaSearchParams) => void;
+  filters: PizzaFiltersDto;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
   const [minPrice, setMinPrice] = useState<number>(15);
   const [maxPrice, setMaxPrice] = useState<number>(120);
-  const [diameter, setDiameter] = useState<number>(30);
+  const [diameter, setDiameter] = useState<number | null>(30);
 
-  const [selectedPizzerias, setSelectedPizzerias] = useState<string[]>([]);
-  const [selectedDoughs, setSelectedDoughs] = useState<string[]>([]);
-  const [selectedCrusts, setSelectedCrusts] = useState<string[]>([]);
-  const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
-  const [selectedSauces, setSelectedSauces] = useState<string[]>([]);
+  const [selectedPizzerias, setSelectedPizzerias] = useState<LookUpItemDto[]>(
+    [],
+  );
+  const [selectedDoughs, setSelectedDoughs] = useState<LookUpItemDto[]>([]);
+  const [selectedCrusts, setSelectedCrusts] = useState<LookUpItemDto[]>([]);
+  const [selectedStyles, setSelectedStyles] = useState<LookUpItemDto[]>([]);
+  const [selectedSauces, setSelectedSauces] = useState<LookUpItemDto[]>([]);
+
+  const [selectedShape, setSelectedShape] = useState<LookUpItemDto | null>();
 
   useEffect(() => {
     onFilterChange({
-      pizzerias: selectedPizzerias,
-      doughs: selectedDoughs,
-      crusts: selectedCrusts,
-      shapes: selectedShapes,
-      styles: selectedStyles,
-      sauces: selectedSauces,
-      minPrice,
-      maxPrice,
-      minDiameter: diameter,
+      BrandIds: [],
+      Doughs: [],
+      Shapes: [],
+      Styles: [1],
+      Sauces: [],
+      MinPrice: minPrice,
+      MaxPrice: maxPrice,
     });
   }, [
     minPrice,
@@ -78,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
     selectedPizzerias,
     selectedDoughs,
     selectedCrusts,
-    selectedShapes,
+    selectedShape,
     selectedStyles,
     selectedSauces,
   ]);
@@ -90,21 +101,103 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
     setSelectedPizzerias([]);
     setSelectedDoughs([]);
     setSelectedCrusts([]);
-    setSelectedShapes([]);
+    setSelectedShape(null);
     setSelectedStyles([]);
     setSelectedSauces([]);
   };
 
   const toggleFilter = (
-    item: string,
-    currentList: string[],
-    setFunction: (list: string[]) => void,
+    item: LookUpItemDto,
+    currentList: LookUpItemDto[],
+    setFunction: (list: LookUpItemDto[]) => void,
   ) => {
     const isSelected = currentList.includes(item);
     const newSelection = isSelected
       ? currentList.filter((i) => i !== item)
       : [...currentList, item];
     setFunction(newSelection);
+  };
+
+  const generateShapes = (shape: LookUpItemDto) => {
+    // 1. Sprawdzamy czy to ten wybrany
+    const isSelected = selectedShape?.id === shape.id;
+
+    // 2. Sprawdzamy czy to koło (po nazwie z API)
+    // Używamy toLowerCase(), żeby zadziałało na "Okrągła", "okrągła", "Round" itp.
+    const isRound =
+      shape.name.toLowerCase().includes("okrągła") ||
+      shape.name.toLowerCase().includes("round");
+
+    return (
+      <button
+        onClick={() => {
+          if (shape.id === "Round") setDiameter(20);
+          else setDiameter(null);
+          setSelectedShape(shape);
+        }}
+        className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
+          isSelected
+            ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]" // Jak wybrany -> NEON
+            : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20" // Jak nie -> SZARY
+        }`}
+      >
+        {isRound ? (
+          // Opcja A: IKONA KOŁA
+          <svg
+            viewBox="0 0 24 24"
+            // Tutaj też zmieniamy kolor ikony zależnie od isSelected
+            className={`w-8 h-8 mb-2 transition-colors ${
+              isSelected
+                ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
+                : "text-gray-500 group-hover:text-gray-300"
+            }`}
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+        ) : (
+          // Opcja B: IKONA PROSTOKĄTA (dla reszty)
+          <svg
+            viewBox="0 0 24 24"
+            className={`w-8 h-8 mb-2 transition-colors ${
+              isSelected
+                ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
+                : "text-gray-500 group-hover:text-gray-300"
+            }`}
+          >
+            <rect
+              x="4"
+              y="5"
+              width="16"
+              height="14"
+              rx="2"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+        )}
+        <span
+          className={`text-xs font-bold uppercase tracking-wider transition-colors ${
+            isSelected
+              ? "text-white"
+              : "text-gray-500 group-hover:text-gray-300"
+          }`}
+        >
+          {shape.name}
+        </span>
+        {/* Kropka w rogu - renderuje się TYLKO jeśli isSelected jest true */}
+        {isSelected && (
+          <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
+        )}
+      </button>
+    );
   };
 
   const CheckboxGroup = ({
@@ -114,16 +207,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
     setSelected,
   }: {
     title: string;
-    options: string[];
-    selected: string[];
-    setSelected: (l: string[]) => void;
+    options: LookUpItemDto[];
+    selected: LookUpItemDto[];
+    setSelected: (l: LookUpItemDto[]) => void;
   }) => (
     <div className="mb-6">
       <h4 className="text-sm font-semibold text-gray-300 mb-3">{title}</h4>
       <div className="space-y-2">
         {options.map((option) => (
           <label
-            key={option}
+            key={option.id}
             className="flex items-center gap-3 cursor-pointer group"
           >
             <div className="relative flex items-center">
@@ -148,7 +241,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
               </svg>
             </div>
             <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-              {option}
+              {option.name}
             </span>
           </label>
         ))}
@@ -176,7 +269,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
         <input
           type="range"
           min="15"
-          max="150"
+          max={filters.maxPriceLimit}
           value={maxPrice}
           onChange={(e) => setMaxPrice(Number(e.target.value))}
           className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#FF6B6B] hover:accent-red-400"
@@ -190,105 +283,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-gray-300 mb-3">Kształt</h4>
         <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => {
-              if (selectedShapes.includes("Okrągła")) {
-                setSelectedShapes([]);
-                setDiameter(20);
-              } else {
-                setSelectedShapes(["Okrągła"]);
-              }
-            }}
-            className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
-              selectedShapes.includes("Okrągła")
-                ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]"
-                : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
-            }`}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className={`w-8 h-8 mb-2 transition-colors ${
-                selectedShapes.includes("Okrągła")
-                  ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
-                  : "text-gray-500 group-hover:text-gray-300"
-              }`}
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="9"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
-            <span
-              className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                selectedShapes.includes("Okrągła")
-                  ? "text-white"
-                  : "text-gray-500 group-hover:text-gray-300"
-              }`}
-            >
-              Okrągła
-            </span>
-
-            {selectedShapes.includes("Okrągła") && (
-              <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
-            )}
-          </button>
-
-          <button
-            onClick={() => {
-              if (selectedShapes.includes("Prostokątna")) {
-                setSelectedShapes([]);
-              } else {
-                setSelectedShapes(["Prostokątna"]);
-                setDiameter(20);
-              }
-            }}
-            className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
-              selectedShapes.includes("Prostokątna")
-                ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]"
-                : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
-            }`}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className={`w-8 h-8 mb-2 transition-colors ${
-                selectedShapes.includes("Prostokątna")
-                  ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
-                  : "text-gray-500 group-hover:text-gray-300"
-              }`}
-            >
-              <rect
-                x="4"
-                y="5"
-                width="16"
-                height="14"
-                rx="2"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
-            <span
-              className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                selectedShapes.includes("Prostokątna")
-                  ? "text-white"
-                  : "text-gray-500 group-hover:text-gray-300"
-              }`}
-            >
-              Prostokątna
-            </span>
-
-            {selectedShapes.includes("Prostokątna") && (
-              <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
-            )}
-          </button>
+          {filters.shapes?.map((x) => generateShapes(x))}
         </div>
       </div>
 
-      {selectedShapes.includes("Okrągła") && (
+      {diameter && (
         <div className="mb-8 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between text-sm mb-2 text-gray-300">
             <span className="font-semibold">Średnica (Min)</span>
@@ -312,21 +311,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
 
       <CheckboxGroup
         title="Restauracja"
-        options={pizzeriaOptions}
+        options={filters.restaurants ?? []}
         selected={selectedPizzerias}
         setSelected={setSelectedPizzerias}
       />
 
       <CheckboxGroup
         title="Grubość ciasta"
-        options={crustOptions}
+        options={filters.thicknesses ?? []}
         selected={selectedCrusts}
         setSelected={setSelectedCrusts}
       />
 
       <CheckboxGroup
         title="Rodzaj ciasta"
-        options={doughOptions}
+        options={filters.doughs ?? []}
         selected={selectedDoughs}
         setSelected={setSelectedDoughs}
       />
@@ -334,11 +333,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-gray-300 mb-3">Styl pizzy</h4>
         <div className="flex flex-wrap gap-2">
-          {styleOptions.map((style) => {
+          {filters.styles?.map((style) => {
             const isActive = selectedStyles.includes(style);
             return (
               <button
-                key={style}
+                key={style.id}
                 onClick={() =>
                   toggleFilter(style, selectedStyles, setSelectedStyles)
                 }
@@ -348,7 +347,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
                     : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
                 }`}
               >
-                {style}
+                {style.name}
               </button>
             );
           })}
@@ -360,11 +359,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
           Sos / Dodatki
         </h4>
         <div className="flex flex-wrap gap-2">
-          {sauceOptions.map((sauce) => {
+          {filters.sauces?.map((sauce) => {
             const isActive = selectedSauces.includes(sauce);
             return (
               <button
-                key={sauce}
+                key={sauce.id}
                 onClick={() =>
                   toggleFilter(sauce, selectedSauces, setSelectedSauces)
                 }
@@ -374,7 +373,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
                     : "bg-[#1E1E1E] border-gray-700 text-gray-400 hover:border-gray-500"
                 }`}
               >
-                {sauce}
+                {sauce.name}
               </button>
             );
           })}

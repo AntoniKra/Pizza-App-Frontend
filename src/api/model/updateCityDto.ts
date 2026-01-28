@@ -5,8 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBrandDto {
+export interface UpdateCityDto {
+  /** @maxLength 100 */
   name: string;
-  /** @nullable */
-  logo?: string | null;
+  /** @maxLength 100 */
+  region: string;
+  countryId: string;
 }

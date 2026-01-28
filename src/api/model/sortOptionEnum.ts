@@ -5,8 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBrandDto {
-  name: string;
-  /** @nullable */
-  logo?: string | null;
-}
+export type SortOptionEnum = number;
