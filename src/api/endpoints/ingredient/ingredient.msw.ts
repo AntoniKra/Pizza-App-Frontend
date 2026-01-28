@@ -21,17 +21,19 @@ import type {
 } from '../../model';
 
 
-export const getGetApiIngredientResponseMock = (): IngredientDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isAllergen: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMeat: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})))
+export const getGetApiIngredientIdResponseMock = (): IngredientDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isAllergen: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMeat: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})))
 
 export const getPostApiIngredientResponseMock = (overrideResponse: Partial< IngredientDto > = {}): IngredientDto => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isAllergen: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMeat: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
 
+export const getGetApiIngredientGetAllResponseMock = (): IngredientDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isAllergen: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMeat: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})))
 
-export const getGetApiIngredientMockHandler = (overrideResponse?: IngredientDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<IngredientDto[]> | IngredientDto[]), options?: RequestHandlerOptions) => {
-  return http.get('*/api/Ingredient', async (info) => {
+
+export const getGetApiIngredientIdMockHandler = (overrideResponse?: IngredientDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<IngredientDto[]> | IngredientDto[]), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Ingredient/:id', async (info) => {
   
     return new HttpResponse(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetApiIngredientResponseMock(),
+    : getGetApiIngredientIdResponseMock(),
       { status: 200,
         headers: { 'Content-Type': 'text/plain' }
       })
@@ -49,6 +51,19 @@ export const getPostApiIngredientMockHandler = (overrideResponse?: IngredientDto
       })
   }, options)
 }
+
+export const getGetApiIngredientGetAllMockHandler = (overrideResponse?: IngredientDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<IngredientDto[]> | IngredientDto[]), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Ingredient/GetAll', async (info) => {
+  
+    return new HttpResponse(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetApiIngredientGetAllResponseMock(),
+      { status: 200,
+        headers: { 'Content-Type': 'text/plain' }
+      })
+  }, options)
+}
 export const getIngredientMock = () => [
-  getGetApiIngredientMockHandler(),
-  getPostApiIngredientMockHandler()]
+  getGetApiIngredientIdMockHandler(),
+  getPostApiIngredientMockHandler(),
+  getGetApiIngredientGetAllMockHandler()]

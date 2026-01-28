@@ -15,7 +15,7 @@ import type {
 
 
 export const getPostApiAuthRegisterMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/api/Auth/register', async (info) => {
+  return http.post('*/api/Auth/Register', async (info) => {
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
@@ -25,7 +25,7 @@ export const getPostApiAuthRegisterMockHandler = (overrideResponse?: void | ((in
 }
 
 export const getPostApiAuthLoginMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/api/Auth/login', async (info) => {
+  return http.post('*/api/Auth/Login', async (info) => {
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,

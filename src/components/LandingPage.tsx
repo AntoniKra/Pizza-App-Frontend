@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { pizzaService } from "../api/pizzaService";
+import type { City } from "../types/apiTypes";
+import { getCity } from "../api/endpoints/city/city";
+import type { CityDto } from "../api/model";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -14,10 +18,51 @@ const LandingPage = () => {
   const isPartner =
     userRole === "Partner" || userRole === "Owner" || userRole === "partner";
   const [address, setAddress] = useState("");
+  // --- NOWE: Stan dla listy miast ---
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const [cities, setCities] = useState<CityDto[]>([]); // To zastępuje POPULAR_CITIES (jako źródło danych)
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+
+  // Lista nazw do wyróżnienia (opcjonalnie, jeśli chcesz zachować sekcję "Popularne")
+  const POPULAR_CITY_NAMES = ["Warszawa", "Wrocław", "Gdańsk", "Kraków"];
+
+  // --- DODAJ TEN USEEFFECT ---
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
+  const fetchCities = async () => {
+    try {
+      setIsLoadingCities(true);
+      const data = (await getCity().getApiCityGetAll()).data;
+      setCities(data);
+    } catch (error) {
+      console.error("Błąd pobierania miast:", error);
+    } finally {
+      setIsLoadingCities(false);
+    }
+  };
 
   const handleSearch = () => {
     if (!address.trim()) return;
-    navigate("/search", { state: { city: address } });
+
+    // Znajdź miasto w pobranych danych (ignorując wielkość liter)
+    const matchedCity = cities.find(
+      (c) => c.name.toLowerCase() === address.toLowerCase(),
+    );
+
+    if (matchedCity) {
+      // Przekazujemy ID miasta do wyszukiwarki
+      navigate("/search", {
+        state: {
+          cityId: matchedCity.id,
+          cityName: matchedCity.name,
+        },
+      });
+    } else {
+      alert("Wybierz miasto z listy!");
+    }
   };
 
   return (
@@ -79,12 +124,14 @@ const LandingPage = () => {
           <br />
         </p>
 
-        <div className="bg-[#1E1E1E] p-2 rounded-full flex flex-col md:flex-row items-center gap-2 border border-gray-700 shadow-2xl max-w-2xl mx-auto focus-within:border-[#FF6B6B] transition-colors">
+        <div className="bg-[#1E1E1E] p-2 rounded-full flex flex-col md:flex-row items-center gap-2 border border-gray-700 shadow-2xl max-w-2xl mx-auto focus-within:border-[#FF6B6B] transition-colors relative">
           <input
             type="text"
             placeholder="Wpisz miasto (np. Warszawa)..."
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            onFocus={() => setIsDropdownOpen(true)}
+            onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
             className="bg-transparent text-white w-full h-12 px-4 outline-none text-lg placeholder-gray-500 text-center md:text-left"
           />
 
@@ -94,6 +141,26 @@ const LandingPage = () => {
           >
             Szukaj ➔
           </button>
+          {/* --- LISTA MIAST (DROPDOWN) --- */}
+          {isDropdownOpen && cities.length > 0 && (
+            <div className="absolute top-full left-0 w-full mt-2 bg-[#1E1E1E] border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="py-2 max-h-60 overflow-y-auto custom-scrollbar">
+                {cities.map((city) => (
+                  <button
+                    key={city.id}
+                    onClick={() => {
+                      setAddress(city.name);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition-colors flex items-center gap-2 border-b border-gray-800 last:border-0"
+                  >
+                    <span className="text-[#FF6B6B]">📍</span>
+                    <span>{city.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

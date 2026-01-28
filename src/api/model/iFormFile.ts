@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateBrandDto {
-  name: string;
-  /** @nullable */
-  logo?: string | null;
-}
+/**
+ * @nullable
+ */
+export type IFormFile = Blob | null;

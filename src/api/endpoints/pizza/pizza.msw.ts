@@ -22,9 +22,11 @@ import type {
 } from '../../model';
 
 
-export const getGetApiPizzaResponseMock = (): PizzaSearchResultDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), price: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), imageUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ingredientNames: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), undefined])})))
+export const getGetApiPizzaGetAllResponseMock = (): PizzaSearchResultDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), brandName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), price: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), imageUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), weightGrams: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), kcal: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), diameterCm: faker.helpers.arrayElement([faker.helpers.arrayElement([null,faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), styleName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), pricePerSqCm: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), ingredientNames: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), undefined])})))
 
 export const getGetApiPizzaIdResponseMock = (overrideResponse: Partial< PizzaDetailsDto > = {}): PizzaDetailsDto => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), menuId: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), price: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), imageUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), style: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}})}, dough: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}})}, baseSauce: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}})}, thickness: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}})}, shape: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}})}, weightGrams: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), kcal: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), diameterCm: faker.helpers.arrayElement([faker.helpers.arrayElement([null,faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), widthCm: faker.helpers.arrayElement([faker.helpers.arrayElement([null,faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), lengthCm: faker.helpers.arrayElement([faker.helpers.arrayElement([null,faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), ingredients: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), isAllergen: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMeat: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), ...overrideResponse})
+
+export const getGetApiPizzaSearchResponseMock = (): PizzaSearchResultDto[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.string.uuid(), undefined]), name: faker.string.alpha({length: {min: 10, max: 20}}), brandName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), price: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), imageUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), weightGrams: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), kcal: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), diameterCm: faker.helpers.arrayElement([faker.helpers.arrayElement([null,faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), styleName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), pricePerSqCm: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}),faker.string.alpha({length: {min: 10, max: 20}}),]), undefined]), ingredientNames: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), undefined])})))
 
 
 export const getPostApiPizzaMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
@@ -37,12 +39,12 @@ export const getPostApiPizzaMockHandler = (overrideResponse?: void | ((info: Par
   }, options)
 }
 
-export const getGetApiPizzaMockHandler = (overrideResponse?: PizzaSearchResultDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PizzaSearchResultDto[]> | PizzaSearchResultDto[]), options?: RequestHandlerOptions) => {
-  return http.get('*/api/Pizza', async (info) => {
+export const getGetApiPizzaGetAllMockHandler = (overrideResponse?: PizzaSearchResultDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PizzaSearchResultDto[]> | PizzaSearchResultDto[]), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Pizza/GetAll', async (info) => {
   
     return new HttpResponse(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetApiPizzaResponseMock(),
+    : getGetApiPizzaGetAllResponseMock(),
       { status: 200,
         headers: { 'Content-Type': 'text/plain' }
       })
@@ -80,9 +82,22 @@ export const getDeleteApiPizzaIdMockHandler = (overrideResponse?: void | ((info:
       })
   }, options)
 }
+
+export const getGetApiPizzaSearchMockHandler = (overrideResponse?: PizzaSearchResultDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PizzaSearchResultDto[]> | PizzaSearchResultDto[]), options?: RequestHandlerOptions) => {
+  return http.get('*/api/Pizza/search', async (info) => {
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetApiPizzaSearchResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getPizzaMock = () => [
   getPostApiPizzaMockHandler(),
-  getGetApiPizzaMockHandler(),
+  getGetApiPizzaGetAllMockHandler(),
   getGetApiPizzaIdMockHandler(),
   getPutApiPizzaIdMockHandler(),
-  getDeleteApiPizzaIdMockHandler()]
+  getDeleteApiPizzaIdMockHandler(),
+  getGetApiPizzaSearchMockHandler()]

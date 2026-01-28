@@ -20,19 +20,11 @@ import type {
 
 
   export const getBrand = () => {
-const postApiBrand = <TData = AxiosResponse<void>>(
-    createBrandDto: CreateBrandDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Brand`,
-      createBrandDto,options
-    );
-  }
-const getApiBrand = <TData = AxiosResponse<BrandDto[]>>(
+const getApiBrandGetAll = <TData = AxiosResponse<BrandDto[]>>(
      options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
-      `/api/Brand`,options
+      `/api/Brand/GetAll`,options
     );
   }
 const getApiBrandId = <TData = AxiosResponse<BrandDetailsDto>>(
@@ -49,8 +41,16 @@ const deleteApiBrandId = <TData = AxiosResponse<void>>(
       `/api/Brand/${id}`,options
     );
   }
-return {postApiBrand,getApiBrand,getApiBrandId,deleteApiBrandId}};
-export type PostApiBrandResult = AxiosResponse<void>
-export type GetApiBrandResult = AxiosResponse<BrandDto[]>
+const postApiBrand = <TData = AxiosResponse<void>>(
+    createBrandDto: CreateBrandDto, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/api/Brand`,
+      createBrandDto,options
+    );
+  }
+return {getApiBrandGetAll,getApiBrandId,deleteApiBrandId,postApiBrand}};
+export type GetApiBrandGetAllResult = AxiosResponse<BrandDto[]>
 export type GetApiBrandIdResult = AxiosResponse<BrandDetailsDto>
 export type DeleteApiBrandIdResult = AxiosResponse<void>
+export type PostApiBrandResult = AxiosResponse<void>

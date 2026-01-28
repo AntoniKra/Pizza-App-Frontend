@@ -31,9 +31,6 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
   const isPartner =
     userRole === "Partner" || userRole === "Owner" || userRole === "partner";
 
-  console.log("Moja rola to:", userRole); // To nam pokaże w konsoli co widzi system
-  console.log("Czy jestem partnerem?:", isPartner);
-
   const handleProfileClick = () => {
     // Przekieruj tylko jeśli system rozpoznał Partnera
     if (isPartner) {
@@ -97,12 +94,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address }) => {
         </button>
 
         {/* 2. Restauracje (Placeholder - czekamy na widok od kolegi) */}
-        <button
-          onClick={() =>
-            console.log("Tu będzie lista restauracji - czekamy na widok")
-          }
-          className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg"
-        >
+        <button className="flex items-center gap-2 text-gray-300 hover:text-white transition hover:bg-white/5 px-3 py-1.5 rounded-lg">
           <Map size={18} className="text-gray-400" />
           <span>Restauracje</span>
         </button>

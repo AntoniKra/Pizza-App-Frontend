@@ -6,6 +6,7 @@
  */
 import type { CrustThicknessEnum } from './crustThicknessEnum';
 import type { DoughTypeEnum } from './doughTypeEnum';
+import type { IFormFile } from './iFormFile';
 import type { PizzaShapeEnum } from './pizzaShapeEnum';
 import type { PizzaStyleEnum } from './pizzaStyleEnum';
 import type { SauceTypeEnum } from './sauceTypeEnum';
@@ -24,6 +25,7 @@ export interface CreatePizzaDto {
   price?: number | string;
   /** @nullable */
   imageUrl?: string | null;
+  imageFile?: null | IFormFile | null;
   style: PizzaStyleEnum;
   baseSauce: SauceTypeEnum;
   dough: DoughTypeEnum;

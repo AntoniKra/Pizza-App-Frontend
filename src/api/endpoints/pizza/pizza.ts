@@ -12,6 +12,7 @@ import type {
 
 import type {
   CreatePizzaDto,
+  GetApiPizzaSearchParams,
   PizzaDetailsDto,
   PizzaSearchResultDto,
   UpdatePizzaDto
@@ -29,11 +30,11 @@ const postApiPizza = <TData = AxiosResponse<void>>(
       createPizzaDto,options
     );
   }
-const getApiPizza = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
+const getApiPizzaGetAll = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
      options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
-      `/api/Pizza`,options
+      `/api/Pizza/GetAll`,options
     );
   }
 const getApiPizzaId = <TData = AxiosResponse<PizzaDetailsDto>>(
@@ -59,9 +60,19 @@ const deleteApiPizzaId = <TData = AxiosResponse<void>>(
       `/api/Pizza/${id}`,options
     );
   }
-return {postApiPizza,getApiPizza,getApiPizzaId,putApiPizzaId,deleteApiPizzaId}};
+const getApiPizzaSearch = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
+    params?: GetApiPizzaSearchParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/api/Pizza/search`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+return {postApiPizza,getApiPizzaGetAll,getApiPizzaId,putApiPizzaId,deleteApiPizzaId,getApiPizzaSearch}};
 export type PostApiPizzaResult = AxiosResponse<void>
-export type GetApiPizzaResult = AxiosResponse<PizzaSearchResultDto[]>
+export type GetApiPizzaGetAllResult = AxiosResponse<PizzaSearchResultDto[]>
 export type GetApiPizzaIdResult = AxiosResponse<PizzaDetailsDto>
 export type PutApiPizzaIdResult = AxiosResponse<void>
 export type DeleteApiPizzaIdResult = AxiosResponse<void>
+export type GetApiPizzaSearchResult = AxiosResponse<PizzaSearchResultDto[]>

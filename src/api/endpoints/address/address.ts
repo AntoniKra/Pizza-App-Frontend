@@ -20,6 +20,37 @@ import type {
 
 
   export const getAddress = () => {
+const getApiAddressId = <TData = AxiosResponse<Address>>(
+    id: string, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/api/Address/${id}`,options
+    );
+  }
+const putApiAddressId = <TData = AxiosResponse<void>>(
+    id: string,
+    updateAddressDto: UpdateAddressDto, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.put(
+      `/api/Address/${id}`,
+      updateAddressDto,options
+    );
+  }
+const deleteApiAddressId = <TData = AxiosResponse<void>>(
+    id: string, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.delete(
+      `/api/Address/${id}`,options
+    );
+  }
+const postApiAddress = <TData = AxiosResponse<Address>>(
+    createAddressDto: CreateAddressDto, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/api/Address`,
+      createAddressDto,options
+    );
+  }
 const getApiAddressGetAll = <TData = AxiosResponse<Address[]>>(
      options?: AxiosRequestConfig
  ): Promise<TData> => {
@@ -27,40 +58,9 @@ const getApiAddressGetAll = <TData = AxiosResponse<Address[]>>(
       `/api/Address/GetAll`,options
     );
   }
-const getApiAddressGetAdressId = <TData = AxiosResponse<Address>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Address/GetAdress/${id}`,options
-    );
-  }
-const postApiAddressCreate = <TData = AxiosResponse<Address>>(
-    createAddressDto: CreateAddressDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Address/Create`,
-      createAddressDto,options
-    );
-  }
-const putApiAddressUpdateId = <TData = AxiosResponse<void>>(
-    id: string,
-    updateAddressDto: UpdateAddressDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/Address/Update/${id}`,
-      updateAddressDto,options
-    );
-  }
-const deleteApiAddressDeleteId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Address/Delete/${id}`,options
-    );
-  }
-return {getApiAddressGetAll,getApiAddressGetAdressId,postApiAddressCreate,putApiAddressUpdateId,deleteApiAddressDeleteId}};
+return {getApiAddressId,putApiAddressId,deleteApiAddressId,postApiAddress,getApiAddressGetAll}};
+export type GetApiAddressIdResult = AxiosResponse<Address>
+export type PutApiAddressIdResult = AxiosResponse<void>
+export type DeleteApiAddressIdResult = AxiosResponse<void>
+export type PostApiAddressResult = AxiosResponse<Address>
 export type GetApiAddressGetAllResult = AxiosResponse<Address[]>
-export type GetApiAddressGetAdressIdResult = AxiosResponse<Address>
-export type PostApiAddressCreateResult = AxiosResponse<Address>
-export type PutApiAddressUpdateIdResult = AxiosResponse<void>
-export type DeleteApiAddressDeleteIdResult = AxiosResponse<void>
