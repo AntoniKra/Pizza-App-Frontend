@@ -4,7 +4,6 @@ import { Clock, Star, Truck, MapPin } from "lucide-react";
 
 // Importujemy TYPY z Orvala (to jest klucz do łatwego podpięcia potem!)
 import type { PizzeriaDetailsDto } from "../api/model";
-import Header from "./Header";
 
 // --- MOCK DATA (Zgodny z typem z Orvala) ---
 // Kolega usunie to i odkomentuje pobieranie z API
@@ -68,6 +67,12 @@ const RestaurantsList = () => {
     // Tutaj normalnie byłoby: getPizzeria().getAll().then(...)
     const fetchRestaurants = async () => {
       setIsLoading(true);
+      // 👇 TO JEST NOWE: Logujemy ID, żeby sprawdzić, czy dochodzi
+      console.log("Pobieram restauracje dla miasta ID:", cityId);
+
+      // 👇 Zostawiamy komentarz dla kolegi, żeby wiedział gdzie wstawić strzał do API
+      // const response = await getPizzeria().getAll({ cityId: cityId });
+
       // Symulujemy opóźnienie sieci
       setTimeout(() => {
         setRestaurants(MOCK_RESTAURANTS);
@@ -76,7 +81,7 @@ const RestaurantsList = () => {
     };
 
     fetchRestaurants();
-  }, []);
+  }, [cityId]);
 
   const handleRestaurantClick = (id: string) => {
     // Przekierowanie do menu konkretnej restauracji

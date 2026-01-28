@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
 import { ArrowLeft, CheckCircle, BarChart3, Store, Flame } from "lucide-react";
 import type { Pizza } from "../data/mockPizzas";
 
@@ -298,7 +297,7 @@ const AddPizzaView = ({ restaurants }: AddPizzaViewProps) => {
                     value={formData.image}
                     onChange={handleChange}
                     type="text"
-                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-red-500 text-xs text-gray-400"
+                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-red-500 text-xs"
                   />
                 </div>
               </div>

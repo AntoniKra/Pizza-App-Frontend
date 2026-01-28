@@ -71,12 +71,16 @@ function App() {
   const [selectedCity, setSelectedCity] = useState<{
     id: string;
     name: string;
-  } | null>(null);
+  } | null>(() => {
+    const savedCity = localStorage.getItem("pizza_city");
+    return savedCity ? JSON.parse(savedCity) : null;
+  });
 
   // 3. Funkcja: "Szefie, klient wybrał miasto na Landing Page!"
   // Zapisujemy miasto w pamięci i przenosimy klienta do wyszukiwarki.
   const handleCitySelect = (city: { id: string; name: string }) => {
     setSelectedCity(city);
+    localStorage.setItem("pizza_city", JSON.stringify(city));
     // Przekazujemy miasto w 'state' nawigacji, żeby PizzaSearch od razu wiedział co robić
     navigate("/search", { state: { cityId: city.id, cityName: city.name } });
   };

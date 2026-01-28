@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Header from "./Header";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
 import type { Pizza } from "../data/mockPizzas";
 

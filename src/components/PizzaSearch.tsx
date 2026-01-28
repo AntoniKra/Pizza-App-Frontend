@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import Header from "./Header";
 import Sidebar, { type FilterValues } from "./Sidebar";
 import { pizzaService } from "../api/pizzaService";
 import type { PizzaSearchResult, PizzaSearchCriteria } from "../types/apiTypes";

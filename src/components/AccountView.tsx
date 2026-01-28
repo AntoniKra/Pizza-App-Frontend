@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Header from "./Header";
+
 import { PlusCircle, Store } from "lucide-react"; // Zmieniono importy ikon
 
 const AccountView = () => {
