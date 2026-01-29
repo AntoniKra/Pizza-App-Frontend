@@ -1,21 +1,29 @@
 export interface Pizza {
   id: number;
   name: string;
-  pizzeria: string;
-  city: string; // <--- Nowe pole!
   price: number;
   image: string;
   description: string;
-  dough: string;
-  crust: string;
-  shape: string;
-  style: string;
-  sauce: string;
+  kcal: number;
+
+  // 👇 ZMIANA: Dodajemy '?' żeby te pola były OPCJONALNE
+  weight: number;
+  pizzeria?: string;
+  city?: string;
+
+  // Specyfikacja (też opcjonalna)
+  style?: string;
+  dough?: string;
+  crust?: string;
+  sauce?: string;
+  shape?: string;
   diameter?: number;
   width?: number;
   length?: number;
-  weight: number;
-  kcal: number;
+
+  // Opcjonalne flagi (na przyszłość)
+  isNew?: boolean;
+  ingredients?: string[];
 }
 
 export const pizzas: Pizza[] = [
