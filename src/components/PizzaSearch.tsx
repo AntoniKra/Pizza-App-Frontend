@@ -6,8 +6,9 @@ import { pizzaService } from "../api/pizzaService";
 import type { PizzaSearchResult, PizzaSearchCriteria } from "../types/apiTypes";
 import { getPizza } from "../api/endpoints/pizza/pizza";
 import {
-  type GetApiPizzaSearchParams,
+  
   type PizzaFiltersDto,
+  type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
 } from "../api/model";
 import { getLookUp } from "../api/endpoints/look-up/look-up";
@@ -31,7 +32,7 @@ function PizzaSearch() {
   const [filters, setFilters] = useState<PizzaFiltersDto>();
 
   const [currentFilters, setCurrentFilters] =
-    useState<GetApiPizzaSearchParams>();
+    useState<PizzaSearchCriteriaDto>();
 
   // 3. POBIERANIE DANYCH Z API
   // useEffect(() => {
@@ -42,10 +43,12 @@ function PizzaSearch() {
     fetchFilters();
   }, []);
 
-  const fetchPizzas = async (filters: GetApiPizzaSearchParams) => {
+  const fetchPizzas = async (filters: PizzaSearchCriteriaDto) => {
     try {
+      filters.cityId = initialCityId;
+      console.log(filters);
       setIsLoading(true);
-      const data = (await getPizza().getApiPizzaSearch(filters)).data;
+      const data = (await getPizza().postApiPizzaSearch(filters)).data;
       setPizzas(data);
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
@@ -73,11 +76,11 @@ function PizzaSearch() {
     // setCriteria((prev) => ({ ...prev, sortBy: apiSortBy }));
   };
 
-  const handleFilterChange = async (filters: GetApiPizzaSearchParams) => {
+  const handleFilterChange = async (filters: PizzaSearchCriteriaDto) => {
     const helper = {
       CityId: initialCityId,
       ...filters,
-    } as GetApiPizzaSearchParams;
+    } as PizzaSearchCriteriaDto;
     setCurrentFilters(helper);
 
     await fetchPizzas(helper);
@@ -167,7 +170,7 @@ function PizzaSearch() {
 
                       <div className="flex gap-2 mt-auto">
                         <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
-                          {pizza.styleName}
+                          {pizza.style?.name}
                         </span>
                         {pizza.diameterCm && (
                           <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">

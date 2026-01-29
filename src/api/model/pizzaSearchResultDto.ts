@@ -4,6 +4,7 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { LookUpItemDto } from './lookUpItemDto';
 
 export interface PizzaSearchResultDto {
   id?: string;
@@ -24,7 +25,7 @@ export interface PizzaSearchResultDto {
    * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
    */
   diameterCm?: number | string | null;
-  styleName?: string;
+  style?: LookUpItemDto;
   /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
   pricePerSqCm?: number | string;
   ingredientNames?: string[];

@@ -5,7 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * @nullable
- */
-export type IFormFile = Blob | null;
+export type IFormFile = Blob;
