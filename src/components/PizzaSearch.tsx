@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import Sidebar, { type FilterValues } from "./Sidebar";
-import { pizzaService } from "../api/pizzaService";
-import type { PizzaSearchResult, PizzaSearchCriteria } from "../types/apiTypes";
+import Sidebar from "./Sidebar";
 import { getPizza } from "../api/endpoints/pizza/pizza";
 import {
-  
   type PizzaFiltersDto,
   type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
@@ -24,31 +21,25 @@ function PizzaSearch() {
   // 2. STANY
   const [pizzas, setPizzas] = useState<PizzaSearchResultDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("default"); // Naprawiono: brakowało tego stanu
+  const [sortOption, setSortOption] = useState("default"); 
 
   // Stan filtrów (Kryteria API)
-
   const [filters, setFilters] = useState<PizzaFiltersDto>();
-
-  const [currentFilters, setCurrentFilters] =
-    useState<PizzaSearchCriteriaDto>();
+  const [currentFilters, setCurrentFilters] = useState<PizzaSearchCriteriaDto>();
 
   // 3. POBIERANIE DANYCH Z API
-  // useEffect(() => {
-  //   fetchPizzas();
-  // }, [currentFilters]);
-
+  // Pobierz filtry (opcje) przy starcie
   useEffect(() => {
     fetchFilters();
   }, []);
 
-  const fetchPizzas = async (filters: PizzaSearchCriteriaDto) => {
+  const fetchPizzas = async (searchCriteria: PizzaSearchCriteriaDto) => {
     try {
-      filters.cityId = initialCityId;
-      console.log(filters);
+      searchCriteria.cityId = initialCityId;
+      console.log("Wysyłanie filtrów:", searchCriteria);
+      
       setIsLoading(true);
-      const data = (await getPizza().postApiPizzaSearch(filters)).data;
+      const data = (await getPizza().postApiPizzaSearch(searchCriteria)).data;
       setPizzas(data);
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
@@ -58,9 +49,13 @@ function PizzaSearch() {
   };
 
   const fetchFilters = async () => {
-    const data = (await getLookUp().getApiLookUpFilters()).data;
-    setFilters(data);
-    console.log(data);
+    try {
+        const data = (await getLookUp().getApiLookUpFilters()).data;
+        setFilters(data);
+        console.log("Pobrane opcje filtrów:", data);
+    } catch (error) {
+        console.error("Nie udało się pobrać filtrów", error);
+    }
   };
 
   // 4. OBSŁUGA ZMIAN (Sortowanie, Filtry)
@@ -68,30 +63,29 @@ function PizzaSearch() {
     const value = e.target.value;
     setSortOption(value);
 
-    // Mapowanie: Front -> Enum w C# (0=Name, 1=PriceAsc, 2=PriceDesc)
+    // Mapowanie: Front -> Enum 
     let apiSortBy = 0;
     if (value === "price_asc") apiSortBy = 1;
     if (value === "price_desc") apiSortBy = 2;
 
-    // setCriteria((prev) => ({ ...prev, sortBy: apiSortBy }));
+    if (currentFilters) {
+        const updatedFilters = { ...currentFilters, SortBy: apiSortBy }; // Używamy dużej litery SortBy, jeśli tak jest w DTO, lub małej sortBy - zależnie od definicji. W C# DTO jest zazwyczaj PascalCase, ale JS to camelCase. Zostawiam tak jak jest w TS.
+        (updatedFilters as any).sortBy = apiSortBy; 
+        
+        setCurrentFilters(updatedFilters);
+        fetchPizzas(updatedFilters);
+    }
   };
 
-  const handleFilterChange = async (filters: PizzaSearchCriteriaDto) => {
+  const handleFilterChange = async (newFilters: PizzaSearchCriteriaDto) => {
     const helper = {
-      CityId: initialCityId,
-      ...filters,
+      ...newFilters,
+      cityId: initialCityId,
     } as PizzaSearchCriteriaDto;
+    
     setCurrentFilters(helper);
-
     await fetchPizzas(helper);
   };
-
-  // // 5. FILTROWANIE LOKALNE (Wyszukiwarka w nagłówku)
-  // const displayedPizzas = pizzas?.filter(
-  //   (p) =>
-  //     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     p.brandName?.toLowerCase().includes(searchTerm.toLowerCase()),
-  // );
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">

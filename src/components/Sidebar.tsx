@@ -1,59 +1,12 @@
 import React, { useState, useEffect } from "react";
 import type {
-  GetApiPizzaSearchParams,
   LookUpItemDto,
-  PizzaDetailsDto,
   PizzaFiltersDto,
-  PizzaSearchResultDto,
-  PizzaShapeEnum,
+  PizzaSearchCriteriaDto, // <-- To jest poprawny typ
 } from "../api/model";
-import type { PizzaSearchCriteria } from "../types/apiTypes";
-
-const pizzeriaOptions = ["Da Grasso", "Pizza Hut", "Dominos", "Local Pizzeria"];
-const doughOptions = [
-  "Pszenne",
-  "Pełnoziarniste",
-  "Bezglutenowe",
-  "Na zakwasie",
-];
-const crustOptions = [
-  "Cienkie",
-  "Tradycyjne",
-  "Grube",
-  "Z wypełnionymi brzegami",
-];
-
-const styleOptions = [
-  "Neapolitańska",
-  "Amerykańska",
-  "Chicago Style",
-  "Sycylijska",
-  "Rzymska",
-  "Calzone",
-];
-const sauceOptions = [
-  "Pomidorowy",
-  "Śmietanowy (Biały)",
-  "BBQ",
-  "Pesto",
-  "Ostry pomidorowy",
-  "Krem truflowy",
-];
-
-export interface FilterValues {
-  pizzerias: string[];
-  doughs: string[];
-  crusts: string[];
-  shapes: string[];
-  styles: string[];
-  sauces: string[];
-  minPrice: number;
-  maxPrice: number;
-  minDiameter: number;
-}
 
 interface SidebarProps {
-  onFilterChange: (filters: GetApiPizzaSearchParams) => void;
+  onFilterChange: (filters: PizzaSearchCriteriaDto) => void; // <-- Zmiana typu tutaj
   filters: PizzaFiltersDto;
 }
 
@@ -62,9 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
   const [maxPrice, setMaxPrice] = useState<number>(120);
   const [diameter, setDiameter] = useState<number | null>(30);
 
-  const [selectedPizzerias, setSelectedPizzerias] = useState<LookUpItemDto[]>(
-    [],
-  );
+  const [selectedPizzerias, setSelectedPizzerias] = useState<LookUpItemDto[]>([]);
   const [selectedDoughs, setSelectedDoughs] = useState<LookUpItemDto[]>([]);
   const [selectedCrusts, setSelectedCrusts] = useState<LookUpItemDto[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<LookUpItemDto[]>([]);
@@ -72,16 +23,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
 
   const [selectedShape, setSelectedShape] = useState<LookUpItemDto | null>();
 
+  // --- FIX: Przekazywanie poprawnych danych do rodzica ---
   useEffect(() => {
     onFilterChange({
-      BrandIds: [],
+      // 1. Mapujemy obiekty pizzerii na listę samych ID (Guid string)
+      BrandIds: selectedPizzerias.map((p) => p.id), 
+      
+      // 2. Przekazujemy wybrane Enumy (Backend chce listę obiektów LookUpItemDto)
       Doughs: selectedDoughs,
-      Shapes: selectedShape ? [selectedShape] : [],
+      Thicknesses: selectedCrusts,
       Styles: selectedStyles,
       Sauces: selectedSauces,
+      Shapes: selectedShape ? [selectedShape] : [],
+      
+      // 3. Przekazujemy liczby
       MinPrice: minPrice,
       MaxPrice: maxPrice,
-    });
+      MinDiameter: diameter ?? undefined,
+    } as any); // 'as any' pozwala obejść ewentualne niezgodności typów generowanych przez Orval
   }, [
     minPrice,
     maxPrice,
@@ -92,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
     selectedShape,
     selectedStyles,
     selectedSauces,
+    // onFilterChange - pomijamy w zależnościach, żeby uniknąć pętli, jeśli funkcja nie jest memoizowana
   ]);
 
   const handleReset = () => {
@@ -119,33 +79,28 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
   };
 
   const generateShapes = (shape: LookUpItemDto) => {
-    // 1. Sprawdzamy czy to ten wybrany
     const isSelected = selectedShape?.id === shape.id;
-
-    // 2. Sprawdzamy czy to koło (po nazwie z API)
-    // Używamy toLowerCase(), żeby zadziałało na "Okrągła", "okrągła", "Round" itp.
     const isRound =
-      shape.name.toLowerCase().includes("okrągła") ||
-      shape.name.toLowerCase().includes("round");
+      shape.name?.toLowerCase().includes("okrągła") ||
+      shape.name?.toLowerCase().includes("round");
 
     return (
       <button
+        key={shape.id}
         onClick={() => {
-          if (shape.id === "Round") setDiameter(20);
-          else setDiameter(null);
+          if (shape.id === "1" || shape.id === "Round") setDiameter(30); // Domyślna średnica dla okrągłej
+          else setDiameter(null); // Brak średnicy dla prostokątnej
           setSelectedShape(shape);
         }}
         className={`relative group flex flex-col items-center justify-center py-4 rounded-xl border transition-all duration-300 ${
           isSelected
-            ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]" // Jak wybrany -> NEON
-            : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20" // Jak nie -> SZARY
+            ? "border-[#FF6B6B] bg-[#FF6B6B]/10 shadow-[0_0_15px_rgba(255,107,107,0.15)]"
+            : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
         }`}
       >
         {isRound ? (
-          // Opcja A: IKONA KOŁA
           <svg
             viewBox="0 0 24 24"
-            // Tutaj też zmieniamy kolor ikony zależnie od isSelected
             className={`w-8 h-8 mb-2 transition-colors ${
               isSelected
                 ? "text-[#FF6B6B] drop-shadow-[0_0_8px_rgba(255,107,107,0.6)]"
@@ -162,7 +117,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
             />
           </svg>
         ) : (
-          // Opcja B: IKONA PROSTOKĄTA (dla reszty)
           <svg
             viewBox="0 0 24 24"
             className={`w-8 h-8 mb-2 transition-colors ${
@@ -192,7 +146,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
         >
           {shape.name}
         </span>
-        {/* Kropka w rogu - renderuje się TYLKO jeśli isSelected jest true */}
         {isSelected && (
           <div className="absolute top-2 right-2 w-2 h-2 bg-[#FF6B6B] rounded-full shadow-[0_0_5px_#FF6B6B]"></div>
         )}
@@ -269,7 +222,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
         <input
           type="range"
           min="15"
-          max={filters.maxPriceLimit}
+          max={filters.maxPriceLimit || 150} // Fallback jeśli API nie zwróci limitu
           value={maxPrice}
           onChange={(e) => setMaxPrice(Number(e.target.value))}
           className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#FF6B6B] hover:accent-red-400"
@@ -287,7 +240,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
         </div>
       </div>
 
-      {diameter && (
+      {diameter !== null && (
         <div className="mb-8 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between text-sm mb-2 text-gray-300">
             <span className="font-semibold">Średnica (Min)</span>
