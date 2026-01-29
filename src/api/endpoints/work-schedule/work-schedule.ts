@@ -4,63 +4,65 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateWorkScheduleDto,
   UpdateWorkScheduleDto,
   WorkScheduleDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getWorkSchedule = () => {
-const getApiWorkScheduleGetByPizzeriaPizzeriaId = <TData = AxiosResponse<WorkScheduleDto[]>>(
-    pizzeriaId: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/WorkSchedule/GetByPizzeria/${pizzeriaId}`,options
-    );
-  }
-const getApiWorkScheduleId = <TData = AxiosResponse<WorkScheduleDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/WorkSchedule/${id}`,options
-    );
-  }
-const putApiWorkScheduleId = <TData = AxiosResponse<void>>(
+const getApiWorkScheduleGetByPizzeriaPizzeriaId = (
+    pizzeriaId: string,
+ ) => {
+      return customInstance<WorkScheduleDto[]>(
+      {url: `/api/WorkSchedule/GetByPizzeria/${pizzeriaId}`, method: 'GET'
+    },
+      );
+    }
+  const getApiWorkScheduleId = (
     id: string,
-    updateWorkScheduleDto: UpdateWorkScheduleDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/WorkSchedule/${id}`,
-      updateWorkScheduleDto,options
-    );
-  }
-const deleteApiWorkScheduleId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/WorkSchedule/${id}`,options
-    );
-  }
-const postApiWorkSchedule = <TData = AxiosResponse<WorkScheduleDto>>(
-    createWorkScheduleDto: CreateWorkScheduleDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/WorkSchedule`,
-      createWorkScheduleDto,options
-    );
-  }
-return {getApiWorkScheduleGetByPizzeriaPizzeriaId,getApiWorkScheduleId,putApiWorkScheduleId,deleteApiWorkScheduleId,postApiWorkSchedule}};
-export type GetApiWorkScheduleGetByPizzeriaPizzeriaIdResult = AxiosResponse<WorkScheduleDto[]>
-export type GetApiWorkScheduleIdResult = AxiosResponse<WorkScheduleDto>
-export type PutApiWorkScheduleIdResult = AxiosResponse<void>
-export type DeleteApiWorkScheduleIdResult = AxiosResponse<void>
-export type PostApiWorkScheduleResult = AxiosResponse<WorkScheduleDto>
+ ) => {
+      return customInstance<WorkScheduleDto>(
+      {url: `/api/WorkSchedule/${id}`, method: 'GET'
+    },
+      );
+    }
+  const putApiWorkScheduleId = (
+    id: string,
+    updateWorkScheduleDto: UpdateWorkScheduleDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/WorkSchedule/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateWorkScheduleDto
+    },
+      );
+    }
+  const deleteApiWorkScheduleId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/WorkSchedule/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiWorkSchedule = (
+    createWorkScheduleDto: CreateWorkScheduleDto,
+ ) => {
+      return customInstance<WorkScheduleDto>(
+      {url: `/api/WorkSchedule`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createWorkScheduleDto
+    },
+      );
+    }
+  return {getApiWorkScheduleGetByPizzeriaPizzeriaId,getApiWorkScheduleId,putApiWorkScheduleId,deleteApiWorkScheduleId,postApiWorkSchedule}};
+export type GetApiWorkScheduleGetByPizzeriaPizzeriaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getWorkSchedule>['getApiWorkScheduleGetByPizzeriaPizzeriaId']>>>
+export type GetApiWorkScheduleIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getWorkSchedule>['getApiWorkScheduleId']>>>
+export type PutApiWorkScheduleIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getWorkSchedule>['putApiWorkScheduleId']>>>
+export type DeleteApiWorkScheduleIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getWorkSchedule>['deleteApiWorkScheduleId']>>>
+export type PostApiWorkScheduleResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getWorkSchedule>['postApiWorkSchedule']>>>

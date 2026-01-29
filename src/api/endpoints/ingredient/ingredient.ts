@@ -4,44 +4,43 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateIngredientDto,
   IngredientDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getIngredient = () => {
-const getApiIngredientId = <TData = AxiosResponse<IngredientDto[]>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Ingredient/${id}`,options
-    );
-  }
-const postApiIngredient = <TData = AxiosResponse<IngredientDto>>(
-    createIngredientDto: CreateIngredientDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Ingredient`,
-      createIngredientDto,options
-    );
-  }
-const getApiIngredientGetAll = <TData = AxiosResponse<IngredientDto[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Ingredient/GetAll`,options
-    );
-  }
-return {getApiIngredientId,postApiIngredient,getApiIngredientGetAll}};
-export type GetApiIngredientIdResult = AxiosResponse<IngredientDto[]>
-export type PostApiIngredientResult = AxiosResponse<IngredientDto>
-export type GetApiIngredientGetAllResult = AxiosResponse<IngredientDto[]>
+const getApiIngredientId = (
+    id: string,
+ ) => {
+      return customInstance<IngredientDto[]>(
+      {url: `/api/Ingredient/${id}`, method: 'GET'
+    },
+      );
+    }
+  const postApiIngredient = (
+    createIngredientDto: CreateIngredientDto,
+ ) => {
+      return customInstance<IngredientDto>(
+      {url: `/api/Ingredient`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createIngredientDto
+    },
+      );
+    }
+  const getApiIngredientGetAll = (
+    
+ ) => {
+      return customInstance<IngredientDto[]>(
+      {url: `/api/Ingredient/GetAll`, method: 'GET'
+    },
+      );
+    }
+  return {getApiIngredientId,postApiIngredient,getApiIngredientGetAll}};
+export type GetApiIngredientIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getIngredient>['getApiIngredientId']>>>
+export type PostApiIngredientResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getIngredient>['postApiIngredient']>>>
+export type GetApiIngredientGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getIngredient>['getApiIngredientGetAll']>>>

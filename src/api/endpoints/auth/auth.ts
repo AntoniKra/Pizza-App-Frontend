@@ -4,37 +4,37 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   LoginDto,
+  LoginResponseDto,
   RegisterDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getAuth = () => {
-const postApiAuthRegister = <TData = AxiosResponse<void>>(
-    registerDto: RegisterDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Auth/Register`,
-      registerDto,options
-    );
-  }
-const postApiAuthLogin = <TData = AxiosResponse<void>>(
-    loginDto: LoginDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Auth/Login`,
-      loginDto,options
-    );
-  }
-return {postApiAuthRegister,postApiAuthLogin}};
-export type PostApiAuthRegisterResult = AxiosResponse<void>
-export type PostApiAuthLoginResult = AxiosResponse<void>
+const postApiAuthRegister = (
+    registerDto: RegisterDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Auth/Register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerDto
+    },
+      );
+    }
+  const postApiAuthLogin = (
+    loginDto: LoginDto,
+ ) => {
+      return customInstance<LoginResponseDto>(
+      {url: `/api/Auth/Login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginDto
+    },
+      );
+    }
+  return {postApiAuthRegister,postApiAuthLogin}};
+export type PostApiAuthRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuth>['postApiAuthRegister']>>>
+export type PostApiAuthLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuth>['postApiAuthLogin']>>>

@@ -4,27 +4,22 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   PizzaDetailsDto,
   PizzaSearchCriteriaDto,
   PizzaSearchResultDto,
   PostApiPizzaBody,
-  UpdatePizzaDto
+  PutApiPizzaIdBody
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getPizza = () => {
-const postApiPizza = <TData = AxiosResponse<void>>(
-    postApiPizzaBody: PostApiPizzaBody, options?: AxiosRequestConfig
- ): Promise<TData> => {const formUrlEncoded = new URLSearchParams();
+const postApiPizza = (
+    postApiPizzaBody: PostApiPizzaBody,
+ ) => {const formUrlEncoded = new URLSearchParams();
 if(postApiPizzaBody.IngredientIds !== undefined) {
  postApiPizzaBody.IngredientIds.forEach(value => formUrlEncoded.append(`IngredientIds`, value));
  }
@@ -92,53 +87,126 @@ if(postApiPizzaBody.MenuId !== undefined) {
  formUrlEncoded.append(`MenuId`, postApiPizzaBody.MenuId);
  }
 
-    return axios.default.post(
-      `/api/Pizza`,
-      formUrlEncoded,options
-    );
-  }
-const getApiPizzaGetAll = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Pizza/GetAll`,options
-    );
-  }
-const getApiPizzaId = <TData = AxiosResponse<PizzaDetailsDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Pizza/${id}`,options
-    );
-  }
-const putApiPizzaId = <TData = AxiosResponse<void>>(
+      return customInstance<void>(
+      {url: `/api/Pizza`, method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
+       data: formUrlEncoded
+    },
+      );
+    }
+  const getApiPizzaGetAll = (
+    
+ ) => {
+      return customInstance<PizzaSearchResultDto[]>(
+      {url: `/api/Pizza/GetAll`, method: 'GET'
+    },
+      );
+    }
+  const getApiPizzaId = (
     id: string,
-    updatePizzaDto: UpdatePizzaDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/Pizza/${id}`,
-      updatePizzaDto,options
-    );
-  }
-const deleteApiPizzaId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Pizza/${id}`,options
-    );
-  }
-const postApiPizzaSearch = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
-    pizzaSearchCriteriaDto: PizzaSearchCriteriaDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Pizza/search`,
-      pizzaSearchCriteriaDto,options
-    );
-  }
-return {postApiPizza,getApiPizzaGetAll,getApiPizzaId,putApiPizzaId,deleteApiPizzaId,postApiPizzaSearch}};
-export type PostApiPizzaResult = AxiosResponse<void>
-export type GetApiPizzaGetAllResult = AxiosResponse<PizzaSearchResultDto[]>
-export type GetApiPizzaIdResult = AxiosResponse<PizzaDetailsDto>
-export type PutApiPizzaIdResult = AxiosResponse<void>
-export type DeleteApiPizzaIdResult = AxiosResponse<void>
-export type PostApiPizzaSearchResult = AxiosResponse<PizzaSearchResultDto[]>
+ ) => {
+      return customInstance<PizzaDetailsDto>(
+      {url: `/api/Pizza/${id}`, method: 'GET'
+    },
+      );
+    }
+  const putApiPizzaId = (
+    id: string,
+    putApiPizzaIdBody: PutApiPizzaIdBody,
+ ) => {const formUrlEncoded = new URLSearchParams();
+if(putApiPizzaIdBody.Name !== undefined) {
+ formUrlEncoded.append(`Name`, putApiPizzaIdBody.Name);
+ }
+if(putApiPizzaIdBody.Description !== undefined) {
+ formUrlEncoded.append(`Description`, putApiPizzaIdBody.Description);
+ }
+if(putApiPizzaIdBody.Price !== undefined) {
+ formUrlEncoded.append(`Price`, putApiPizzaIdBody.Price.toString())
+ }
+if(putApiPizzaIdBody.ImageUrl !== undefined) {
+ formUrlEncoded.append(`ImageUrl`, putApiPizzaIdBody.ImageUrl);
+ }
+if(putApiPizzaIdBody.ImageFile !== undefined) {
+ formUrlEncoded.append(`ImageFile`, putApiPizzaIdBody.ImageFile);
+ }
+if(putApiPizzaIdBody.WeightGrams !== undefined) {
+ formUrlEncoded.append(`WeightGrams`, putApiPizzaIdBody.WeightGrams.toString())
+ }
+if(putApiPizzaIdBody.Kcal !== undefined) {
+ formUrlEncoded.append(`Kcal`, putApiPizzaIdBody.Kcal.toString())
+ }
+if(putApiPizzaIdBody['Style.Id'] !== undefined) {
+ formUrlEncoded.append(`Style.Id`, putApiPizzaIdBody['Style.Id']);
+ }
+if(putApiPizzaIdBody['Style.Name'] !== undefined) {
+ formUrlEncoded.append(`Style.Name`, putApiPizzaIdBody['Style.Name']);
+ }
+if(putApiPizzaIdBody['BaseSauce.Id'] !== undefined) {
+ formUrlEncoded.append(`BaseSauce.Id`, putApiPizzaIdBody['BaseSauce.Id']);
+ }
+if(putApiPizzaIdBody['BaseSauce.Name'] !== undefined) {
+ formUrlEncoded.append(`BaseSauce.Name`, putApiPizzaIdBody['BaseSauce.Name']);
+ }
+if(putApiPizzaIdBody['Dough.Id'] !== undefined) {
+ formUrlEncoded.append(`Dough.Id`, putApiPizzaIdBody['Dough.Id']);
+ }
+if(putApiPizzaIdBody['Dough.Name'] !== undefined) {
+ formUrlEncoded.append(`Dough.Name`, putApiPizzaIdBody['Dough.Name']);
+ }
+if(putApiPizzaIdBody['Thickness.Id'] !== undefined) {
+ formUrlEncoded.append(`Thickness.Id`, putApiPizzaIdBody['Thickness.Id']);
+ }
+if(putApiPizzaIdBody['Thickness.Name'] !== undefined) {
+ formUrlEncoded.append(`Thickness.Name`, putApiPizzaIdBody['Thickness.Name']);
+ }
+if(putApiPizzaIdBody['Shape.Id'] !== undefined) {
+ formUrlEncoded.append(`Shape.Id`, putApiPizzaIdBody['Shape.Id']);
+ }
+if(putApiPizzaIdBody['Shape.Name'] !== undefined) {
+ formUrlEncoded.append(`Shape.Name`, putApiPizzaIdBody['Shape.Name']);
+ }
+if(putApiPizzaIdBody.DiameterCm !== undefined) {
+ formUrlEncoded.append(`DiameterCm`, putApiPizzaIdBody.DiameterCm.toString())
+ }
+if(putApiPizzaIdBody.WidthCm !== undefined) {
+ formUrlEncoded.append(`WidthCm`, putApiPizzaIdBody.WidthCm.toString())
+ }
+if(putApiPizzaIdBody.LengthCm !== undefined) {
+ formUrlEncoded.append(`LengthCm`, putApiPizzaIdBody.LengthCm.toString())
+ }
+if(putApiPizzaIdBody.IngredientIds !== undefined) {
+ putApiPizzaIdBody.IngredientIds.forEach(value => formUrlEncoded.append(`IngredientIds`, value));
+ }
+
+      return customInstance<void>(
+      {url: `/api/Pizza/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
+       data: formUrlEncoded
+    },
+      );
+    }
+  const deleteApiPizzaId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Pizza/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiPizzaSearch = (
+    pizzaSearchCriteriaDto: PizzaSearchCriteriaDto,
+ ) => {
+      return customInstance<PizzaSearchResultDto[]>(
+      {url: `/api/Pizza/search`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: pizzaSearchCriteriaDto
+    },
+      );
+    }
+  return {postApiPizza,getApiPizzaGetAll,getApiPizzaId,putApiPizzaId,deleteApiPizzaId,postApiPizzaSearch}};
+export type PostApiPizzaResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['postApiPizza']>>>
+export type GetApiPizzaGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['getApiPizzaGetAll']>>>
+export type GetApiPizzaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['getApiPizzaId']>>>
+export type PutApiPizzaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['putApiPizzaId']>>>
+export type DeleteApiPizzaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['deleteApiPizzaId']>>>
+export type PostApiPizzaSearchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizza>['postApiPizzaSearch']>>>

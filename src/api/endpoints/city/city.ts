@@ -4,71 +4,74 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CityDto,
   CreateCityDto,
   UpdateCityDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getCity = () => {
-const getApiCityId = <TData = AxiosResponse<CityDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/City/${id}`,options
-    );
-  }
-const putApiCityId = <TData = AxiosResponse<void>>(
+const getApiCityId = (
     id: string,
-    updateCityDto: UpdateCityDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/City/${id}`,
-      updateCityDto,options
-    );
-  }
-const deleteApiCityId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/City/${id}`,options
-    );
-  }
-const postApiCity = <TData = AxiosResponse<CityDto>>(
-    createCityDto: CreateCityDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/City`,
-      createCityDto,options
-    );
-  }
-const getApiCityGetAll = <TData = AxiosResponse<CityDto[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/City/GetAll`,options
-    );
-  }
-const getApiCityGetByCountryCountryId = <TData = AxiosResponse<CityDto[]>>(
-    countryId: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/City/GetByCountry/${countryId}`,options
-    );
-  }
-return {getApiCityId,putApiCityId,deleteApiCityId,postApiCity,getApiCityGetAll,getApiCityGetByCountryCountryId}};
-export type GetApiCityIdResult = AxiosResponse<CityDto>
-export type PutApiCityIdResult = AxiosResponse<void>
-export type DeleteApiCityIdResult = AxiosResponse<void>
-export type PostApiCityResult = AxiosResponse<CityDto>
-export type GetApiCityGetAllResult = AxiosResponse<CityDto[]>
-export type GetApiCityGetByCountryCountryIdResult = AxiosResponse<CityDto[]>
+ ) => {
+      return customInstance<CityDto>(
+      {url: `/api/City/${id}`, method: 'GET'
+    },
+      );
+    }
+  const putApiCityId = (
+    id: string,
+    updateCityDto: UpdateCityDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/City/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCityDto
+    },
+      );
+    }
+  const deleteApiCityId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/City/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiCity = (
+    createCityDto: CreateCityDto,
+ ) => {
+      return customInstance<CityDto>(
+      {url: `/api/City`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createCityDto
+    },
+      );
+    }
+  const getApiCityGetAll = (
+    
+ ) => {
+      return customInstance<CityDto[]>(
+      {url: `/api/City/GetAll`, method: 'GET'
+    },
+      );
+    }
+  const getApiCityGetByCountryCountryId = (
+    countryId: string,
+ ) => {
+      return customInstance<CityDto[]>(
+      {url: `/api/City/GetByCountry/${countryId}`, method: 'GET'
+    },
+      );
+    }
+  return {getApiCityId,putApiCityId,deleteApiCityId,postApiCity,getApiCityGetAll,getApiCityGetByCountryCountryId}};
+export type GetApiCityIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['getApiCityId']>>>
+export type PutApiCityIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['putApiCityId']>>>
+export type DeleteApiCityIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['deleteApiCityId']>>>
+export type PostApiCityResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['postApiCity']>>>
+export type GetApiCityGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['getApiCityGetAll']>>>
+export type GetApiCityGetByCountryCountryIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCity>['getApiCityGetByCountryCountryId']>>>

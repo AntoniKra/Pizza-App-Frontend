@@ -1,8 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut, UtensilsCrossed, Map } from "lucide-react";
-// 1. Importujemy nasz "Mózg" logowania
-import { useAuth } from "../context/AuthContext";
+import { User, LogOut, UtensilsCrossed } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 interface HeaderProps {
   onSearch: (term: string) => void;
@@ -14,33 +13,20 @@ interface HeaderProps {
 // --- POPRAWKA 2: Odbieramy cityId ---
 const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
   const navigate = useNavigate();
+  const { isAuthenticated ,email,handleLogout,isPartner} = useAuth();
   // 2. Wyciągamy dane użytkownika i funkcję wylogowania
-  const { isAuthenticated, user, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/"); // Po wylogowaniu wracamy na główną
-  };
+ 
+  const logout = () => {
+    handleLogout();
+    navigate("/");
+  }
 
-  /// 1. Pobieramy rolę bezpiecznie (obsługa .NET i zwykłego API)
-  // Używamy rzutowania (user as any), bo TypeScript nie widzi tego długiego klucza w interfejsie
-  const userRole =
-    user?.role ||
-    (user as any)?.[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-    ];
-
-  // 2. Sprawdzamy uprawnienia (ignorując wielkość liter dla pewności)
-  const isPartner =
-    userRole === "Partner" || userRole === "Owner" || userRole === "partner";
 
   const handleProfileClick = () => {
-    // Przekieruj tylko jeśli system rozpoznał Partnera
-    if (isPartner) {
+  if (isPartner) {
       navigate("/account");
-    } else {
-      console.log("Kliknięto, ale nie jesteś rozpoznany jako Partner.");
-    }
+    } 
   };
 
   // Funkcja pomocnicza do nawigacji z zachowaniem miasta
@@ -101,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
 
       {/* PRAWA STRONA: INTERAKTYWNA (ZALOGOWANY vs NIEZALOGOWANY) */}
       <div className="flex items-center gap-4 text-sm font-medium">
-        {/* 1. Znajdź Pizzę (PizzaSearch) */}
+       {/* 1. Znajdź Pizzę (PizzaSearch) */}
         <button
           // --- POPRAWKA 4: Używamy nowej funkcji zamiast zwykłego navigate ---
           onClick={() => navigateWithCity("/search")}
@@ -111,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
           <span>Znajdź Pizzę</span>
         </button>
 
-        {/* 2. Restauracje */}
+        {/* 2. Restauracje
         <button
           // --- POPRAWKA 5: Restauracje też dostaną miasto (w przyszłości się przyda) ---
           onClick={() => navigateWithCity("/restaurants")}
@@ -119,7 +105,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
         >
           <Map size={18} className="text-gray-400" />
           <span>Restauracje</span>
-        </button>
+        </button> */}
 
         {/* Mała kreska oddzielająca menu od logowania */}
         <div className="w-[1px] h-6 bg-gray-800 mx-1"></div>
@@ -131,23 +117,19 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
             <button
               onClick={handleProfileClick}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-700 transition-all
-                    ${
-                      isPartner
-                        ? "hover:border-[#FF6B6B] hover:bg-[#FF6B6B]/10 cursor-pointer text-white"
-                        : "cursor-default text-gray-300 border-transparent bg-transparent"
-                    }`}
+                   `}
             >
               <div className="w-6 h-6 bg-[#FF6B6B] rounded-full flex items-center justify-center text-white text-xs shadow-md">
                 <User size={14} />
               </div>
               <span className="hidden lg:inline max-w-[120px] truncate font-medium">
-                {user?.email || "Konto"}
+                {email || "Konto"}
               </span>
             </button>
 
             {/* Przycisk Wyloguj */}
             <button
-              onClick={handleLogout}
+              onClick={logout}
               title="Wyloguj się"
               className="text-gray-500 hover:text-red-400 transition p-2 hover:bg-red-500/10 rounded-full"
             >

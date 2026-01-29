@@ -31,6 +31,11 @@ export interface PizzaSearchCriteriaDto {
    * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
    */
   maxPrice?: number | string | null;
+  /**
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
+   */
+  minDiameter?: number | string | null;
   sortBy?: SortOptionEnum;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   pageNumber?: number | string;

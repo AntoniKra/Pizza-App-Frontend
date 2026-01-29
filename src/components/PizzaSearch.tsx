@@ -14,9 +14,7 @@ function PizzaSearch() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Odbieramy dane z LandingPage
   const initialCityId = location.state?.cityId;
-  const initialCityName = location.state?.cityName || "Wybierz miasto";
 
   // 2. STANY
   const [pizzas, setPizzas] = useState<PizzaSearchResultDto[]>([]);
@@ -35,11 +33,9 @@ function PizzaSearch() {
 
   const fetchPizzas = async (searchCriteria: PizzaSearchCriteriaDto) => {
     try {
-      searchCriteria.cityId = initialCityId;
-      console.log("Wysyłanie filtrów:", searchCriteria);
-      
+      searchCriteria.cityId = initialCityId;      
       setIsLoading(true);
-      const data = (await getPizza().postApiPizzaSearch(searchCriteria)).data;
+      const data = (await getPizza().postApiPizzaSearch(searchCriteria));
       setPizzas(data);
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
@@ -50,9 +46,8 @@ function PizzaSearch() {
 
   const fetchFilters = async () => {
     try {
-        const data = (await getLookUp().getApiLookUpFilters()).data;
+        const data = (await getLookUp().getApiLookUpFilters());
         setFilters(data);
-        console.log("Pobrane opcje filtrów:", data);
     } catch (error) {
         console.error("Nie udało się pobrać filtrów", error);
     }
@@ -69,10 +64,7 @@ function PizzaSearch() {
     if (value === "price_desc") apiSortBy = 2;
 
     if (currentFilters) {
-        const updatedFilters = { ...currentFilters, SortBy: apiSortBy }; // Używamy dużej litery SortBy, jeśli tak jest w DTO, lub małej sortBy - zależnie od definicji. W C# DTO jest zazwyczaj PascalCase, ale JS to camelCase. Zostawiam tak jak jest w TS.
-        (updatedFilters as any).sortBy = apiSortBy; 
-        
-        setCurrentFilters(updatedFilters);
+        const updatedFilters = { ...currentFilters, SortBy: apiSortBy }; 
         fetchPizzas(updatedFilters);
     }
   };
@@ -169,6 +161,11 @@ function PizzaSearch() {
                         {pizza.diameterCm && (
                           <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
                             {pizza.diameterCm} cm
+                          </span>
+                        )}
+                           {pizza.pricePerSqCm && (
+                          <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
+                            {pizza.pricePerSqCm} zł/cm²
                           </span>
                         )}
                       </div>

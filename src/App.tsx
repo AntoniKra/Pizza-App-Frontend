@@ -9,7 +9,6 @@ import AddPizzaView from "./components/AddPizzaView";
 import LoginView from "./components/LoginView";
 import ManageRestaurantsView from "./components/ManageRestaurantsView";
 import AddRestaurantView from "./components/AddRestaurantView";
-import EditRestaurantView from "./components/EditRestaurantView";
 import NewPizzaPreviewView from "./components/NewPizzaPreviewView"; // Import podglądu
 import type { Pizza } from "./data/mockPizzas";
 import RestaurantsList from "./components/RestaurantsList";
@@ -17,6 +16,7 @@ import Header from "./components/Header";
 import AddBrandView from "./components/AddBrandView";
 import EditPizzaView from "./components/EditPizzaView";
 import RestaurantMenuView from "./components/RestaurantMenuView";
+import { useAuth } from "./hooks/useAuth";
 
 // --- DANE PIZZ ---
 const INITIAL_MENU: Pizza[] = [
@@ -70,6 +70,8 @@ function App() {
   // 1. Sprawdzamy gdzie jesteśmy (np. czy to strona "/")
   const location = useLocation();
 
+  const {isLoading} = useAuth()
+
   // 2. To jest nasza "Pamięć Globalna". Tu trzymamy miasto, niezależnie od strony.
   const [selectedCity, setSelectedCity] = useState<{
     id: string;
@@ -108,6 +110,14 @@ function App() {
   const handleDeleteRestaurant = (id: number) => {
     setMyRestaurants((prev) => prev.filter((rest) => rest.id !== id));
   };
+
+  if(isLoading){
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#121212] text-white">
+        <div className="text-gray-500 animate-pulse">Ładowanie aplikacji...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-[#121212] min-h-screen text-white">
@@ -158,7 +168,6 @@ function App() {
           }
         />
         <Route path="/add-restaurant" element={<AddRestaurantView />} />
-        <Route path="/edit-restaurant/:id" element={<EditRestaurantView />} />
       </Routes>
     </div>
   );

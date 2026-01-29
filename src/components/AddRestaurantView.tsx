@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
@@ -11,9 +11,12 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-// TWORZENIE LOKALU (PIZZERII)
-// Wersja z DESIGNEM zgodnym z resztą aplikacji + Logika DTO
+// Importy API
+import { getPizzeria } from "../api/endpoints/pizzeria/pizzeria";
+import { getCity } from "../api/endpoints/city/city";
+import type { CityDto } from "../api/model";
 
+// Generowanie slotów czasowych co 30 min
 const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
   const hour = Math.floor(i / 2)
     .toString()
@@ -25,8 +28,25 @@ const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
 const AddRestaurantView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // 1. Odbieramy markę przekazaną z AccountView
   const preSelectedBrand = location.state?.brand;
+
+  // Stan dla miast (Dropdown)
+  const [cities, setCities] = useState<CityDto[]>([]);
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
+
+  // Pobieranie miast przy starcie
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await getCity().getApiCityGetAll();
+        // Sprawdzenie czy response to tablica (zależnie od konfiguracji axios/orval)
+        setCities(response);
+      } catch (error) {
+        console.error("Błąd pobierania miast:", error);
+      }
+    };
+    fetchCities();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,16 +55,14 @@ const AddRestaurantView = () => {
     minOrderAmount: "",
     averagePreparationTimeMinutes: "30",
     maxDeliveryRange: "10",
-    description: "", // Dodane pole opisu dla UI
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1000",
-
+    description: "",
+    
     // Adres
     street: "",
     buildingNumber: "",
     apartmentNumber: "",
     zipCode: "",
-    cityName: "",
+    cityName: "", // To pole będzie sterowane przez dropdown
 
     // Godziny
     weekdayOpen: "11:00",
@@ -53,9 +71,15 @@ const AddRestaurantView = () => {
     weekendClose: "23:00",
   });
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Obsługa wyboru miasta z listy
+  const handleCitySelect = (cityName: string) => {
+    setFormData((prev) => ({ ...prev, cityName: cityName }));
+    setIsCityDropdownOpen(false);
   };
 
   const handleSubmit = async () => {
@@ -65,20 +89,22 @@ const AddRestaurantView = () => {
       return;
     }
 
-    try {
-      console.log("🚀 ROZPOCZYNAM PROCES TWORZENIA LOKALU...");
+    // Walidacja podstawowa
+    if (!formData.name || !formData.cityName || !formData.street) {
+        alert("Uzupełnij wymagane pola (Nazwa, Miasto, Ulica).");
+        return;
+    }
 
-      // KROK 1: DTO Pizzerii
+    try {
+      // Konstrukcja DTO zgodnie z Twoim modelem OpenAPI
       const createPizzeriaDto = {
         name: formData.name,
         phoneNumber: formData.phoneNumber,
         deliveryCost: Number(formData.deliveryCost),
         minOrderAmount: Number(formData.minOrderAmount),
-        averagePreparationTimeMinutes: Number(
-          formData.averagePreparationTimeMinutes,
-        ),
+        averagePreparationTimeMinutes: Number(formData.averagePreparationTimeMinutes),
         maxDeliveryRange: Number(formData.maxDeliveryRange),
-        serviceFee: 0,
+        serviceFee: 0, // Domyślnie 0, brak w formularzu
         brand: {
           id: preSelectedBrand.id,
           name: preSelectedBrand.name,
@@ -89,44 +115,31 @@ const AddRestaurantView = () => {
           apartmentNumber: formData.apartmentNumber || null,
           zipCode: formData.zipCode,
           cityName: formData.cityName,
-          region: "Mazowieckie",
+          region: "Mazowieckie", // Hardcoded lub do dodania w formularzu
         },
       };
 
-      console.log(
-        "📨 1. Wysyłam POST /api/Pizzeria:",
-        JSON.stringify(createPizzeriaDto, null, 2),
-      );
-      const newPizzeriaId = "nowe-id-123"; // Mock ID
+      console.log("📨 Wysyłam POST /api/Pizzeria:", createPizzeriaDto);
 
-      // KROK 2: Harmonogram
-      console.log("📨 2. Wysyłam harmonogramy POST /api/WorkSchedule...");
-      const days = [0, 1, 2, 3, 4, 5, 6];
-      const schedules = days.map((day) => {
-        const isWeekend = day === 0 || day === 6;
-        return {
-          dayOfWeek: day,
-          openTime:
-            (isWeekend ? formData.weekendOpen : formData.weekdayOpen) + ":00",
-          closeTime:
-            (isWeekend ? formData.weekendClose : formData.weekdayClose) + ":00",
-          pizzeriaId: newPizzeriaId,
-        };
-      });
+      // Wywołanie API
+      await getPizzeria().postApiPizzeria(createPizzeriaDto);
 
-      schedules.forEach((s) =>
-        console.log(
-          `   - Dzień ${s.dayOfWeek}: ${s.openTime} - ${s.closeTime}`,
-        ),
-      );
-
-      alert("Lokal został pomyślnie dodany (Symulacja)!");
+      // Uwaga: Skoro postApiPizzeria zwraca void, nie mamy ID do utworzenia harmonogramu w tym samym kroku.
+      // Zakładam, że harmonogram tworzy się domyślny na backendzie lub edytuje się go później.
+      
+      alert(`Lokal "${formData.name}" został pomyślnie utworzony!`);
       navigate("/account");
+      
     } catch (error) {
-      console.error("Błąd:", error);
-      alert("Wystąpił błąd. Zobacz konsolę.");
+      console.error("Błąd podczas tworzenia pizzerii:", error);
+      alert("Wystąpił błąd podczas wysyłania danych. Sprawdź konsolę.");
     }
   };
+
+  // Filtrowanie miast do dropdowna
+  const filteredCities = cities.filter((city) =>
+    city.name.toLowerCase().includes(formData.cityName.toLowerCase())
+  );
 
   // Zabezpieczenie przed wejściem bez marki
   if (!preSelectedBrand) {
@@ -169,6 +182,7 @@ const AddRestaurantView = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* LEWA KOLUMNA: FORMULARZ */}
           <div className="lg:col-span-2 space-y-6">
+            
             {/* 1. INFORMACJE PODSTAWOWE */}
             <div className="bg-[#121212] p-6 rounded-xl border border-[#27272a]">
               <div className="flex items-center gap-2 mb-6 text-red-400 font-bold text-sm uppercase tracking-wider">
@@ -210,18 +224,7 @@ const AddRestaurantView = () => {
                       className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-red-500 focus:outline-none transition-colors placeholder-gray-600"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
-                      URL Zdjęcia (Tło)
-                    </label>
-                    <input
-                      name="image"
-                      value={formData.image}
-                      onChange={handleChange}
-                      type="text"
-                      className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-red-500 text-xs focus:outline-none placeholder-gray-600"
-                    />
-                  </div>
+                   {/* Usunięto pole URL Zdjęcia */}
                 </div>
 
                 <div>
@@ -247,6 +250,40 @@ const AddRestaurantView = () => {
                 Adres Lokalu
               </div>
               <div className="grid grid-cols-6 gap-4">
+                
+                {/* DROPDOWN MIASTA */}
+                <div className="col-span-6 relative">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                    Miasto
+                  </label>
+                  <div className="relative">
+                    <input
+                      name="cityName"
+                      value={formData.cityName}
+                      onChange={handleChange}
+                      onFocus={() => setIsCityDropdownOpen(true)}
+                      onBlur={() => setTimeout(() => setIsCityDropdownOpen(false), 200)}
+                      placeholder="Wpisz miasto..."
+                      className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
+                    />
+                    {/* Lista podpowiedzi */}
+                    {isCityDropdownOpen && filteredCities.length > 0 && (
+                      <div className="absolute top-full left-0 w-full mt-2 bg-[#1A1A1A] border border-[#333] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto custom-scrollbar">
+                        {filteredCities.map((city, index) => (
+                           <button
+                             key={city.id || index}
+                             onClick={() => handleCitySelect(city.name)}
+                             className="w-full text-left px-4 py-3 hover:bg-[#252525] text-gray-300 hover:text-white border-b border-[#333] last:border-0 flex items-center gap-2"
+                           >
+                             <span className="text-purple-500 text-xs">📍</span>
+                             {city.name}
+                           </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="col-span-4">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
                     Ulica
@@ -266,29 +303,7 @@ const AddRestaurantView = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
-                    Nr Bud.
-                  </label>
-                  <input
-                    name="buildingNumber"
-                    value={formData.buildingNumber}
-                    onChange={handleChange}
-                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
-                    Nr Lok.
-                  </label>
-                  <input
-                    name="apartmentNumber"
-                    value={formData.apartmentNumber}
-                    onChange={handleChange}
-                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
-                    Kod
+                    Kod Pocztowy
                   </label>
                   <input
                     name="zipCode"
@@ -298,13 +313,24 @@ const AddRestaurantView = () => {
                     className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-3">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
-                    Miasto
+                    Nr Budynku
                   </label>
                   <input
-                    name="cityName"
-                    value={formData.cityName}
+                    name="buildingNumber"
+                    value={formData.buildingNumber}
+                    onChange={handleChange}
+                    className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
+                <div className="col-span-3">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                    Nr Lokalu
+                  </label>
+                  <input
+                    name="apartmentNumber"
+                    value={formData.apartmentNumber}
                     onChange={handleChange}
                     className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg p-3 text-white focus:border-purple-500 focus:outline-none"
                   />
@@ -469,31 +495,15 @@ const AddRestaurantView = () => {
             </div>
           </div>
 
-          {/* PRAWA KOLUMNA: PODGLĄD (STICKY) */}
+          {/* PRAWA KOLUMNA: PODGLĄD (STICKY) - BEZ ZDJĘCIA */}
           <div className="space-y-6 sticky top-6">
             <div className="flex items-center gap-2 text-white font-bold mb-2">
-              <CheckCircle size={16} className="text-green-500" /> Podgląd na
-              żywo
+              <CheckCircle size={16} className="text-green-500" /> Podgląd na żywo
             </div>
 
-            <div className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] shadow-2xl relative overflow-hidden flex flex-col gap-4 group hover:border-gray-600 transition duration-300">
-              {/* Zdjęcie Podglądu */}
-              <div className="w-full h-40 rounded-xl overflow-hidden relative border border-[#333]">
-                <img
-                  src={formData.image}
-                  alt="Preview"
-                  className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
-                  onError={(e) =>
-                    (e.currentTarget.src =
-                      "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=1000")
-                  }
-                />
-                <span className="absolute top-2 right-2 px-2 py-1 bg-green-500/20 text-green-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-green-500/30 backdrop-blur-sm">
-                  ● Otwarte teraz
-                </span>
-              </div>
-
-              {/* Treść Podglądu */}
+            <div className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] shadow-2xl relative overflow-hidden flex flex-col gap-4">
+              
+              {/* Treść Podglądu (Bez obrazka) */}
               <div>
                 <h1 className="text-2xl font-extrabold text-white tracking-tight mb-1">
                   {formData.name || preSelectedBrand.name + "..."}
@@ -504,9 +514,8 @@ const AddRestaurantView = () => {
                     ? `${formData.street} ${formData.buildingNumber}, ${formData.cityName}`
                     : "Adres lokalu..."}
                 </p>
-                <p className="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-3 min-h-[40px]">
-                  {formData.description ||
-                    "Tu pojawi się opis Twojej restauracji widoczny dla klientów."}
+                <p className="text-gray-500 text-xs leading-relaxed mb-4 min-h-[20px]">
+                  {formData.description || "Opis lokalu..."}
                 </p>
 
                 {/* Ikony w Podglądzie */}

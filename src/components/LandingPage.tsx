@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, User } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
 import { getCity } from "../api/endpoints/city/city";
 import type { CityDto } from "../api/model";
+import { useAuth } from "../hooks/useAuth";
 
 interface LandingPageProps {
   onCitySelect?: (city: { id: string; name: string }) => void;
@@ -11,32 +11,24 @@ interface LandingPageProps {
 
 const LandingPage = ({ onCitySelect }: LandingPageProps) => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
-
-  const userRole =
-    user?.role ||
-    (user as any)?.[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-    ];
-  const isPartner =
-    userRole === "Partner" || userRole === "Owner" || userRole === "partner";
+  const { isAuthenticated } = useAuth();
 
   const [address, setAddress] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [cities, setCities] = useState<CityDto[]>([]);
+  const {email,isPartner} = useAuth();
 
   useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await getCity().getApiCityGetAll();
+        setCities(response);
+      } catch (error) {
+        console.error("Błąd pobierania miast:", error);
+      }
+    };
     fetchCities();
   }, []);
-
-  const fetchCities = async () => {
-    try {
-      const data = (await getCity().getApiCityGetAll()).data;
-      setCities(data);
-    } catch (error) {
-      console.error("Błąd pobierania miast:", error);
-    }
-  };
 
   const handleSearch = () => {
     if (!address.trim()) return;
@@ -90,7 +82,7 @@ const LandingPage = ({ onCitySelect }: LandingPageProps) => {
             <span
               className={`text-sm font-medium transition-colors ${isPartner ? "text-white group-hover:text-white" : "text-gray-300"}`}
             >
-              {user?.email || "Twój Profil"}
+              {email || "Twój Profil"}
             </span>
           </button>
         ) : (

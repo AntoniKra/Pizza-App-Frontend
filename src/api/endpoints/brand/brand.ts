@@ -4,53 +4,60 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   BrandDetailsDto,
   BrandDto,
-  CreateBrandDto
+  PostApiBrandBody
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getBrand = () => {
-const getApiBrandGetAll = <TData = AxiosResponse<BrandDto[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Brand/GetAll`,options
-    );
-  }
-const getApiBrandId = <TData = AxiosResponse<BrandDetailsDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Brand/${id}`,options
-    );
-  }
-const deleteApiBrandId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Brand/${id}`,options
-    );
-  }
-const postApiBrand = <TData = AxiosResponse<void>>(
-    createBrandDto: CreateBrandDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Brand`,
-      createBrandDto,options
-    );
-  }
-return {getApiBrandGetAll,getApiBrandId,deleteApiBrandId,postApiBrand}};
-export type GetApiBrandGetAllResult = AxiosResponse<BrandDto[]>
-export type GetApiBrandIdResult = AxiosResponse<BrandDetailsDto>
-export type DeleteApiBrandIdResult = AxiosResponse<void>
-export type PostApiBrandResult = AxiosResponse<void>
+const getApiBrandGetAll = (
+    
+ ) => {
+      return customInstance<BrandDto[]>(
+      {url: `/api/Brand/GetAll`, method: 'GET'
+    },
+      );
+    }
+  const getApiBrandId = (
+    id: string,
+ ) => {
+      return customInstance<BrandDetailsDto>(
+      {url: `/api/Brand/${id}`, method: 'GET'
+    },
+      );
+    }
+  const deleteApiBrandId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Brand/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiBrand = (
+    postApiBrandBody: PostApiBrandBody,
+ ) => {const formUrlEncoded = new URLSearchParams();
+if(postApiBrandBody.Name !== undefined) {
+ formUrlEncoded.append(`Name`, postApiBrandBody.Name);
+ }
+if(postApiBrandBody.LogoFile !== undefined) {
+ formUrlEncoded.append(`LogoFile`, postApiBrandBody.LogoFile);
+ }
+
+      return customInstance<void>(
+      {url: `/api/Brand`, method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
+       data: formUrlEncoded
+    },
+      );
+    }
+  return {getApiBrandGetAll,getApiBrandId,deleteApiBrandId,postApiBrand}};
+export type GetApiBrandGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getBrand>['getApiBrandGetAll']>>>
+export type GetApiBrandIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getBrand>['getApiBrandId']>>>
+export type DeleteApiBrandIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getBrand>['deleteApiBrandId']>>>
+export type PostApiBrandResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getBrand>['postApiBrand']>>>

@@ -5,4 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SauceTypeEnum = number;
+export type GetApiLookUpEnumParams = {
+type?: string;
+value?: string;
+};

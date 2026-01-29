@@ -4,26 +4,45 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
 import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
-import type {
+  GetApiLookUpEnumAllParams,
+  GetApiLookUpEnumParams,
+  LookUpItemDto,
   PizzaFiltersDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getLookUp = () => {
-const getApiLookUpFilters = <TData = AxiosResponse<PizzaFiltersDto>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/LookUp/filters`,options
-    );
-  }
-return {getApiLookUpFilters}};
-export type GetApiLookUpFiltersResult = AxiosResponse<PizzaFiltersDto>
+const getApiLookUpFilters = (
+    
+ ) => {
+      return customInstance<PizzaFiltersDto>(
+      {url: `/api/LookUp/filters`, method: 'GET'
+    },
+      );
+    }
+  const getApiLookUpEnum = (
+    params?: GetApiLookUpEnumParams,
+ ) => {
+      return customInstance<LookUpItemDto>(
+      {url: `/api/LookUp/enum`, method: 'GET',
+        params
+    },
+      );
+    }
+  const getApiLookUpEnumAll = (
+    params?: GetApiLookUpEnumAllParams,
+ ) => {
+      return customInstance<LookUpItemDto[]>(
+      {url: `/api/LookUp/enum/all`, method: 'GET',
+        params
+    },
+      );
+    }
+  return {getApiLookUpFilters,getApiLookUpEnum,getApiLookUpEnumAll}};
+export type GetApiLookUpFiltersResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpFilters']>>>
+export type GetApiLookUpEnumResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpEnum']>>>
+export type GetApiLookUpEnumAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpEnumAll']>>>

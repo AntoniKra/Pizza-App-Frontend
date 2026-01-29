@@ -10,6 +10,12 @@ export default defineConfig({
       mock: false,
       clean: true,
       prettier: true,
+      override: {
+        mutator: {
+          path: "src/api/axiosConfig.ts",
+          name: "customInstance",
+        },
+      },
     },
     input: {
       // 1. Tutaj wklejamy link od kolegi

@@ -3,12 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import axios from "axios"; // <--- 1. Importujemy axios
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
-axios.defaults.baseURL = apiUrl;
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

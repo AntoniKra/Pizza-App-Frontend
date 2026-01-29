@@ -5,4 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type PizzaShapeEnum = number;
+export interface LoginResponseDto {
+  token?: string;
+  email?: string;
+  isOwner?: boolean;
+}

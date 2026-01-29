@@ -1,79 +1,82 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import type { ReactNode } from "react";
-import { jwtDecode } from "jwt-decode";
+import { createContext, useState, useEffect, type ReactNode } from "react";
 import axios from "axios";
 
-// 1. Definiujemy, co siedzi w naszym Tokenie (to zależy od Backendu)
-interface UserToken {
-  sub: string; // zazwyczaj email lub ID
-  email: string;
-  role: string;
-  exp: number; // data wygaśnięcia
-}
-
-// 2. Definiujemy, co nasz "Mózg" udostępnia reszcie aplikacji
 interface AuthContextType {
-  user: UserToken | null;
   token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
+  handleLogin: (token: string | null, email: string | null, isPartner: boolean | null) => void;
   isAuthenticated: boolean;
+  email: string | null;
+  isPartner: boolean;
+  handleLogout: () => void;
+  isLoading: boolean; // Dodajemy informację o ładowaniu
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserToken | null>(null);
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token"),
-  );
+const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+  const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
+  const [isPartner, setIsPartner] = useState<boolean>(localStorage.getItem("isPartner") === "true");
+  const [isLoading, setIsLoading] = useState(true); 
 
-  // Funkcja, która uruchamia się raz przy starcie aplikacji
-  useEffect(() => {
+useEffect(() => {
+  const initAuth = async () => {
     if (token) {
-      try {
-        const decoded = jwtDecode<UserToken>(token);
-        // Sprawdzamy czy token nie wygasł
-        if (decoded.exp * 1000 < Date.now()) {
-          logout();
-        } else {
-          setUser(decoded);
-          // Ustawiamy token w axiosie, żeby każde zapytanie go miało
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        }
-      } catch (error) {
-        logout();
-      }
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-  }, [token]);
-
-  const login = (newToken: string) => {
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
-    // Axios i User zaktualizują się w useEffect
+    setIsLoading(false);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-    delete axios.defaults.headers.common["Authorization"];
+  initAuth();
+}, [token]);
+
+  const handleLogin = (newToken: string | null, newEmail: string | null, newIsPartner: boolean | null) => {
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+      setToken(newToken);
+    } else {
+      localStorage.removeItem("token");
+      delete axios.defaults.headers.common["Authorization"];
+      setToken(null);
+    }
+    
+    if (newEmail) {
+      localStorage.setItem("email", newEmail);
+      setEmail(newEmail);
+    } else {
+      localStorage.removeItem("email");
+      setEmail(null);
+    }
+    
+    if (newIsPartner !== null) {
+      localStorage.setItem("isPartner", newIsPartner ? "true" : "false");
+      setIsPartner(newIsPartner);
+    } else {
+      localStorage.removeItem("isPartner");
+      setIsPartner(false);
+    }
+  };
+
+  const handleLogout = () => {
+    handleLogin(null, null, null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!user }}
+      value={{
+        token,
+        handleLogin,
+        isAuthenticated: !!token,
+        email,
+        isPartner,
+        handleLogout,
+        isLoading, // Udostępniamy stan ładowania
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Własny hook, żeby łatwiej używać tego w komponentach
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export { AuthContext, AuthProvider };

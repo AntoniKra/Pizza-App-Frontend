@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -6,18 +5,19 @@ import {
   Lock,
   Mail,
   User,
-  Store,
   FileText,
   CheckCircle,
   ChefHat,
   Utensils,
 } from "lucide-react";
 import { getAuth } from "../api/endpoints/auth/auth";
+import { useAuth } from "../hooks/useAuth";
+import { AxiosError } from "axios";
+import NeonInput from "./NeonInput";
 
 const LoginView = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
 
   const initialRole = location.state?.role || "user";
   const [activeTab, setActiveTab] = useState<"user" | "partner">(initialRole);
@@ -31,10 +31,12 @@ const LoginView = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [taxId, setTaxId] = useState("");
-  const [storeName, setStoreName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const {handleLogin} = useAuth();
 
   useEffect(() => {
     setError("");
@@ -53,8 +55,8 @@ const LoginView = () => {
           email: email,
           password: password,
         });
-        const token = (response.data as any).token;
-        login(token);
+
+        handleLogin(response.token!, response.email!,response.isOwner || false);
         alert("Zalogowano pomyślnie!");
         if (isPartner) navigate("/account");
         else navigate("/");
@@ -66,32 +68,34 @@ const LoginView = () => {
         }
         await postApiAuthRegister({
           email: email,
-          password: password,
-          firstName: firstName,
-          lastName: storeName || "",
-          taxId: isPartner ? taxId : undefined,
-          isOwner: isPartner,
-        });
-        alert("Rejestracja udana! Możesz się teraz zalogować.");
-        setIsLogin(true);
-      }
-    } catch (err: any) {
-      console.error("Błąd API:", err);
-      if (err.response?.status === 401) {
-        setError("Błędny email lub hasło.");
-      } else if (err.response?.data) {
-        setError(
-          typeof err.response.data === "string"
-            ? err.response.data
-            : "Wystąpił błąd.",
-        );
-      } else {
-        setError("Błąd połączenia z serwerem.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+              password: password,
+              firstName: firstName,
+              lastName: lastName || "",
+              taxId: isPartner ? taxId : undefined,
+              isOwner: isPartner,
+            });
+            alert("Rejestracja udana! Możesz się teraz zalogować.");
+            setIsLogin(true);
+          }
+        } catch (err: unknown) {
+          if((err instanceof AxiosError)){
+          if (err.response?.status === 401) {
+            setError("Błędny email lub hasło.");
+          } else if (err.response?.data) {
+            setError(
+              typeof err.response.data === "string"
+                ? err.response.data
+                : "Wystąpił błąd.",
+            );
+          } else {
+            setError("Błąd połączenia z serwerem.");
+          }
+          }
+        
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-[#FF6B6B] selection:text-white">
@@ -187,18 +191,18 @@ const LoginView = () => {
             {!isLogin && isPartner && (
               <div className="space-y-5 animate-in fade-in slide-in-from-top-4">
                 <NeonInput
-                  label="Nazwa Użytkownika"
+                  label="Imię"
                   icon={User}
                   type="text"
                   value={firstName}
                   onChange={setFirstName}
                 />
                 <NeonInput
-                  label="Nazwa Restauracji"
-                  icon={Store}
+                  label="Nazwisko "
+                  icon={User}
                   type="text"
-                  value={storeName}
-                  onChange={setStoreName}
+                  value={lastName}
+                  onChange={setLastName}
                 />
                 <NeonInput
                   label="NIP"
@@ -303,34 +307,6 @@ const LoginView = () => {
 };
 
 // --- POMOCNICZY KOMPONENT DLA PÓL (NEON EFFECT) ---
-const NeonInput = ({
-  label,
-  icon: Icon,
-  type,
-  value,
-  onChange,
-  required = false,
-}: any) => (
-  <div className="space-y-1 group">
-    <label className="text-xs text-gray-500 font-bold uppercase ml-1 group-focus-within:text-[#FF6B6B] transition-colors duration-300">
-      {label}
-    </label>
-    <div className="relative">
-      <Icon
-        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-[#FF6B6B] group-focus-within:drop-shadow-[0_0_5px_rgba(255,107,107,0.8)] transition-all duration-300"
-        size={18}
-      />
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="w-full bg-black/20 border border-gray-700/50 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-gray-600 
-          focus:border-[#FF6B6B] focus:bg-black/40 focus:outline-none focus:shadow-[0_0_15px_rgba(255,107,107,0.15)] 
-          transition-all duration-300"
-      />
-    </div>
-  </div>
-);
+
 
 export default LoginView;

@@ -4,61 +4,62 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateMenuDto,
   MenuDetailsDto,
   MenuListItemDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getMenu = () => {
-const getApiMenuId = <TData = AxiosResponse<MenuDetailsDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Menu/${id}`,options
-    );
-  }
-const deleteApiMenuId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Menu/${id}`,options
-    );
-  }
-const postApiMenuCreate = <TData = AxiosResponse<void>>(
-    createMenuDto: CreateMenuDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Menu/Create`,
-      createMenuDto,options
-    );
-  }
-const putApiMenuIdActivate = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/Menu/${id}/activate`,undefined,options
-    );
-  }
-const getApiMenuGetAllMenusPizzeriaId = <TData = AxiosResponse<MenuListItemDto[]>>(
-    pizzeriaId: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Menu/GetAllMenus/${pizzeriaId}`,options
-    );
-  }
-return {getApiMenuId,deleteApiMenuId,postApiMenuCreate,putApiMenuIdActivate,getApiMenuGetAllMenusPizzeriaId}};
-export type GetApiMenuIdResult = AxiosResponse<MenuDetailsDto>
-export type DeleteApiMenuIdResult = AxiosResponse<void>
-export type PostApiMenuCreateResult = AxiosResponse<void>
-export type PutApiMenuIdActivateResult = AxiosResponse<void>
-export type GetApiMenuGetAllMenusPizzeriaIdResult = AxiosResponse<MenuListItemDto[]>
+const getApiMenuId = (
+    id: string,
+ ) => {
+      return customInstance<MenuDetailsDto>(
+      {url: `/api/Menu/${id}`, method: 'GET'
+    },
+      );
+    }
+  const deleteApiMenuId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Menu/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiMenuCreate = (
+    createMenuDto: CreateMenuDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Menu/Create`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMenuDto
+    },
+      );
+    }
+  const putApiMenuIdActivate = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Menu/${id}/activate`, method: 'PUT'
+    },
+      );
+    }
+  const getApiMenuGetAllMenusPizzeriaId = (
+    pizzeriaId: string,
+ ) => {
+      return customInstance<MenuListItemDto[]>(
+      {url: `/api/Menu/GetAllMenus/${pizzeriaId}`, method: 'GET'
+    },
+      );
+    }
+  return {getApiMenuId,deleteApiMenuId,postApiMenuCreate,putApiMenuIdActivate,getApiMenuGetAllMenusPizzeriaId}};
+export type GetApiMenuIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getMenu>['getApiMenuId']>>>
+export type DeleteApiMenuIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getMenu>['deleteApiMenuId']>>>
+export type PostApiMenuCreateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getMenu>['postApiMenuCreate']>>>
+export type PutApiMenuIdActivateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getMenu>['putApiMenuIdActivate']>>>
+export type GetApiMenuGetAllMenusPizzeriaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getMenu>['getApiMenuGetAllMenusPizzeriaId']>>>

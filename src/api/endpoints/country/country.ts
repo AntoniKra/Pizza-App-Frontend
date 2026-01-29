@@ -4,63 +4,65 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CountryDto,
   CreateCountryDto,
   UpdateCountryDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getCountry = () => {
-const getApiCountryGetAll = <TData = AxiosResponse<CountryDto[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Country/GetAll`,options
-    );
-  }
-const getApiCountryId = <TData = AxiosResponse<CountryDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Country/${id}`,options
-    );
-  }
-const putApiCountryId = <TData = AxiosResponse<void>>(
+const getApiCountryGetAll = (
+    
+ ) => {
+      return customInstance<CountryDto[]>(
+      {url: `/api/Country/GetAll`, method: 'GET'
+    },
+      );
+    }
+  const getApiCountryId = (
     id: string,
-    updateCountryDto: UpdateCountryDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/Country/${id}`,
-      updateCountryDto,options
-    );
-  }
-const deleteApiCountryId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Country/${id}`,options
-    );
-  }
-const postApiCountry = <TData = AxiosResponse<CountryDto>>(
-    createCountryDto: CreateCountryDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Country`,
-      createCountryDto,options
-    );
-  }
-return {getApiCountryGetAll,getApiCountryId,putApiCountryId,deleteApiCountryId,postApiCountry}};
-export type GetApiCountryGetAllResult = AxiosResponse<CountryDto[]>
-export type GetApiCountryIdResult = AxiosResponse<CountryDto>
-export type PutApiCountryIdResult = AxiosResponse<void>
-export type DeleteApiCountryIdResult = AxiosResponse<void>
-export type PostApiCountryResult = AxiosResponse<CountryDto>
+ ) => {
+      return customInstance<CountryDto>(
+      {url: `/api/Country/${id}`, method: 'GET'
+    },
+      );
+    }
+  const putApiCountryId = (
+    id: string,
+    updateCountryDto: UpdateCountryDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Country/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateCountryDto
+    },
+      );
+    }
+  const deleteApiCountryId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Country/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiCountry = (
+    createCountryDto: CreateCountryDto,
+ ) => {
+      return customInstance<CountryDto>(
+      {url: `/api/Country`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createCountryDto
+    },
+      );
+    }
+  return {getApiCountryGetAll,getApiCountryId,putApiCountryId,deleteApiCountryId,postApiCountry}};
+export type GetApiCountryGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCountry>['getApiCountryGetAll']>>>
+export type GetApiCountryIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCountry>['getApiCountryId']>>>
+export type PutApiCountryIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCountry>['putApiCountryId']>>>
+export type DeleteApiCountryIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCountry>['deleteApiCountryId']>>>
+export type PostApiCountryResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getCountry>['postApiCountry']>>>

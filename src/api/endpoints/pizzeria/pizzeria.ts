@@ -4,36 +4,34 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreatePizzeriaDto,
   PizzeriaDetailsDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getPizzeria = () => {
-const postApiPizzeria = <TData = AxiosResponse<void>>(
-    createPizzeriaDto: CreatePizzeriaDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Pizzeria`,
-      createPizzeriaDto,options
-    );
-  }
-const getApiPizzeriaId = <TData = AxiosResponse<PizzeriaDetailsDto>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Pizzeria/${id}`,options
-    );
-  }
-return {postApiPizzeria,getApiPizzeriaId}};
-export type PostApiPizzeriaResult = AxiosResponse<void>
-export type GetApiPizzeriaIdResult = AxiosResponse<PizzeriaDetailsDto>
+const postApiPizzeria = (
+    createPizzeriaDto: CreatePizzeriaDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Pizzeria`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPizzeriaDto
+    },
+      );
+    }
+  const getApiPizzeriaId = (
+    id: string,
+ ) => {
+      return customInstance<PizzeriaDetailsDto>(
+      {url: `/api/Pizzeria/${id}`, method: 'GET'
+    },
+      );
+    }
+  return {postApiPizzeria,getApiPizzeriaId}};
+export type PostApiPizzeriaResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizzeria>['postApiPizzeria']>>>
+export type GetApiPizzeriaIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getPizzeria>['getApiPizzeriaId']>>>

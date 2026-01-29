@@ -4,63 +4,65 @@
  * PizzaApp | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   Address,
   CreateAddressDto,
   UpdateAddressDto
 } from '../../model';
 
+import { customInstance } from '../../axiosConfig';
 
 
 
   export const getAddress = () => {
-const getApiAddressId = <TData = AxiosResponse<Address>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Address/${id}`,options
-    );
-  }
-const putApiAddressId = <TData = AxiosResponse<void>>(
+const getApiAddressId = (
     id: string,
-    updateAddressDto: UpdateAddressDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.put(
-      `/api/Address/${id}`,
-      updateAddressDto,options
-    );
-  }
-const deleteApiAddressId = <TData = AxiosResponse<void>>(
-    id: string, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.delete(
-      `/api/Address/${id}`,options
-    );
-  }
-const postApiAddress = <TData = AxiosResponse<Address>>(
-    createAddressDto: CreateAddressDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.post(
-      `/api/Address`,
-      createAddressDto,options
-    );
-  }
-const getApiAddressGetAll = <TData = AxiosResponse<Address[]>>(
-     options?: AxiosRequestConfig
- ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Address/GetAll`,options
-    );
-  }
-return {getApiAddressId,putApiAddressId,deleteApiAddressId,postApiAddress,getApiAddressGetAll}};
-export type GetApiAddressIdResult = AxiosResponse<Address>
-export type PutApiAddressIdResult = AxiosResponse<void>
-export type DeleteApiAddressIdResult = AxiosResponse<void>
-export type PostApiAddressResult = AxiosResponse<Address>
-export type GetApiAddressGetAllResult = AxiosResponse<Address[]>
+ ) => {
+      return customInstance<Address>(
+      {url: `/api/Address/${id}`, method: 'GET'
+    },
+      );
+    }
+  const putApiAddressId = (
+    id: string,
+    updateAddressDto: UpdateAddressDto,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Address/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateAddressDto
+    },
+      );
+    }
+  const deleteApiAddressId = (
+    id: string,
+ ) => {
+      return customInstance<void>(
+      {url: `/api/Address/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  const postApiAddress = (
+    createAddressDto: CreateAddressDto,
+ ) => {
+      return customInstance<Address>(
+      {url: `/api/Address`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createAddressDto
+    },
+      );
+    }
+  const getApiAddressGetAll = (
+    
+ ) => {
+      return customInstance<Address[]>(
+      {url: `/api/Address/GetAll`, method: 'GET'
+    },
+      );
+    }
+  return {getApiAddressId,putApiAddressId,deleteApiAddressId,postApiAddress,getApiAddressGetAll}};
+export type GetApiAddressIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAddress>['getApiAddressId']>>>
+export type PutApiAddressIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAddress>['putApiAddressId']>>>
+export type DeleteApiAddressIdResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAddress>['deleteApiAddressId']>>>
+export type PostApiAddressResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAddress>['postApiAddress']>>>
+export type GetApiAddressGetAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAddress>['getApiAddressGetAll']>>>
