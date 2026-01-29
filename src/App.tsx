@@ -14,6 +14,9 @@ import NewPizzaPreviewView from "./components/NewPizzaPreviewView"; // Import po
 import type { Pizza } from "./data/mockPizzas";
 import RestaurantsList from "./components/RestaurantsList";
 import Header from "./components/Header";
+import AddBrandView from "./components/AddBrandView";
+import EditPizzaView from "./components/EditPizzaView";
+import RestaurantMenuView from "./components/RestaurantMenuView";
 
 // --- DANE PIZZ ---
 const INITIAL_MENU: Pizza[] = [
@@ -102,32 +105,6 @@ function App() {
     setRestaurantMenu((prevMenu) => [...prevMenu, newPizza]);
   };
 
-  // Logika restauracji (bez zmian)
-  const handleAddRestaurant = (newRestaurant: any) => {
-    setMyRestaurants((prev) => [
-      ...prev,
-      {
-        ...newRestaurant,
-        id: Date.now(),
-        isNew: true,
-        status: "Otwarte",
-        rating: 0,
-      },
-    ]);
-    navigate("/manage-restaurants");
-  };
-
-  const handleEditRestaurant = (updatedRestaurant: any) => {
-    setMyRestaurants((prev) =>
-      prev.map((rest) =>
-        rest.id === updatedRestaurant.id
-          ? { ...rest, ...updatedRestaurant }
-          : rest,
-      ),
-    );
-    navigate("/manage-restaurants");
-  };
-
   const handleDeleteRestaurant = (id: number) => {
     setMyRestaurants((prev) => prev.filter((rest) => rest.id !== id));
   };
@@ -159,22 +136,18 @@ function App() {
           path="/restaurant"
           element={<RestaurantView menu={restaurantMenu} />}
         />
-
         <Route path="/account" element={<AccountView />} />
+        <Route path="/add-brand" element={<AddBrandView />} />
+        <Route path="/restaurant-menu/:id" element={<RestaurantMenuView />} />
+        <Route path="/edit-pizza/:id" element={<EditPizzaView />} />
 
         {/* --- POPRAWIONA TRASA ADD-PIZZA (Usunięto onAdd) --- */}
-        <Route
-          path="/add-pizza"
-          element={<AddPizzaView restaurants={myRestaurants} />}
-        />
-
+        <Route path="/add-pizza" element={<AddPizzaView />} />
         {/* --- TRASA PODGLĄDU (Tutaj przekazujemy onConfirm) --- */}
         <Route
           path="/pizza-preview"
           element={<NewPizzaPreviewView onConfirm={handleAddPizza} />}
         />
-
-        {/* Restauracje */}
         <Route
           path="/manage-restaurants"
           element={
@@ -184,19 +157,8 @@ function App() {
             />
           }
         />
-        <Route
-          path="/add-restaurant"
-          element={<AddRestaurantView onAdd={handleAddRestaurant} />}
-        />
-        <Route
-          path="/edit-restaurant/:id"
-          element={
-            <EditRestaurantView
-              restaurants={myRestaurants}
-              onEdit={handleEditRestaurant}
-            />
-          }
-        />
+        <Route path="/add-restaurant" element={<AddRestaurantView />} />
+        <Route path="/edit-restaurant/:id" element={<EditRestaurantView />} />
       </Routes>
     </div>
   );
