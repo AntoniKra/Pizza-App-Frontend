@@ -75,10 +75,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
   useEffect(() => {
     onFilterChange({
       BrandIds: [],
-      Doughs: [],
-      Shapes: [],
-      Styles: [1],
-      Sauces: [],
+      Doughs: selectedDoughs,
+      Shapes: selectedShape ? [selectedShape] : [],
+      Styles: selectedStyles,
+      Sauces: selectedSauces,
       MinPrice: minPrice,
       MaxPrice: maxPrice,
     });

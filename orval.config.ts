@@ -7,7 +7,7 @@ export default defineConfig({
       target: "src/api/endpoints",
       schemas: "src/api/model",
       client: "axios",
-      mock: true,
+      mock: false,
       clean: true,
       prettier: true,
     },

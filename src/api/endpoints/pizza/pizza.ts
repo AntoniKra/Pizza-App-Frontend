@@ -11,10 +11,10 @@ import type {
 } from 'axios';
 
 import type {
-  CreatePizzaDto,
-  GetApiPizzaSearchParams,
   PizzaDetailsDto,
+  PizzaSearchCriteriaDto,
   PizzaSearchResultDto,
+  PostApiPizzaBody,
   UpdatePizzaDto
 } from '../../model';
 
@@ -23,11 +23,78 @@ import type {
 
   export const getPizza = () => {
 const postApiPizza = <TData = AxiosResponse<void>>(
-    createPizzaDto: CreatePizzaDto, options?: AxiosRequestConfig
- ): Promise<TData> => {
+    postApiPizzaBody: PostApiPizzaBody, options?: AxiosRequestConfig
+ ): Promise<TData> => {const formUrlEncoded = new URLSearchParams();
+if(postApiPizzaBody.IngredientIds !== undefined) {
+ postApiPizzaBody.IngredientIds.forEach(value => formUrlEncoded.append(`IngredientIds`, value));
+ }
+if(postApiPizzaBody.Name !== undefined) {
+ formUrlEncoded.append(`Name`, postApiPizzaBody.Name);
+ }
+if(postApiPizzaBody.Description !== undefined) {
+ formUrlEncoded.append(`Description`, postApiPizzaBody.Description);
+ }
+if(postApiPizzaBody.Price !== undefined) {
+ formUrlEncoded.append(`Price`, postApiPizzaBody.Price.toString())
+ }
+if(postApiPizzaBody.ImageUrl !== undefined) {
+ formUrlEncoded.append(`ImageUrl`, postApiPizzaBody.ImageUrl);
+ }
+if(postApiPizzaBody.ImageFile !== undefined) {
+ formUrlEncoded.append(`ImageFile`, postApiPizzaBody.ImageFile);
+ }
+if(postApiPizzaBody['Style.Id'] !== undefined) {
+ formUrlEncoded.append(`Style.Id`, postApiPizzaBody['Style.Id']);
+ }
+if(postApiPizzaBody['Style.Name'] !== undefined) {
+ formUrlEncoded.append(`Style.Name`, postApiPizzaBody['Style.Name']);
+ }
+if(postApiPizzaBody['BaseSauce.Id'] !== undefined) {
+ formUrlEncoded.append(`BaseSauce.Id`, postApiPizzaBody['BaseSauce.Id']);
+ }
+if(postApiPizzaBody['BaseSauce.Name'] !== undefined) {
+ formUrlEncoded.append(`BaseSauce.Name`, postApiPizzaBody['BaseSauce.Name']);
+ }
+if(postApiPizzaBody['Dough.Id'] !== undefined) {
+ formUrlEncoded.append(`Dough.Id`, postApiPizzaBody['Dough.Id']);
+ }
+if(postApiPizzaBody['Dough.Name'] !== undefined) {
+ formUrlEncoded.append(`Dough.Name`, postApiPizzaBody['Dough.Name']);
+ }
+if(postApiPizzaBody['Thickness.Id'] !== undefined) {
+ formUrlEncoded.append(`Thickness.Id`, postApiPizzaBody['Thickness.Id']);
+ }
+if(postApiPizzaBody['Thickness.Name'] !== undefined) {
+ formUrlEncoded.append(`Thickness.Name`, postApiPizzaBody['Thickness.Name']);
+ }
+if(postApiPizzaBody['Shape.Id'] !== undefined) {
+ formUrlEncoded.append(`Shape.Id`, postApiPizzaBody['Shape.Id']);
+ }
+if(postApiPizzaBody['Shape.Name'] !== undefined) {
+ formUrlEncoded.append(`Shape.Name`, postApiPizzaBody['Shape.Name']);
+ }
+if(postApiPizzaBody.DiameterCm !== undefined) {
+ formUrlEncoded.append(`DiameterCm`, postApiPizzaBody.DiameterCm.toString())
+ }
+if(postApiPizzaBody.WidthCm !== undefined) {
+ formUrlEncoded.append(`WidthCm`, postApiPizzaBody.WidthCm.toString())
+ }
+if(postApiPizzaBody.LengthCm !== undefined) {
+ formUrlEncoded.append(`LengthCm`, postApiPizzaBody.LengthCm.toString())
+ }
+if(postApiPizzaBody.WeightGrams !== undefined) {
+ formUrlEncoded.append(`WeightGrams`, postApiPizzaBody.WeightGrams.toString())
+ }
+if(postApiPizzaBody.Kcal !== undefined) {
+ formUrlEncoded.append(`Kcal`, postApiPizzaBody.Kcal.toString())
+ }
+if(postApiPizzaBody.MenuId !== undefined) {
+ formUrlEncoded.append(`MenuId`, postApiPizzaBody.MenuId);
+ }
+
     return axios.default.post(
       `/api/Pizza`,
-      createPizzaDto,options
+      formUrlEncoded,options
     );
   }
 const getApiPizzaGetAll = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
@@ -60,19 +127,18 @@ const deleteApiPizzaId = <TData = AxiosResponse<void>>(
       `/api/Pizza/${id}`,options
     );
   }
-const getApiPizzaSearch = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
-    params?: GetApiPizzaSearchParams, options?: AxiosRequestConfig
+const postApiPizzaSearch = <TData = AxiosResponse<PizzaSearchResultDto[]>>(
+    pizzaSearchCriteriaDto: PizzaSearchCriteriaDto, options?: AxiosRequestConfig
  ): Promise<TData> => {
-    return axios.default.get(
-      `/api/Pizza/search`,{
-    ...options,
-        params: {...params, ...options?.params},}
+    return axios.default.post(
+      `/api/Pizza/search`,
+      pizzaSearchCriteriaDto,options
     );
   }
-return {postApiPizza,getApiPizzaGetAll,getApiPizzaId,putApiPizzaId,deleteApiPizzaId,getApiPizzaSearch}};
+return {postApiPizza,getApiPizzaGetAll,getApiPizzaId,putApiPizzaId,deleteApiPizzaId,postApiPizzaSearch}};
 export type PostApiPizzaResult = AxiosResponse<void>
 export type GetApiPizzaGetAllResult = AxiosResponse<PizzaSearchResultDto[]>
 export type GetApiPizzaIdResult = AxiosResponse<PizzaDetailsDto>
 export type PutApiPizzaIdResult = AxiosResponse<void>
 export type DeleteApiPizzaIdResult = AxiosResponse<void>
-export type GetApiPizzaSearchResult = AxiosResponse<PizzaSearchResultDto[]>
+export type PostApiPizzaSearchResult = AxiosResponse<PizzaSearchResultDto[]>
