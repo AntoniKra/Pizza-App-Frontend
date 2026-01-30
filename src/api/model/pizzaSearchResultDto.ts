@@ -28,5 +28,7 @@ export interface PizzaSearchResultDto {
   style?: LookUpItemDto;
   /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
   pricePerSqCm?: number | string;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$ */
+  kcalPerGram?: number | string;
   ingredientNames?: string[];
 }
