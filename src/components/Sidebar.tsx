@@ -309,7 +309,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
 
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-gray-300 mb-3">
-          Sos / Dodatki
+          Sosy na spodzie
         </h4>
         <div className="flex flex-wrap gap-2">
           {filters.sauces?.map((sauce) => {
