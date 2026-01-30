@@ -7,6 +7,7 @@ import {
   type PizzaFiltersDto,
   type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
+  type LookUpItemDto,
 } from "../api/model";
 import { getLookUp } from "../api/endpoints/look-up/look-up";
 
@@ -16,26 +17,43 @@ function PizzaSearch() {
 
   const initialCityId = location.state?.cityId;
 
-  // 2. STANY
+  // --- STANY ---
   const [pizzas, setPizzas] = useState<PizzaSearchResultDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortOption, setSortOption] = useState("default"); 
+  
+  // Sortowanie: Stan domyślny to "1" (zgodnie z Enumem w backendzie: Default = 1)
+  const [sortOption, setSortOption] = useState<LookUpItemDto | null>(null); 
+  const [sortOptions, setSortOptions] = useState<LookUpItemDto[]>([]); 
 
-  // Stan filtrów (Kryteria API)
+  // Stan filtrów
   const [filters, setFilters] = useState<PizzaFiltersDto>();
   const [currentFilters, setCurrentFilters] = useState<PizzaSearchCriteriaDto>();
 
-  // 3. POBIERANIE DANYCH Z API
-  // Pobierz filtry (opcje) przy starcie
+  // --- POBIERANIE DANYCH ---
   useEffect(() => {
-    fetchFilters();
+    const init = async () => {
+        try {
+            // 1. Pobierz filtry do Sidebara
+            // Orval zwraca dane bezpośrednio (zgodnie z twoim axiosConfig)
+            const filtersData = await getLookUp().getApiLookUpFilters();
+            setFilters(filtersData);
+
+            // 2. Pobierz opcje sortowania
+            // Endpoint zwraca listę [{id: "1", name: "Domyślnie"}, {id: "2", name: "Cena..."}]
+            const sortData = await getLookUp().getApiLookUpEnumAll({type:"SortOptionEnum"});
+            setSortOptions(sortData);
+        } catch (err) {
+            console.error("Błąd inicjalizacji:", err);
+        }
+    };
+    init();
   }, []);
 
   const fetchPizzas = async (searchCriteria: PizzaSearchCriteriaDto) => {
     try {
-      searchCriteria.cityId = initialCityId;      
+      searchCriteria.cityId = initialCityId;
       setIsLoading(true);
-      const data = (await getPizza().postApiPizzaSearch(searchCriteria));
+      const data = await getPizza().postApiPizzaSearch(searchCriteria);
       setPizzas(data);
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
@@ -44,41 +62,40 @@ function PizzaSearch() {
     }
   };
 
-  const fetchFilters = async () => {
-    try {
-        const data = (await getLookUp().getApiLookUpFilters());
-        setFilters(data);
-    } catch (error) {
-        console.error("Nie udało się pobrać filtrów", error);
-    }
-  };
-
-  // 4. OBSŁUGA ZMIAN (Sortowanie, Filtry)
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  // --- OBSŁUGA ZMIAN ---
+  
+  // 1. Zmiana Sortowania (Dropdown)
+  const handleSortChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    setSortOption(value);
-
-    // Mapowanie: Front -> Enum 
-    let apiSortBy = 0;
-    if (value === "price_asc") apiSortBy = 1;
-    if (value === "price_desc") apiSortBy = 2;
+    const findSortOption = sortOptions.find(opt => opt.id === value);
+    setSortOption(findSortOption || null); 
 
     if (currentFilters) {
-        const updatedFilters = { ...currentFilters, SortBy: apiSortBy }; 
-        fetchPizzas(updatedFilters);
+        
+        const updatedFilters = { 
+            ...currentFilters, 
+            sortBy:   findSortOption  
+        };
+
+        setCurrentFilters(updatedFilters);
+        await fetchPizzas(updatedFilters);
     }
   };
 
+  // 2. Zmiana Filtrów (Sidebar)
+  // FIX: Musimy pamiętać o aktualnym sortowaniu!
   const handleFilterChange = async (newFilters: PizzaSearchCriteriaDto) => {
     const helper = {
       ...newFilters,
       cityId: initialCityId,
-    } as PizzaSearchCriteriaDto;
-    
+      sortBy: sortOption
+    } ;
+
     setCurrentFilters(helper);
     await fetchPizzas(helper);
   };
 
+  // --- WIDOK ---
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans pb-20">
       <main className="max-w-[1400px] mx-auto p-8 flex gap-8">
@@ -92,15 +109,18 @@ function PizzaSearch() {
             <h2 className="text-3xl font-bold">Znalezione oferty</h2>
             <div className="flex items-center gap-3">
               <span className="text-gray-400 text-sm">Sortuj:</span>
+              
+              {/* Dynamiczny Select z API */}
               <select
-                value={sortOption}
+                value={sortOption?.id}
                 onChange={handleSortChange}
                 className="bg-[#1E1E1E] border border-gray-700 text-white text-sm rounded-lg p-2.5 outline-none focus:border-[#FF6B6B]"
               >
-                <option value="default">Domyślnie</option>
-                <option value="profitability">🔥 Najbardziej opłacalne</option>
-                <option value="price_asc">Cena: od najniższej</option>
-                <option value="price_desc">Cena: od najwyższej</option>
+                {sortOptions.map(opt => (
+                    <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                    </option>
+                ))}
               </select>
             </div>
           </div>
@@ -129,13 +149,17 @@ function PizzaSearch() {
                   onClick={() => navigate(`/pizza/${pizza.id}`)}
                 >
                   <div className="bg-[#1E1E1E] rounded-xl overflow-hidden border border-gray-800 hover:border-[#FF6B6B] transition cursor-pointer group h-full flex flex-col">
+                    
+                    {/* ZDJĘCIE */}
                     <div className="h-48 overflow-hidden relative">
                       <img
                         src={pizza.imageUrl ?? undefined}
-                        alt={pizza.name}
+                        alt={pizza.name ?? "Pizza"}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                       />
                     </div>
+
+                    {/* TREŚĆ */}
                     <div className="p-4 flex flex-col flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -154,21 +178,31 @@ function PizzaSearch() {
                         {pizza.description}
                       </p>
 
-                      <div className="flex gap-2 mt-auto">
+                      {/* BADGE - Clean Code & Truthy Checks */}
+                      <div className="flex gap-2 mt-auto flex-wrap">
                         <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
                           {pizza.style?.name}
                         </span>
+
                         {pizza.diameterCm && (
                           <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
                             {pizza.diameterCm} cm
                           </span>
                         )}
-                           {pizza.pricePerSqCm && (
-                          <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
+
+                        {pizza.pricePerSqCm && (
+                          <span className="text-xs bg-green-900/50 text-green-400 border border-green-800 px-2 py-1 rounded">
                             {pizza.pricePerSqCm} zł/cm²
                           </span>
                         )}
+
+                        {pizza.kcalPerGram && (
+                          <span className="text-xs bg-blue-900/50 text-blue-400 border border-blue-800 px-2 py-1 rounded">
+                            {pizza.kcalPerGram} kcal/g
+                          </span>
+                        )}
                       </div>
+                      
                     </div>
                   </div>
                 </div>

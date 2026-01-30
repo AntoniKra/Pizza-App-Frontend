@@ -5,7 +5,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { LookUpItemDto } from './lookUpItemDto';
-import type { SortOptionEnum } from './sortOptionEnum';
 
 export interface PizzaSearchCriteriaDto {
   cityId: string;
@@ -36,7 +35,7 @@ export interface PizzaSearchCriteriaDto {
    * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
    */
   minDiameter?: number | string | null;
-  sortBy?: SortOptionEnum;
+  sortBy?: null | LookUpItemDto;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   pageNumber?: number | string;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
