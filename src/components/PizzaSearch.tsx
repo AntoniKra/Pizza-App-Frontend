@@ -22,7 +22,7 @@ function PizzaSearch() {
   const [isLoading, setIsLoading] = useState(false);
   
   // Sortowanie: Stan domyślny to "1" (zgodnie z Enumem w backendzie: Default = 1)
-  const [sortOption, setSortOption] = useState("1"); 
+  const [sortOption, setSortOption] = useState<LookUpItemDto | null>(null); 
   const [sortOptions, setSortOptions] = useState<LookUpItemDto[]>([]); 
 
   // Stan filtrów
@@ -40,7 +40,7 @@ function PizzaSearch() {
 
             // 2. Pobierz opcje sortowania
             // Endpoint zwraca listę [{id: "1", name: "Domyślnie"}, {id: "2", name: "Cena..."}]
-            const sortData = await getLookUp().getApiLookUpSortOptions();
+            const sortData = await getLookUp().getApiLookUpEnumAll({type:"SortOptionEnum"});
             setSortOptions(sortData);
         } catch (err) {
             console.error("Błąd inicjalizacji:", err);
@@ -65,38 +65,31 @@ function PizzaSearch() {
   // --- OBSŁUGA ZMIAN ---
   
   // 1. Zmiana Sortowania (Dropdown)
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    setSortOption(value); // Aktualizuj UI
+    const findSortOption = sortOptions.find(opt => opt.id === value);
+    setSortOption(findSortOption || null); 
 
     if (currentFilters) {
-        // Backend oczekuje liczby (Enum)
-        const sortEnumId = Number(value);
         
-        // Tworzymy nowy obiekt filtrów z zaktualizowanym sortowaniem
         const updatedFilters = { 
             ...currentFilters, 
-            SortBy: sortEnumId, // Dla pewności (PascalCase)
-            sortBy: sortEnumId  // Dla pewności (camelCase)
-        } as any;
+            sortBy:   findSortOption  
+        };
 
         setCurrentFilters(updatedFilters);
-        fetchPizzas(updatedFilters);
+        await fetchPizzas(updatedFilters);
     }
   };
 
   // 2. Zmiana Filtrów (Sidebar)
   // FIX: Musimy pamiętać o aktualnym sortowaniu!
   const handleFilterChange = async (newFilters: PizzaSearchCriteriaDto) => {
-    const currentSortId = Number(sortOption);
-
     const helper = {
       ...newFilters,
       cityId: initialCityId,
-      // WAŻNE: Dodajemy aktualnie wybrane sortowanie do filtrów z sidebara
-      SortBy: currentSortId,
-      sortBy: currentSortId
-    } as any;
+      sortBy: sortOption
+    } ;
 
     setCurrentFilters(helper);
     await fetchPizzas(helper);
@@ -119,7 +112,7 @@ function PizzaSearch() {
               
               {/* Dynamiczny Select z API */}
               <select
-                value={sortOption}
+                value={sortOption?.id}
                 onChange={handleSortChange}
                 className="bg-[#1E1E1E] border border-gray-700 text-white text-sm rounded-lg p-2.5 outline-none focus:border-[#FF6B6B]"
               >

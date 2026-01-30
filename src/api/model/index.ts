@@ -41,7 +41,6 @@ export * from './postApiPizzaBody';
 export * from './problemDetails';
 export * from './putApiPizzaIdBody';
 export * from './registerDto';
-export * from './sortOptionEnum';
 export * from './updateAddressDto';
 export * from './updateCityDto';
 export * from './updateCountryDto';
