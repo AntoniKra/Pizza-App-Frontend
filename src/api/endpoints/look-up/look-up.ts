@@ -42,7 +42,16 @@ const getApiLookUpFilters = (
     },
       );
     }
-  return {getApiLookUpFilters,getApiLookUpEnum,getApiLookUpEnumAll}};
+  const getApiLookUpSortOptions = (
+    
+ ) => {
+      return customInstance<LookUpItemDto[]>(
+      {url: `/api/LookUp/sort-options`, method: 'GET'
+    },
+      );
+    }
+  return {getApiLookUpFilters,getApiLookUpEnum,getApiLookUpEnumAll,getApiLookUpSortOptions}};
 export type GetApiLookUpFiltersResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpFilters']>>>
 export type GetApiLookUpEnumResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpEnum']>>>
 export type GetApiLookUpEnumAllResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpEnumAll']>>>
+export type GetApiLookUpSortOptionsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getLookUp>['getApiLookUpSortOptions']>>>

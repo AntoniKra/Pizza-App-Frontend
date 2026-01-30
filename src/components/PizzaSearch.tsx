@@ -7,6 +7,7 @@ import {
   type PizzaFiltersDto,
   type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
+  type LookUpItemDto,
 } from "../api/model";
 import { getLookUp } from "../api/endpoints/look-up/look-up";
 
@@ -19,7 +20,10 @@ function PizzaSearch() {
   // --- STANY ---
   const [pizzas, setPizzas] = useState<PizzaSearchResultDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortOption, setSortOption] = useState("default");
+  
+  // Sortowanie: Stan domyślny to "1" (zgodnie z Enumem w backendzie: Default = 1)
+  const [sortOption, setSortOption] = useState("1"); 
+  const [sortOptions, setSortOptions] = useState<LookUpItemDto[]>([]); 
 
   // Stan filtrów
   const [filters, setFilters] = useState<PizzaFiltersDto>();
@@ -27,14 +31,29 @@ function PizzaSearch() {
 
   // --- POBIERANIE DANYCH ---
   useEffect(() => {
-    fetchFilters();
+    const init = async () => {
+        try {
+            // 1. Pobierz filtry do Sidebara
+            // Orval zwraca dane bezpośrednio (zgodnie z twoim axiosConfig)
+            const filtersData = await getLookUp().getApiLookUpFilters();
+            setFilters(filtersData);
+
+            // 2. Pobierz opcje sortowania
+            // Endpoint zwraca listę [{id: "1", name: "Domyślnie"}, {id: "2", name: "Cena..."}]
+            const sortData = await getLookUp().getApiLookUpSortOptions();
+            setSortOptions(sortData);
+        } catch (err) {
+            console.error("Błąd inicjalizacji:", err);
+        }
+    };
+    init();
   }, []);
 
   const fetchPizzas = async (searchCriteria: PizzaSearchCriteriaDto) => {
     try {
       searchCriteria.cityId = initialCityId;
       setIsLoading(true);
-      const data = (await getPizza().postApiPizzaSearch(searchCriteria));
+      const data = await getPizza().postApiPizzaSearch(searchCriteria);
       setPizzas(data);
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
@@ -43,43 +62,41 @@ function PizzaSearch() {
     }
   };
 
-  const fetchFilters = async () => {
-    try {
-      const data = (await getLookUp().getApiLookUpFilters());
-      setFilters(data);
-    } catch (error) {
-      console.error("Nie udało się pobrać filtrów", error);
-    }
-  };
-
   // --- OBSŁUGA ZMIAN ---
+  
+  // 1. Zmiana Sortowania (Dropdown)
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    setSortOption(value);
-
-    let apiSortBy = 1;
-    if (value === "price_asc") apiSortBy = 2;
-    if (value === "price_desc") apiSortBy = 3;
-    if (value === "name_asc") apiSortBy = 4;
-    if (value === "name_desc") apiSortBy = 5;
-    if (value === "profitability") apiSortBy = 6;
-    if (value === "kcal_desc") apiSortBy = 7;
-    if (value === "kcal_asc") apiSortBy = 8;
+    setSortOption(value); // Aktualizuj UI
 
     if (currentFilters) {
-      const updatedFilters = { ...currentFilters, SortBy: apiSortBy } as any;
-      updatedFilters.sortBy = apiSortBy;
+        // Backend oczekuje liczby (Enum)
+        const sortEnumId = Number(value);
+        
+        // Tworzymy nowy obiekt filtrów z zaktualizowanym sortowaniem
+        const updatedFilters = { 
+            ...currentFilters, 
+            SortBy: sortEnumId, // Dla pewności (PascalCase)
+            sortBy: sortEnumId  // Dla pewności (camelCase)
+        } as any;
 
-      setCurrentFilters(updatedFilters);
-      fetchPizzas(updatedFilters);
+        setCurrentFilters(updatedFilters);
+        fetchPizzas(updatedFilters);
     }
   };
 
+  // 2. Zmiana Filtrów (Sidebar)
+  // FIX: Musimy pamiętać o aktualnym sortowaniu!
   const handleFilterChange = async (newFilters: PizzaSearchCriteriaDto) => {
+    const currentSortId = Number(sortOption);
+
     const helper = {
       ...newFilters,
       cityId: initialCityId,
-    } as PizzaSearchCriteriaDto;
+      // WAŻNE: Dodajemy aktualnie wybrane sortowanie do filtrów z sidebara
+      SortBy: currentSortId,
+      sortBy: currentSortId
+    } as any;
 
     setCurrentFilters(helper);
     await fetchPizzas(helper);
@@ -99,17 +116,18 @@ function PizzaSearch() {
             <h2 className="text-3xl font-bold">Znalezione oferty</h2>
             <div className="flex items-center gap-3">
               <span className="text-gray-400 text-sm">Sortuj:</span>
+              
+              {/* Dynamiczny Select z API */}
               <select
                 value={sortOption}
                 onChange={handleSortChange}
                 className="bg-[#1E1E1E] border border-gray-700 text-white text-sm rounded-lg p-2.5 outline-none focus:border-[#FF6B6B]"
               >
-                <option value="default">Domyślnie</option>
-                <option value="price_asc">Cena: od najniższej</option>
-                <option value="price_desc">Cena: od najwyższej</option>
-                <option value="profitability">💰 Opłacalność (zł/cm²)</option>
-                <option value="kcal_desc">💪 Masa (Max kcal/g)</option>
-                <option value="kcal_asc">🥗 Redukcja (Min kcal/g)</option>
+                {sortOptions.map(opt => (
+                    <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                    </option>
+                ))}
               </select>
             </div>
           </div>
@@ -167,31 +185,27 @@ function PizzaSearch() {
                         {pizza.description}
                       </p>
 
-                      {/* BADGE (NAPRAWIONE) */}
+                      {/* BADGE - Clean Code & Truthy Checks */}
                       <div className="flex gap-2 mt-auto flex-wrap">
-                        {/* 1. Styl */}
                         <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
                           {pizza.style?.name}
                         </span>
 
-                        {/* 2. Średnica */}
                         {pizza.diameterCm && (
                           <span className="text-xs bg-[#2A2A2A] px-2 py-1 rounded text-gray-400">
                             {pizza.diameterCm} cm
                           </span>
                         )}
 
-                        {/* 3. Opłacalność (Fix: Rzutowanie na Number) */}
-                        {pizza.pricePerSqCm && Number(pizza.pricePerSqCm) > 0 && (
+                        {pizza.pricePerSqCm && (
                           <span className="text-xs bg-green-900/50 text-green-400 border border-green-800 px-2 py-1 rounded">
                             {pizza.pricePerSqCm} zł/cm²
                           </span>
                         )}
 
-                        {/* 4. Masa/Kcal (Fix: 'as any' + Number, bo Orval tego jeszcze nie widzi) */}
-                        {(pizza as any).kcalPerGram && Number((pizza as any).kcalPerGram) > 0 && (
+                        {pizza.kcalPerGram && (
                           <span className="text-xs bg-blue-900/50 text-blue-400 border border-blue-800 px-2 py-1 rounded">
-                            {(pizza as any).kcalPerGram} kcal/g
+                            {pizza.kcalPerGram} kcal/g
                           </span>
                         )}
                       </div>
