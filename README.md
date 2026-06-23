@@ -15,6 +15,16 @@ Projekt wymaga określenia bazowego adresu API.
 Przykładowy plik `.env`:
 ```env
 VITE_API_BASE_URL=https://localhost:7115
+## Generowanie klienta API (Orval)
+
+Projekt wykorzystuje narzędzie **Orval** do automatycznego generowania klienta API oraz typów (DTO) na podstawie pliku Swagger udostępnianego przez backend.
+
+Aby wygenerować lub zaktualizować klienta API:
+1. Upewnij się, że backend (`Pizza-App-Api`) jest uruchomiony na porcie `https://localhost:7115` (komenda `dotnet run --launch-profile "https"`).
+2. W terminalu frontendowym wykonaj komendę:
+   ```bash
+   npm run api:gen
+
 
 ## React Compiler
 
