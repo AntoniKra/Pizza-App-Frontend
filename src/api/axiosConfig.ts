@@ -1,7 +1,7 @@
-import axios, {  type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig, type AxiosResponse, AxiosError } from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://localhost:7115',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -10,26 +10,25 @@ const axiosInstance = axios.create({
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     return response;
   },
-  (error) => {
+  (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Możesz tutaj obsłużyć wylogowanie użytkownika
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
@@ -37,19 +36,24 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+// Definiujemy dedykowany interfejs, aby uniknąć @ts-ignore
+interface CancelablePromise<T> extends Promise<T> {
+  cancel?: () => void;
+}
+
 export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
   const source = axios.CancelToken.source();
+  
+  // Jawne rzutowanie na nasz nowy interfejs
   const promise = axiosInstance({
     ...config,
     cancelToken: source.token,
-  }).then(({ data }) => data);
+  }).then((response: AxiosResponse<T>) => response.data) as CancelablePromise<T>;
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'cancel' does not exist on type 'Promise<T>'.
+  // Bezpieczne przypisanie funkcji
   promise.cancel = () => {
     source.cancel('Query was cancelled');
   };
 
   return promise;
 };
-
-export default axiosInstance;
