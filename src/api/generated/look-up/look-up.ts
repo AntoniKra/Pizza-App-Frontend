@@ -9,7 +9,7 @@ import type {
   GetApiLookUpEnumParams,
   LookUpItemDto,
   PizzaFiltersDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

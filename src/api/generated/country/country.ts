@@ -8,7 +8,7 @@ import type {
   CountryDto,
   CreateCountryDto,
   UpdateCountryDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

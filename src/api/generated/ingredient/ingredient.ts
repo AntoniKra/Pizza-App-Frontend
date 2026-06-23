@@ -7,7 +7,7 @@
 import type {
   CreateIngredientDto,
   IngredientDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

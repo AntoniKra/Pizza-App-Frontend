@@ -8,7 +8,7 @@ import type {
   CreateMenuDto,
   MenuDetailsDto,
   MenuListItemDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 
