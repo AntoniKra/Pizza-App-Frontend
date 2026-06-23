@@ -25,4 +25,8 @@ dist-ssr
 
 # Sensitive files
 gcp-keys.json
+
+# local env files
 .env
+.env.local
+.env.*.local
