@@ -8,7 +8,7 @@ import type {
   CityDto,
   CreateCityDto,
   UpdateCityDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

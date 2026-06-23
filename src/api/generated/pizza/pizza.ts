@@ -10,7 +10,7 @@ import type {
   PizzaSearchResultDto,
   PostApiPizzaBody,
   PutApiPizzaIdBody
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

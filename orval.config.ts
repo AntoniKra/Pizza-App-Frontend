@@ -1,25 +1,20 @@
-import { defineConfig } from "orval";
+import { defineConfig } from 'orval';
 
 export default defineConfig({
-  pizzaRadar: {
+  pizzaApi: {
+    // Używamy nieszyfrowanego portu, aby ominąć błąd certyfikatu Node.js
+    input: 'https://localhost:7115/openapi/v1.json',
     output: {
-      mode: "tags-split",
-      target: "src/api/endpoints",
-      schemas: "src/api/model",
-      client: "axios",
-      mock: false,
-      clean: true,
-      prettier: true,
+      mode: 'tags-split',
+      target: 'src/api/generated/api.ts',
+      schemas: 'src/api/generated/models',
+      client: 'axios',
       override: {
         mutator: {
-          path: "src/api/axiosConfig.ts",
-          name: "customInstance",
+          path: 'src/api/axiosConfig.ts',
+          name: 'customInstance',
         },
       },
-    },
-    input: {
-      // 1. Tutaj wklejamy link od kolegi
-      target: "https://localhost:7115/openapi/v1.json",
     },
   },
 });

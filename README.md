@@ -7,6 +7,17 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## Generowanie klienta API (Orval)
+
+Projekt wykorzystuje narzędzie **Orval** do automatycznego generowania klienta API oraz typów (DTO) na podstawie pliku Swagger udostępnianego przez backend.
+
+Aby wygenerować lub zaktualizować klienta API:
+1. Upewnij się, że backend (`Pizza-App-Api`) jest uruchomiony na porcie `https://localhost:7115` (komenda `dotnet run --launch-profile "https"`).
+2. W terminalu frontendowym wykonaj komendę:
+   ```bash
+   npm run api:gen
+
+
 ## React Compiler
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).

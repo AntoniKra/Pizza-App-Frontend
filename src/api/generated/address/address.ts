@@ -8,7 +8,7 @@ import type {
   Address,
   CreateAddressDto,
   UpdateAddressDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

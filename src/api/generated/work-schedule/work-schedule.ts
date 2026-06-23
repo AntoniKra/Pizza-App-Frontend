@@ -8,7 +8,7 @@ import type {
   CreateWorkScheduleDto,
   UpdateWorkScheduleDto,
   WorkScheduleDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

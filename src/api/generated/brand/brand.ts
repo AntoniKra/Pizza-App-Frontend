@@ -8,7 +8,7 @@ import type {
   BrandDetailsDto,
   BrandDto,
   PostApiBrandBody
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 
