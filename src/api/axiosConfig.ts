@@ -1,4 +1,4 @@
-import axios, {  type AxiosRequestConfig } from 'axios';
+import axios, {  AxiosError, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'https://localhost:7115',
@@ -24,14 +24,17 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     return response;
   },
-  (error) => {
+  (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Możesz tutaj obsłużyć wylogowanie użytkownika
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      
+      // Zabezpieczenie przed pętlą (Infinite Loop)
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
