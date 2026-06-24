@@ -15,6 +15,7 @@ import {
 import { getPizzeria } from "../api/endpoints/pizzeria/pizzeria";
 import { getCity } from "../api/endpoints/city/city";
 import type { CityDto } from "../api/model";
+import { FormAlert, FieldError } from "./FormError";
 
 // Generowanie slotów czasowych co 30 min
 const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
@@ -48,6 +49,9 @@ const AddRestaurantView = () => {
     fetchCities();
   }, []);
 
+  const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
@@ -74,25 +78,47 @@ const AddRestaurantView = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+    setFormError("");
   };
 
   // Obsługa wyboru miasta z listy
   const handleCitySelect = (cityName: string) => {
     setFormData((prev) => ({ ...prev, cityName: cityName }));
     setIsCityDropdownOpen(false);
+    setFieldErrors((prev) => {
+      if (!prev.cityName) return prev;
+      const next = { ...prev };
+      delete next.cityName;
+      return next;
+    });
+    setFormError("");
   };
 
   const handleSubmit = async () => {
+    setFormError("");
+    setFieldErrors({});
+
     if (!preSelectedBrand) {
-      alert("Błąd: Nie wybrano marki!");
+      setFormError("Błąd: Nie wybrano marki!");
       navigate("/account");
       return;
     }
 
-    // Walidacja podstawowa
-    if (!formData.name || !formData.cityName || !formData.street) {
-        alert("Uzupełnij wymagane pola (Nazwa, Miasto, Ulica).");
-        return;
+    const errors: Record<string, string> = {};
+    if (!formData.name.trim()) errors.name = "Nazwa jest wymagana";
+    if (!formData.cityName.trim()) errors.cityName = "Miasto jest wymagane";
+    if (!formData.street.trim()) errors.street = "Ulica jest wymagana";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setFormError("Uzupełnij wymagane pola.");
+      return;
     }
 
     try {
@@ -132,7 +158,7 @@ const AddRestaurantView = () => {
       
     } catch (error) {
       console.error("Błąd podczas tworzenia pizzerii:", error);
-      alert("Wystąpił błąd podczas wysyłania danych. Sprawdź konsolę.");
+      setFormError("Wystąpił błąd podczas wysyłania danych. Spróbuj ponownie.");
     }
   };
 
@@ -182,7 +208,8 @@ const AddRestaurantView = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* LEWA KOLUMNA: FORMULARZ */}
           <div className="lg:col-span-2 space-y-6">
-            
+            <FormAlert message={formError} />
+
             {/* 1. INFORMACJE PODSTAWOWE */}
             <div className="bg-[#121212] p-6 rounded-xl border border-[#27272a]">
               <div className="flex items-center gap-2 mb-6 text-red-400 font-bold text-sm uppercase tracking-wider">
@@ -208,6 +235,7 @@ const AddRestaurantView = () => {
                       className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg py-3 pl-10 pr-4 text-white focus:border-red-500 focus:outline-none transition-colors placeholder-gray-600"
                     />
                   </div>
+                  <FieldError message={fieldErrors.name} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -282,6 +310,7 @@ const AddRestaurantView = () => {
                       </div>
                     )}
                   </div>
+                  <FieldError message={fieldErrors.cityName} />
                 </div>
 
                 <div className="col-span-4">
@@ -300,6 +329,7 @@ const AddRestaurantView = () => {
                       className="w-full bg-[#1A1A1A] border border-[#333] rounded-lg py-3 pl-10 pr-4 text-white focus:border-purple-500 focus:outline-none"
                     />
                   </div>
+                  <FieldError message={fieldErrors.street} />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
