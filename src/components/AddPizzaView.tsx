@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Flame, Plus, DollarSign, ImagePlus, X, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, Flame, Plus, DollarSign, ImagePlus, X } from "lucide-react";
+import Loader from "./Loader";
 
 // API
 import { customInstance } from "../api/axiosConfig";
-import { getIngredient } from "../api/endpoints/ingredient/ingredient";
-import { getLookUp } from "../api/endpoints/look-up/look-up"; 
-import type { IngredientDto, LookUpItemDto } from "../api/model";
+import { getIngredient } from "../api/generated/ingredient/ingredient";
+import { getLookUp } from "../api/generated/look-up/look-up";
+import type { IngredientDto, LookUpItemDto } from "../api/generated/models";
+
+type AddPizzaLocationState = {
+  menuId?: string;
+  pizzeriaName?: string;
+};
+
+type AddPizzaPreviewPayload = {
+  name: string;
+  description?: string;
+  price?: number | string;
+  image?: string;
+  style?: LookUpItemDto;
+  dough?: LookUpItemDto;
+  thickness?: LookUpItemDto;
+  baseSauce?: LookUpItemDto;
+  shape?: LookUpItemDto;
+  diameterCm?: number | string;
+  widthCm?: number | string;
+  lengthCm?: number | string;
+  weightGrams?: number | string;
+  kcal?: number | string;
+  pizzeria?: string;
+};
 
 // Jeśli nie masz pliku OptionTile, dodaję prostą definicję poniżej (możesz to przenieść do osobnego pliku)
 const OptionTile = ({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) => (
@@ -25,7 +49,7 @@ const AddPizzaView = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { menuId, pizzeriaName } = location.state || {};
+  const { menuId, pizzeriaName } = (location.state || {}) as AddPizzaLocationState;
 
   // --- STAN OPCJI (Lookups) ---
   const [options, setOptions] = useState({
@@ -153,6 +177,48 @@ const AddPizzaView = () => {
     });
   };
 
+  const getOptionById = (list: LookUpItemDto[], id: string) => list.find((item) => item.id === id);
+
+  const buildPreviewData = (): AddPizzaPreviewPayload => {
+    const style = getOptionById(options.styles, formData.styleId);
+    const dough = getOptionById(options.doughs, formData.doughId);
+    const thickness = getOptionById(options.crusts, formData.crustId);
+    const baseSauce = getOptionById(options.sauces, formData.sauceId);
+    const shape = getOptionById(options.shapes, formData.shapeId);
+
+    return {
+      name: formData.name || "Nowa pizza",
+      description: formData.description,
+      price: formData.price,
+      image: previewUrl ?? undefined,
+      style,
+      dough,
+      thickness,
+      baseSauce,
+      shape,
+      diameterCm: getCurrentShapeName() === "Okrągła" ? formData.diameter : undefined,
+      widthCm: getCurrentShapeName() === "Okrągła" ? undefined : formData.width,
+      lengthCm: getCurrentShapeName() === "Okrągła" ? undefined : formData.length,
+      weightGrams: formData.weight,
+      kcal: formData.kcal,
+      pizzeria: pizzeriaName,
+    };
+  };
+
+  const handlePreview = () => {
+    const previewPayload = buildPreviewData();
+    const ingredientNames = availableIngredients
+      .filter((ing) => formData.ingredients.includes(ing.id!))
+      .map((ing) => ing.name);
+
+    navigate("/pizza-preview", {
+      state: {
+        pizzaData: previewPayload,
+        ingredientsList: ingredientNames,
+      },
+    });
+  };
+
   const handleSubmit = async () => {
     if (!menuId) {
         alert("Błąd kontekstu: Brak Menu ID.");
@@ -244,10 +310,7 @@ const AddPizzaView = () => {
         </div>
 
         {isLoadingData ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                <Loader2 className="animate-spin mb-4" size={48} />
-                <p>Ładowanie konfiguratora...</p>
-            </div>
+            <Loader message="Ładowanie konfiguratora..." size={48} className="h-64" />
         ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
@@ -406,14 +469,26 @@ const AddPizzaView = () => {
                 </div>
                 </div>
 
-                <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition text-lg
-                    ${isSubmitting ? "bg-gray-600 cursor-not-allowed" : "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-red-900/20 hover:to-red-600 hover:scale-[1.02]"}`}
-                >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : <><Plus size={20} /> Dodaj do Menu</>}
-                </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handlePreview}
+                    className="w-full py-4 rounded-xl font-bold bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500 transition text-lg"
+                  >
+                    Podgląd w pełnym widoku
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className={`w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition text-lg
+                      ${isSubmitting ? "bg-gray-600 cursor-not-allowed" : "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-red-900/20 hover:to-red-600 hover:scale-[1.02]"}`}
+                  >
+                    {isSubmitting ? (
+                      <Loader inline size={20} message="" />
+                    ) : (
+                      <><Plus size={20} /> Dodaj do Menu</>
+                    )}
+                  </button>
+                </div>
             </div>
 
             {/* PRAWA STRONA: PODGLĄD */}

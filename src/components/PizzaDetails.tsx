@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import type { PizzaDetailsDto } from "../api/model";
-import { Loader2, ChefHat, Ruler, Scale, Flame } from "lucide-react";
+import { getPizza } from "../api/generated/pizza/pizza";
+import type { PizzaDetailsDto } from "../api/generated/models";
+import Loader from "./Loader";
+import ErrorState from "./ErrorState";
+import { ChefHat, Ruler, Scale, Flame } from "lucide-react";
 
 const PizzaDetails = () => {
   const { id } = useParams();
@@ -34,26 +36,17 @@ const PizzaDetails = () => {
   }, [id]);
 
   if (isLoading) {
-    return (
-       <div className="min-h-screen bg-[#121212] flex items-center justify-center">
-         <Loader2 className="animate-spin text-[#FF6B6B]" size={48} />
-       </div>
-    );
+    return <Loader message="Ładowanie szczegółów pizzy..." />;
   }
 
   if (!pizza || error) {
-      return (
-        <div className="min-h-screen bg-[#121212] text-white flex flex-col items-center justify-center">
-          <h2 className="text-3xl font-bold mb-4">Nie znaleziono pizzy 😔</h2>
-          <p className="text-gray-500 mb-6">{error}</p>
-          <button
-            onClick={() => navigate("/search")}
-            className="text-[#FF6B6B] hover:underline"
-          >
-            Wróć do wyszukiwarki
-          </button>
-        </div>
-      );
+    return (
+      <ErrorState
+        message={error || "Nie udało się pobrać szczegółów pizzy."}
+        buttonLabel="Wróć do wyszukiwarki"
+        onButtonClick={() => navigate("/search")}
+      />
+    );
   }
 
   // 3. Obliczenia metryk (Cena za cm2, Cena za 100g)

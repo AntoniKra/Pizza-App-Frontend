@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import RestaurantView from "./components/RestaurantView";
 import LandingPage from "./components/LandingPage";
@@ -10,19 +10,23 @@ import LoginView from "./components/LoginView";
 import ManageRestaurantsView from "./components/ManageRestaurantsView";
 import AddRestaurantView from "./components/AddRestaurantView";
 import NewPizzaPreviewView from "./components/NewPizzaPreviewView";
-import type { Pizza } from "./data/mockPizzas";
 import RestaurantsList from "./components/RestaurantsList";
 import Header from "./components/Header";
 import AddBrandView from "./components/AddBrandView";
 import EditPizzaView from "./components/EditPizzaView";
 import RestaurantMenuView from "./components/RestaurantMenuView";
+import Loader from "./components/Loader";
+import ErrorState from "./components/ErrorState";
 import { useAuth } from "./hooks/useAuth";
 import { customInstance } from "./api/axiosConfig"; // Dodany import do strzałów API
+// Zakładając, że endpointy nazywają się getApiPizzaGetAll (zależnie od tego jak nazwał je Orval)
+import { getPizza } from "./api/generated/pizza/pizza";
+import type { PizzeriaSimpleDto, PizzaSearchResultDto } from "./api/generated/models";
 
 function App() {
   // Zastąpienie mocków pustymi tablicami
-  const [restaurantMenu, setRestaurantMenu] = useState<Pizza[]>([]);
-  const [myRestaurants, setMyRestaurants] = useState<any[]>([]);
+  const [restaurantMenu, setRestaurantMenu] = useState<PizzaSearchResultDto[]>([]);
+  const [myRestaurants, setMyRestaurants] = useState<PizzeriaSimpleDto[]>([]);
   
   // Nowe stany ładowania i błędów zdefiniowane w zadaniu
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -41,32 +45,29 @@ function App() {
   });
 
   // POBIERANIE DANYCH Z API
-  useEffect(() => {
-    const fetchAppData = async () => {
-      try {
-        setIsDataLoading(true);
-        setDataError(null);
+  const fetchAppData = useCallback(async () => {
+    try {
+      setIsDataLoading(true);
+      setDataError(null);
 
-        // Pobieramy dane z API. Używamy .catch(() => []), aby API nie crashowało UI przy błędzie
-        const menuResponse = await customInstance<Pizza[]>({ url: '/api/Pizza/GetAll', method: 'GET' }).catch(() => []);
-        const restaurantsResponse = await customInstance<any[]>({ url: '/api/Pizzeria/GetAll', method: 'GET' }).catch(() => []);
+      const menuResponse = await getPizza().getApiPizzaGetAll();
+      const restaurantsResponse = await customInstance<PizzeriaSimpleDto[]>({ url: "/api/Pizzeria/GetAll", method: "GET" });
 
-        // Zabezpieczenie przed nieprawidłowym formatem (Empty state fallback)
-        setRestaurantMenu(Array.isArray(menuResponse) ? menuResponse : []);
-        setMyRestaurants(Array.isArray(restaurantsResponse) ? restaurantsResponse : []);
-
-      } catch (error) {
-        console.error("Błąd pobierania danych:", error);
-        setDataError("Wystąpił problem podczas pobierania danych z serwera.");
-        setRestaurantMenu([]);
-        setMyRestaurants([]);
-      } finally {
-        setIsDataLoading(false);
-      }
-    };
-
-    fetchAppData();
+      setRestaurantMenu(Array.isArray(menuResponse) ? menuResponse : []);
+      setMyRestaurants(Array.isArray(restaurantsResponse) ? restaurantsResponse : []);
+    } catch (error) {
+      console.error("Błąd pobierania danych:", error);
+      setDataError("Wystąpił problem podczas pobierania danych z serwera.");
+      setRestaurantMenu([]);
+      setMyRestaurants([]);
+    } finally {
+      setIsDataLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchAppData();
+  }, [fetchAppData]);
 
   const handleCitySelect = (city: { id: string; name: string }) => {
     setSelectedCity(city);
@@ -84,38 +85,22 @@ function App() {
     });
   };
 
-  const handleAddPizza = (newPizza: Pizza) => {
+  const handleAddPizza = (newPizza: PizzaSearchResultDto) => {
     setRestaurantMenu((prevMenu) => [...prevMenu, newPizza]);
   };
 
-  const handleDeleteRestaurant = (id: number) => {
+  const handleDeleteRestaurant = (id: string) => {
     setMyRestaurants((prev) => prev.filter((rest) => rest.id !== id));
   };
 
   // Obsługa stanu Loading z Auth oraz z pobierania danych
   if (isLoading || isDataLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#121212] text-white">
-         <div className="w-12 h-12 border-4 border-[#FF6B6B] border-t-transparent rounded-full animate-spin mb-4"></div>
-         <div className="text-gray-400 font-medium animate-pulse">Pobieranie danych z serwera...</div>
-      </div>
-    );
+    return <Loader message="Pobieranie danych z serwera..." />;
   }
 
   // Obsługa stanu Error
   if (dataError) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#121212] text-white">
-        <div className="text-red-500 mb-4 text-4xl">⚠️</div>
-        <div className="text-gray-300 font-bold mb-6">{dataError}</div>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-6 py-2 bg-[#FF6B6B] rounded-full text-white font-bold hover:bg-red-500 transition"
-        >
-          Spróbuj ponownie
-        </button>
-      </div>
-    );
+    return <ErrorState message={dataError} onButtonClick={fetchAppData} />;
   }
 
   return (

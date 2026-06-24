@@ -3,10 +3,12 @@ import type {
   LookUpItemDto,
   PizzaFiltersDto,
   PizzaSearchCriteriaDto, // <-- To jest poprawny typ
-} from "../api/model";
+} from "../api/generated/models";
+
+type SidebarFilterPayload = Omit<PizzaSearchCriteriaDto, "cityId">;
 
 interface SidebarProps {
-  onFilterChange: (filters: PizzaSearchCriteriaDto) => void; // <-- Zmiana typu tutaj
+  onFilterChange: (filters: SidebarFilterPayload) => void;
   filters: PizzaFiltersDto;
 }
 
@@ -21,26 +23,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, filters }) => {
   const [selectedStyles, setSelectedStyles] = useState<LookUpItemDto[]>([]);
   const [selectedSauces, setSelectedSauces] = useState<LookUpItemDto[]>([]);
 
-  const [selectedShape, setSelectedShape] = useState<LookUpItemDto | null>();
+  const [selectedShape, setSelectedShape] = useState<LookUpItemDto | null>(null);
 
-  // --- FIX: Przekazywanie poprawnych danych do rodzica ---
   useEffect(() => {
     onFilterChange({
-      // 1. Mapujemy obiekty pizzerii na listę samych ID (Guid string)
-      BrandIds: selectedPizzerias.map((p) => p.id), 
-      
-      // 2. Przekazujemy wybrane Enumy (Backend chce listę obiektów LookUpItemDto)
-      Doughs: selectedDoughs,
-      Thicknesses: selectedCrusts,
-      Styles: selectedStyles,
-      Sauces: selectedSauces,
-      Shapes: selectedShape ? [selectedShape] : [],
-      
-      // 3. Przekazujemy liczby
-      MinPrice: minPrice,
-      MaxPrice: maxPrice,
-      MinDiameter: diameter ?? undefined,
-    } as any); // 'as any' pozwala obejść ewentualne niezgodności typów generowanych przez Orval
+      brandIds: selectedPizzerias.length ? selectedPizzerias.map((p) => p.id) : undefined,
+      doughs: selectedDoughs.length ? selectedDoughs : undefined,
+      thicknesses: selectedCrusts.length ? selectedCrusts : undefined,
+      styles: selectedStyles.length ? selectedStyles : undefined,
+      sauces: selectedSauces.length ? selectedSauces : undefined,
+      shapes: selectedShape ? [selectedShape] : undefined,
+      minPrice,
+      maxPrice,
+      minDiameter: diameter ?? undefined,
+    });
   }, [
     minPrice,
     maxPrice,

@@ -1,18 +1,43 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import { ArrowLeft, CheckCircle } from "lucide-react";
-import type { Pizza } from "../data/mockPizzas";
+import type { PizzaSearchResultDto, LookUpItemDto } from "../api/generated/models";
+
+type NewPizzaPreviewPayload = PizzaSearchResultDto & {
+  city?: string;
+  pizzeria?: string;
+  image?: string;
+  dough?: string;
+  crust?: string;
+  sauce?: string;
+  shape?: string | LookUpItemDto;
+  thickness?: string | LookUpItemDto;
+  baseSauce?: string | LookUpItemDto;
+  diameter?: number | string;
+  diameterCm?: number | string;
+  width?: number | string;
+  widthCm?: number | string;
+  length?: number | string;
+  lengthCm?: number | string;
+  weight?: number | string;
+  weightGrams?: number | string;
+  kcal?: number | string;
+};
 
 interface NewPizzaPreviewViewProps {
-    onConfirm: (pizza: Pizza) => void;
+    onConfirm: (pizza: NewPizzaPreviewPayload) => void;
 }
+
+type NewPizzaPreviewLocationState = {
+  pizzaData?: NewPizzaPreviewPayload;
+  ingredientsList?: string[];
+};
 
 const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const pizza = location.state?.pizzaData as Pizza;
-  const ingredientsList = (location.state?.ingredientsList as string[]) || [];
+  const { pizzaData: pizza, ingredientsList = [] } = (location.state || {}) as NewPizzaPreviewLocationState;
 
   if (!pizza) {
       navigate("/add-pizza");
@@ -24,16 +49,37 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
       navigate("/restaurant");
   };
 
-  // Obliczenia
+  const getName = (value?: string | LookUpItemDto | null) =>
+    typeof value === "string" ? value : value?.name || "-";
+
+  const getNumber = (value?: number | string | null) => {
+    if (value === undefined || value === null || value === "") return 0;
+    return typeof value === "string" ? parseFloat(value) || 0 : value;
+  };
+
+  const shapeName = getName(pizza.shape);
+  const doughName = pizza.dough || getName(pizza.style);
+  const crustName = pizza.crust || getName(pizza.thickness);
+  const sauceName = pizza.sauce || getName(pizza.baseSauce);
+  const diameter = getNumber(pizza.diameterCm ?? pizza.diameter);
+  const width = getNumber(pizza.widthCm ?? pizza.width);
+  const length = getNumber(pizza.lengthCm ?? pizza.length);
+  const weight = getNumber(pizza.weightGrams ?? pizza.weight);
+  const price = getNumber(pizza.price ?? 0);
+  const kcal = getNumber(pizza.kcal);
+  const imageSrc = pizza.image ?? pizza.imageUrl ?? "https://placehold.co/600x600?text=Brak+Zdjęcia";
+  const cityName = pizza.city || "Nieznane miasto";
+  const pizzeriaName = pizza.pizzeria || "Nieznana pizzeria";
+
   let area = 0;
-  if (pizza.shape === "Okrągła" && pizza.diameter) {
-      area = Math.PI * (pizza.diameter / 2) ** 2;
-  } else if (pizza.shape === "Prostokątna" && pizza.width && pizza.length) {
-      area = pizza.width * pizza.length;
+  if (shapeName === "Okrągła" && diameter > 0) {
+      area = Math.PI * (diameter / 2) ** 2;
+  } else if (shapeName === "Prostokątna" && width > 0 && length > 0) {
+      area = width * length;
   }
   
-  const pricePerCm2 = area > 0 ? (pizza.price / area).toFixed(2) : "0.00";
-  const pricePer100g = pizza.weight > 0 ? ((pizza.price / pizza.weight) * 100).toFixed(2) : "0.00";
+  const pricePerCm2 = area > 0 ? (price / area).toFixed(2) : "0.00";
+  const pricePer100g = weight > 0 ? ((price / weight) * 100).toFixed(2) : "0.00";
 
   return (
     <div className="min-h-screen bg-[#121212] text-white font-sans">
@@ -59,7 +105,7 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
             <div className="absolute top-6 left-6 bg-[#FF6B6B] text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider shadow-lg z-10">
               NOWA POZYCJA
             </div>
-            <img src={pizza.image} alt={pizza.name} className="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
+            <img src={imageSrc} alt={pizza.name} className="w-full h-full object-cover transition duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-transparent opacity-60"></div>
           </div>
 
@@ -68,7 +114,7 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
               <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-3">Składniki</h3>
               {ingredientsList.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                      {ingredientsList.map((ing, idx) => (
+                      {ingredientsList.map((ing: string, idx: number) => (
                           <span key={idx} className="bg-[#252525] text-gray-300 text-xs px-3 py-1.5 rounded-full border border-[#333]">
                               {ing}
                           </span>
@@ -85,9 +131,9 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
           <div className="flex justify-between items-start">
             <div>
               <div className="mb-2 text-[#FF6B6B] font-medium tracking-wide text-sm uppercase flex items-center gap-2">
-                <span>📍 {pizza.city}</span>
+                <span>📍 {cityName}</span>
                 <span className="text-gray-600">•</span>
-                <span>{pizza.pizzeria}</span>
+                <span>{pizzeriaName}</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{pizza.name}</h1>
             </div>
@@ -98,26 +144,26 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
           </p>
 
           <div className="flex items-end gap-4 mb-8">
-            <span className="text-5xl font-bold text-white">{pizza.price.toFixed(2)} zł</span>
+            <span className="text-5xl font-bold text-white">{price.toFixed(2)} zł</span>
           </div>
 
           {/* SPECYFIKACJA (Tabela 2x2) */}
           <div className="bg-[#1E1E1E]/50 rounded-xl p-5 border border-gray-800 mb-8 grid grid-cols-2 gap-y-4 gap-x-8">
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">Styl</span>
-              <span className="text-white font-medium">{pizza.style}</span>
+              <span className="text-white font-medium">{getName(pizza.style)}</span>
             </div>
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">Ciasto (Dough)</span>
-              <span className="text-white font-medium">{pizza.dough}</span>
+              <span className="text-white font-medium">{doughName}</span>
             </div>
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">Brzeg (Crust)</span>
-              <span className="text-white font-medium">{pizza.crust}</span>
+              <span className="text-white font-medium">{crustName}</span>
             </div>
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">Sos bazowy</span>
-              <span className="text-white font-medium">{pizza.sauce}</span>
+              <span className="text-white font-medium">{sauceName}</span>
             </div>
           </div>
 
@@ -144,18 +190,18 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
             <div className="bg-[#1E1E1E] rounded-xl p-4 text-center border border-gray-800">
               <div className="text-blue-400 text-2xl mb-1">📏</div>
               <div className="font-bold text-lg">
-                  {pizza.shape === "Okrągła" ? `${pizza.diameter} cm` : `${pizza.width}x${pizza.length}`}
+                  {shapeName === "Okrągła" ? `${diameter} cm` : `${width}x${length}`}
               </div>
               <div className="text-xs text-gray-500 uppercase mt-1">Rozmiar</div>
             </div>
             <div className="bg-[#1E1E1E] rounded-xl p-4 text-center border border-gray-800">
               <div className="text-green-400 text-2xl mb-1">⚖️</div>
-              <div className="font-bold text-lg">{pizza.weight} g</div>
+              <div className="font-bold text-lg">{weight} g</div>
               <div className="text-xs text-gray-500 uppercase mt-1">Waga</div>
             </div>
             <div className="bg-[#1E1E1E] rounded-xl p-4 text-center border border-gray-800">
               <div className="text-orange-400 text-2xl mb-1">🔥</div>
-              <div className="font-bold text-lg">{pizza.kcal}</div>
+              <div className="font-bold text-lg">{kcal}</div>
               <div className="text-xs text-gray-500 uppercase mt-1">Kcal</div>
             </div>
           </div>
@@ -168,7 +214,7 @@ const NewPizzaPreviewView = ({ onConfirm }: NewPizzaPreviewViewProps) => {
             </div>
             <div>
               <p className="text-xs text-gray-400 uppercase">Sprzedawane przez</p>
-              <h4 className="font-bold text-lg text-white">{pizza.pizzeria}</h4>
+              <h4 className="font-bold text-lg text-white">{pizzeriaName}</h4>
               <p className="text-sm text-green-400">● Otwarte do 23:00</p>
             </div>
           </div>

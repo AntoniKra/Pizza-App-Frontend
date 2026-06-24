@@ -8,7 +8,7 @@ import type {
   LoginDto,
   LoginResponseDto,
   RegisterDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

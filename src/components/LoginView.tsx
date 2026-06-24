@@ -10,7 +10,7 @@ import {
   ChefHat,
   Utensils,
 } from "lucide-react";
-import { getAuth } from "../api/endpoints/auth/auth";
+import { getAuth } from "../api/generated/auth/auth";
 import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 import NeonInput from "./NeonInput";

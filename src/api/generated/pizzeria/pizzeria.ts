@@ -7,7 +7,7 @@
 import type {
   CreatePizzeriaDto,
   PizzeriaDetailsDto
-} from '../../model';
+} from '.././models';
 
 import { customInstance } from '../../axiosConfig';
 

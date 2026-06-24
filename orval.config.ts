@@ -4,11 +4,11 @@ export default defineConfig({
   pizzaRadar: {
     output: {
       mode: "tags-split",
-      target: "src/api/endpoints",
-      schemas: "src/api/model",
+      target: "src/api/generated/api.ts", // Orval utworzy folder generated
+      schemas: "src/api/generated/models", // Modele trafią do generated/models
       client: "axios",
       mock: false,
-      clean: true,
+      clean: true, // To usunie stare wygenerowane pliki przed zrobieniem nowych
       prettier: true,
       override: {
         mutator: {
@@ -17,9 +17,7 @@ export default defineConfig({
         },
       },
     },
-    input: {
-      // 1. Tutaj wklejamy link od kolegi
-      target: "https://localhost:7115/openapi/v1.json",
-    },
+    // Uproszczony zapis input
+    input: "https://localhost:7115/openapi/v1.json",
   },
 });

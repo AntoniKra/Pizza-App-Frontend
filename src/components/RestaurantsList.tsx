@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Clock, Star, Truck, MapPin } from "lucide-react";
 
 // Importujemy TYPY z Orvala (to jest klucz do łatwego podpięcia potem!)
-import type { PizzeriaDetailsDto } from "../api/model";
+import type { PizzeriaDetailsDto } from "../api/generated/models";
 
 // --- MOCK DATA (Zgodny z typem z Orvala) ---
 // Kolega usunie to i odkomentuje pobieranie z API

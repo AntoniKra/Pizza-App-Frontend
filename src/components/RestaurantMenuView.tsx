@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
@@ -8,17 +8,17 @@ import {
   Flame,
   BookOpen,
   CheckCircle,
-  Loader2,
   Scale,
   ChefHat,
   Ruler
 } from "lucide-react";
+import Loader from "./Loader";
 
 // API
-import { getMenu } from "../api/endpoints/menu/menu";
+import { getMenu } from "../api/generated/menu/menu";
 // Importujemy usera getPizza do usuwania pizzy
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import type { MenuListItemDto, MenuDetailsDto, CreateMenuDto, PizzaSearchResultDto } from "../api/model";
+import { getPizza } from "../api/generated/pizza/pizza";
+import type { MenuListItemDto, MenuDetailsDto, CreateMenuDto, PizzaSearchResultDto } from "../api/generated/models";
 
 const RestaurantMenuView = () => {
   const navigate = useNavigate();
@@ -52,16 +52,12 @@ const RestaurantMenuView = () => {
         const toSelect = active ? active.id : response[0].id;
         if(toSelect) handleSelectMenu(toSelect);
       }
-    } catch (error) {
-      console.error("Błąd pobierania listy menu:", error);
-    } finally {
-      setIsLoadingList(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenus();
-  }, [id]);
+        } catch (error) {
+            console.error("Błąd pobierania listy menu:", error);
+        } finally {
+            setIsLoadingList(false);
+        }
+    };
 
   // 2. Pobierz szczegóły konkretnego menu (pizze)
   const handleSelectMenu = async (menuId: string) => {
@@ -162,7 +158,7 @@ const RestaurantMenuView = () => {
         {/* --- SEKCJA WYBORU MENU (TABS) --- */}
         <div className="mb-8">
             <div className="flex flex-wrap items-center gap-3 border-b border-[#2A2A2A] pb-4">
-                {isLoadingList && <Loader2 className="animate-spin text-gray-500" />}
+                {isLoadingList && <Loader inline message="Ładowanie menu..." size={24} className="text-gray-500" />}
                 
                 {menus.map((m) => (
                     <button
@@ -257,10 +253,7 @@ const RestaurantMenuView = () => {
 
                 {/* LISTA PIZZ W TYM MENU */}
                 {isLoadingDetails ? (
-                     <div className="text-center py-20 text-gray-500 flex flex-col items-center">
-                        <Loader2 className="animate-spin mb-2" size={32} />
-                        Ładowanie pozycji...
-                     </div>
+                     <Loader message="Ładowanie pozycji..." size={32} className="py-20" />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Zakładamy, że MenuDetailsDto ma pole 'pizzas' (lub products) */}

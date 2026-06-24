@@ -8,15 +8,15 @@ import {
   DollarSign,
   ImagePlus,
   X,
-  Loader2
 } from "lucide-react";
+import Loader from "./Loader";
 
 // API
 import { customInstance } from "../api/axiosConfig";
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import { getIngredient } from "../api/endpoints/ingredient/ingredient";
-import { getLookUp } from "../api/endpoints/look-up/look-up";
-import type { IngredientDto, LookUpItemDto, PizzaDetailsDto } from "../api/model";
+import { getPizza } from "../api/generated/pizza/pizza";
+import { getIngredient } from "../api/generated/ingredient/ingredient";
+import { getLookUp } from "../api/generated/look-up/look-up";
+import type { IngredientDto, LookUpItemDto, PizzaDetailsDto } from "../api/generated/models";
 
 // Helper UI Component
 const OptionTile = ({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) => (
@@ -312,10 +312,7 @@ const EditPizzaView = () => {
         </div>
 
         {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                <Loader2 className="animate-spin mb-4" size={48} />
-                <p>Pobieranie danych...</p>
-            </div>
+            <Loader message="Pobieranie danych..." size={48} className="h-64" />
         ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* LEWA KOLUMNA */}
@@ -484,7 +481,7 @@ const EditPizzaView = () => {
                 className={`w-full py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition text-lg
                     ${isSubmitting ? "bg-gray-600 cursor-not-allowed" : "bg-gradient-to-r from-yellow-500 to-yellow-600 text-black shadow-yellow-500/20 hover:to-yellow-500"}`}
                 >
-                {isSubmitting ? <Loader2 className="animate-spin" /> : <><Save size={20} /> Zapisz Zmiany</>}
+                {isSubmitting ? <Loader inline size={20} message="" /> : <><Save size={20} /> Zapisz Zmiany</>}
                 </button>
             </div>
             </div>

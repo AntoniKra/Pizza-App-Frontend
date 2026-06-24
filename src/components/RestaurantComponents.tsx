@@ -1,5 +1,5 @@
 import { MapPin, Bike, ShoppingBasket, Clock, Star } from "lucide-react";
-import type { Pizza } from "../data/mockPizzas";
+import type { PizzaSearchResultDto } from "../api/generated/models";
 import MapComponent from "./MapComponent";
 
 // --- 1. NAGŁÓWEK RESTAURACJI (HERO) ---
@@ -61,18 +61,37 @@ export const RestaurantHero = () => {
 
 
 // --- 2. KARTA MENU (PIZZA) ---
-export const MenuCard = ({ data }: { data: Pizza }) => {
-  const isSpicy = data.style === "Spicy" || data.name.includes("Diavola") || data.name.includes("Texas") || data.sauce === "Ostry pomidorowy";
-  const isVegetarian = data.style === "Vegetarian" || data.name.includes("Vegetariańska");
 
-  // Jeśli pizza jest "isNew", dodajemy badge
-  const isNew = data.isNew; 
+type MenuCardData = PizzaSearchResultDto & {
+  isNew?: boolean;
+  image?: string;
+  dough?: string;
+};
+
+export const MenuCard = ({ data }: { data: MenuCardData }) => {
+  const styleName = data.style?.name ?? "";
+  const isSpicy =
+    styleName === "Spicy" ||
+    (data.name ?? "").includes("Diavola") ||
+    (data.name ?? "").includes("Texas") ||
+    false;
+  const isVegetarian =
+    styleName === "Vegetarian" || (data.name ?? "").includes("Vegetaria") || false;
+
+  const isNew = data.isNew;
+
+  const imageSrc = data.imageUrl ?? data.image ?? undefined;
+  const priceNum = typeof data.price === "string" ? parseFloat(data.price) || 0 : data.price ?? 0;
+  const weightNum =
+    typeof data.weightGrams === "string"
+      ? parseFloat(data.weightGrams) || 0
+      : data.weightGrams ?? 0;
 
   return (
     <div className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-[#2A2A2A] hover:border-[#333] transition-all duration-300 flex group min-h-[144px] relative shadow-lg">
       <div className="w-36 h-auto flex-shrink-0 overflow-hidden relative">
         <img
-          src={data.image}
+          src={imageSrc}
           alt={data.name}
           className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
         />
@@ -97,17 +116,21 @@ export const MenuCard = ({ data }: { data: Pizza }) => {
           <div className="flex gap-2 flex-wrap">
              {isSpicy && <span className="bg-red-900/20 text-red-400 border border-red-900/30 text-[10px] font-bold px-2 py-1 rounded uppercase">🌶️ Pikantna</span>}
              {isVegetarian && <span className="bg-green-900/20 text-green-400 border border-green-900/30 text-[10px] font-bold px-2 py-1 rounded uppercase">🌿 Wege</span>}
-             {!isSpicy && !isVegetarian && <span className="bg-[#2A2A2A] text-gray-400 border border-[#333] text-[10px] font-bold px-2 py-1 rounded uppercase">{data.dough || "Klasyczna"}</span>}
+             {!isSpicy && !isVegetarian && (
+               <span className="bg-[#2A2A2A] text-gray-400 border border-[#333] text-[10px] font-bold px-2 py-1 rounded uppercase">
+                 {data.dough || "Klasyczna"}
+               </span>
+             )}
           </div>
         </div>
 
         <div className="flex flex-col items-end gap-3 min-w-[100px]">
           <div className="text-right">
             <span className="text-white font-extrabold text-2xl block tracking-tight">
-              {data.price.toFixed(2)} <span className="text-sm text-gray-500 font-normal">zł</span>
+              {priceNum.toFixed(2)} <span className="text-sm text-gray-500 font-normal">zł</span>
             </span>
             <span className="text-[10px] bg-[#FF6B6B] text-white px-2 py-0.5 rounded font-bold inline-block mt-1 shadow-lg shadow-red-500/20">
-               {((data.price / data.weight) * 100).toFixed(2)} zł / 100g
+               {weightNum > 0 ? (((priceNum / weightNum) * 100).toFixed(2)) : "0.00"} zł / 100g
             </span>
           </div>
           <button className="w-8 h-8 rounded-lg bg-[#2A2A2A] hover:bg-[#FF6B6B] text-white flex items-center justify-center transition-colors border border-[#333] hover:border-[#FF6B6B]">

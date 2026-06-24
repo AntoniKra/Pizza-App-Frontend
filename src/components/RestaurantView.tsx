@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
-import type { Pizza } from "../data/mockPizzas";
+import type { PizzaSearchResultDto } from "../api/generated/models";
 
 // Teraz komponent przyjmuje props 'menu'
 interface RestaurantViewProps {
-  menu: Pizza[];
+  menu: PizzaSearchResultDto[];
 }
 
 const RestaurantView = ({ menu }: RestaurantViewProps) => {

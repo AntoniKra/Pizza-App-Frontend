@@ -10,10 +10,11 @@ import {
   PlusCircle,
   AlertTriangle,
 } from "lucide-react";
+import type { PizzeriaSimpleDto } from "../api/generated/models";
 
 interface ManageRestaurantsViewProps {
-  restaurants: any[];
-  onDelete: (id: number) => void;
+  restaurants: PizzeriaSimpleDto[];
+  onDelete: (id: string) => void;
 }
 
 const ManageRestaurantsView = ({
@@ -23,7 +24,7 @@ const ManageRestaurantsView = ({
   const navigate = useNavigate();
 
   // Stan modala usuwania
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const confirmDelete = () => {
     if (deleteId) {
@@ -99,36 +100,14 @@ const ManageRestaurantsView = ({
               key={rest.id}
               className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-gray-600 transition group relative"
             >
-              {/* BADGE NOWY */}
-              {rest.isNew && (
-                <div className="absolute top-4 left-4 z-10 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg animate-pulse">
-                  NOWY
-                </div>
-              )}
-
               <div className="h-32 bg-gradient-to-r from-gray-800 to-gray-900 relative flex items-center justify-center overflow-hidden">
-                {/* Jeśli jest zdjęcie, pokaż je, w przeciwnym razie ikonka */}
-                {rest.image ? (
-                  <img
-                    src={rest.image}
-                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition duration-500"
-                    alt={rest.name}
-                  />
-                ) : (
-                  <Store
-                    size={48}
-                    className="text-gray-700 group-hover:text-gray-600 transition"
-                  />
-                )}
+                <Store
+                  size={48}
+                  className="text-gray-700 group-hover:text-gray-600 transition"
+                />
 
-                <div
-                  className={`absolute top-4 right-4 px-2 py-1 rounded text-[10px] font-bold uppercase border backdrop-blur-md ${
-                    rest.status === "Otwarte"
-                      ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : "bg-red-500/20 text-red-400 border-red-500/30"
-                  }`}
-                >
-                  {rest.status}
+                <div className="absolute top-4 right-4 px-2 py-1 rounded text-[10px] font-bold uppercase border backdrop-blur-md bg-gray-900/70 text-gray-200 border-gray-700">
+                  {rest.city || "Brak miasta"}
                 </div>
               </div>
 
@@ -138,13 +117,11 @@ const ManageRestaurantsView = ({
                 </h3>
                 <div className="flex items-center gap-2 text-gray-400 text-sm mb-4">
                   <MapPin size={14} />
-                  {rest.address}
+                  <span>{rest.city || "Miasto nieznane"}</span>
                 </div>
 
                 <div className="flex items-center justify-between border-t border-[#2A2A2A] pt-4 mt-2">
-                  <span className="text-sm font-bold text-yellow-500 flex items-center gap-1">
-                    ★ {rest.rating || "New"}
-                  </span>
+                  <span className="text-sm font-bold text-gray-300">ID: {rest.id}</span>
                   <div className="flex gap-2">
                     <button
                       onClick={() => navigate(`/edit-restaurant/${rest.id}`)}
@@ -154,7 +131,7 @@ const ManageRestaurantsView = ({
                       <Edit2 size={16} />
                     </button>
                     <button
-                      onClick={() => setDeleteId(rest.id)}
+                      onClick={() => setDeleteId(rest.id ?? null)}
                       className="p-2 hover:bg-[#252525] rounded-lg text-gray-400 hover:text-red-500 transition"
                       title="Usuń"
                     >

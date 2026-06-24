@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import Loader from "./Loader";
 import Sidebar from "./Sidebar";
-import { getPizza } from "../api/endpoints/pizza/pizza";
+import { getPizza } from "../api/generated/pizza/pizza";
 import {
   type PizzaFiltersDto,
   type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
   type LookUpItemDto,
-} from "../api/model";
-import { getLookUp } from "../api/endpoints/look-up/look-up";
+} from "../api/generated/models";
+import { getLookUp } from "../api/generated/look-up/look-up";
 
 function PizzaSearch() {
   const navigate = useNavigate();
@@ -27,25 +27,22 @@ function PizzaSearch() {
 
   // Stan filtrów
   const [filters, setFilters] = useState<PizzaFiltersDto>();
-  const [currentFilters, setCurrentFilters] = useState<PizzaSearchCriteriaDto>();
+  const [currentFilters, setCurrentFilters] = useState<PizzaSearchCriteriaDto | null>(null);
 
   // --- POBIERANIE DANYCH ---
   useEffect(() => {
     const init = async () => {
-        try {
-            // 1. Pobierz filtry do Sidebara
-            // Orval zwraca dane bezpośrednio (zgodnie z twoim axiosConfig)
-            const filtersData = await getLookUp().getApiLookUpFilters();
-            setFilters(filtersData);
+      try {
+        const filtersData = await getLookUp().getApiLookUpFilters();
+        setFilters(filtersData);
 
-            // 2. Pobierz opcje sortowania
-            // Endpoint zwraca listę [{id: "1", name: "Domyślnie"}, {id: "2", name: "Cena..."}]
-            const sortData = await getLookUp().getApiLookUpEnumAll({type:"SortOptionEnum"});
-            setSortOptions(sortData);
-        } catch (err) {
-            console.error("Błąd inicjalizacji:", err);
-        }
+        const sortData = await getLookUp().getApiLookUpEnumAll({ type: "SortOptionEnum" });
+        setSortOptions(sortData);
+      } catch (err) {
+        console.error("Błąd inicjalizacji:", err);
+      }
     };
+
     init();
   }, []);
 
@@ -84,12 +81,12 @@ function PizzaSearch() {
 
   // 2. Zmiana Filtrów (Sidebar)
   // FIX: Musimy pamiętać o aktualnym sortowaniu!
-  const handleFilterChange = async (newFilters: PizzaSearchCriteriaDto) => {
-    const helper = {
+  const handleFilterChange = async (newFilters: Omit<PizzaSearchCriteriaDto, "cityId">) => {
+    const helper: PizzaSearchCriteriaDto = {
       ...newFilters,
       cityId: initialCityId,
-      sortBy: sortOption
-    } ;
+      sortBy: sortOption,
+    };
 
     setCurrentFilters(helper);
     await fetchPizzas(helper);
@@ -127,9 +124,12 @@ function PizzaSearch() {
 
           {/* SPINNER */}
           {isLoading && (
-            <div className="flex justify-center py-20">
-              <Loader2 className="animate-spin text-[#FF6B6B]" size={48} />
-            </div>
+            <Loader
+              inline
+              message="Ładowanie ofert..."
+              size={48}
+              className="py-20"
+            />
           )}
 
           {/* BRAK WYNIKÓW */}
