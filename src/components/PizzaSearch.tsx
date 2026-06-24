@@ -29,6 +29,11 @@ function PizzaSearch() {
   const [filters, setFilters] = useState<PizzaFiltersDto>();
   const [currentFilters, setCurrentFilters] = useState<PizzaSearchCriteriaDto | null>(null);
 
+  // Paginacja
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+
   // --- POBIERANIE DANYCH ---
   useEffect(() => {
     const init = async () => {
@@ -46,12 +51,39 @@ function PizzaSearch() {
     init();
   }, []);
 
+  type PagedResult<T> = {
+    items: T[];
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
+  };
+
   const fetchPizzas = async (searchCriteria: PizzaSearchCriteriaDto) => {
     try {
       searchCriteria.cityId = initialCityId;
+      // ensure pageNumber/pageSize are numbers
+      if (!searchCriteria.pageNumber) searchCriteria.pageNumber = pageNumber;
+      if (!searchCriteria.pageSize) searchCriteria.pageSize = pageSize;
+
       setIsLoading(true);
-      const data = await getPizza().postApiPizzaSearch(searchCriteria);
-      setPizzas(data);
+      const data: unknown = await getPizza().postApiPizzaSearch(searchCriteria as any);
+
+      // Handle both legacy array response and future paged response
+      if (Array.isArray(data)) {
+        setPizzas(data as PizzaSearchResultDto[]);
+        setTotalCount((data as PizzaSearchResultDto[]).length);
+      } else if (data && (data as PagedResult<PizzaSearchResultDto>).items) {
+        const paged = data as PagedResult<PizzaSearchResultDto>;
+        setPizzas(paged.items);
+        setTotalCount(paged.totalCount ?? paged.items.length);
+        setPageNumber(paged.pageNumber ?? pageNumber);
+        setPageSize(paged.pageSize ?? pageSize);
+      } else {
+        // unknown shape: try to coerce
+        console.warn("Unexpected search response shape", data);
+        setPizzas([]);
+        setTotalCount(0);
+      }
     } catch (error) {
       console.error("Błąd pobierania pizz:", error);
     } finally {
@@ -68,14 +100,13 @@ function PizzaSearch() {
     setSortOption(findSortOption || null); 
 
     if (currentFilters) {
-        
         const updatedFilters = { 
             ...currentFilters, 
-            sortBy:   findSortOption  
+            sortBy: findSortOption,
         };
 
         setCurrentFilters(updatedFilters);
-        await fetchPizzas(updatedFilters);
+        await fetchPizzas({ ...updatedFilters, pageNumber, pageSize });
     }
   };
 
@@ -86,6 +117,8 @@ function PizzaSearch() {
       ...newFilters,
       cityId: initialCityId,
       sortBy: sortOption,
+      pageNumber: pageNumber,
+      pageSize: pageSize,
     };
 
     setCurrentFilters(helper);
@@ -119,6 +152,96 @@ function PizzaSearch() {
                     </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* PAGINACJA - header */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div className="text-sm text-gray-400">
+              {totalCount !== null ? (
+                <span>Wyświetlono {pizzas.length} z {totalCount} wyników</span>
+              ) : (
+                <span>Wyświetlono {pizzas.length} wyników</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-400">Na stronie:</label>
+              <select
+                value={pageSize}
+                onChange={async (e) => {
+                  const newSize = Number(e.target.value);
+                  setPageSize(newSize);
+                  setPageNumber(1);
+                  const criteria = currentFilters ?? ({ cityId: initialCityId } as PizzaSearchCriteriaDto);
+                  await fetchPizzas({ ...criteria, pageNumber: 1, pageSize: newSize });
+                }}
+                className="bg-[#1E1E1E] border border-gray-700 text-white text-sm rounded-lg p-2.5 outline-none"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+
+              {/* Page controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    const prev = Math.max(1, pageNumber - 1);
+                    if (prev === pageNumber) return;
+                    setPageNumber(prev);
+                    const criteria = currentFilters ?? ({ cityId: initialCityId } as PizzaSearchCriteriaDto);
+                    await fetchPizzas({ ...criteria, pageNumber: prev, pageSize });
+                  }}
+                  className="px-3 py-1 bg-[#1E1E1E] border border-gray-700 rounded text-white text-sm disabled:opacity-50"
+                  disabled={pageNumber <= 1}
+                >
+                  Prev
+                </button>
+
+                {/* Page numbers (windowed) */}
+                <div className="flex items-center gap-1">
+                  {(() => {
+                    if (totalCount === null) return null;
+                    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+                    let start = Math.max(1, pageNumber - 2);
+                    let end = Math.min(totalPages, start + 4);
+                    if (end - start < 4) start = Math.max(1, end - 4);
+                    const pages = [] as number[];
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    return pages.map(p => (
+                      <button
+                        key={p}
+                        onClick={async () => {
+                          if (p === pageNumber) return;
+                          setPageNumber(p);
+                          const criteria = currentFilters ?? ({ cityId: initialCityId } as PizzaSearchCriteriaDto);
+                          await fetchPizzas({ ...criteria, pageNumber: p, pageSize });
+                        }}
+                        className={`px-3 py-1 rounded ${p === pageNumber ? 'bg-[#FF6B6B] text-white' : 'bg-[#1E1E1E] text-gray-300'} text-sm border border-gray-700`}
+                      >
+                        {p}
+                      </button>
+                    ));
+                  })()}
+                </div>
+
+                <button
+                  onClick={async () => {
+                    if (totalCount === null) return;
+                    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+                    const next = Math.min(totalPages, pageNumber + 1);
+                    if (next === pageNumber) return;
+                    setPageNumber(next);
+                    const criteria = currentFilters ?? ({ cityId: initialCityId } as PizzaSearchCriteriaDto);
+                    await fetchPizzas({ ...criteria, pageNumber: next, pageSize });
+                  }}
+                  className="px-3 py-1 bg-[#1E1E1E] border border-gray-700 rounded text-white text-sm disabled:opacity-50"
+                  disabled={totalCount === null || pageNumber >= Math.max(1, Math.ceil((totalCount ?? 0) / pageSize))}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
 
