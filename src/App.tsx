@@ -19,7 +19,6 @@ import Loader from "./components/Loader";
 import ErrorState from "./components/ErrorState";
 import { useAuth } from "./hooks/useAuth";
 import { customInstance } from "./api/axiosConfig"; // Dodany import do strzałów API
-// Zakładając, że endpointy nazywają się getApiPizzaGetAll (zależnie od tego jak nazwał je Orval)
 import { getPizza } from "./api/generated/pizza/pizza";
 import type { PizzeriaSimpleDto, PizzaSearchResultDto } from "./api/generated/models";
 
