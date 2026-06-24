@@ -1,66 +1,110 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
-import axios from "axios";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  readAuthFromStorage,
+  writeAuthToStorage,
+  clearAuthStorage,
+  setUnauthorizedHandler,
+  AUTH_SESSION_EXPIRED_MESSAGE,
+} from "./authSession";
+
+export interface LogoutOptions {
+  /** Gdzie przekierować po wylogowaniu. null = bez przekierowania */
+  redirectTo?: string | null;
+  /** Komunikat pokazany na stronie logowania (np. wygasła sesja) */
+  message?: string;
+}
 
 interface AuthContextType {
   token: string | null;
-  handleLogin: (token: string | null, email: string | null, isPartner: boolean | null) => void;
+  handleLogin: (
+    token: string | null,
+    email: string | null,
+    isPartner: boolean | null,
+  ) => void;
   isAuthenticated: boolean;
   email: string | null;
   isPartner: boolean;
-  handleLogout: () => void;
-  isLoading: boolean; // Dodajemy informację o ładowaniu
+  handleLogout: (options?: LogoutOptions) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-  const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
-  const [isPartner, setIsPartner] = useState<boolean>(localStorage.getItem("isPartner") === "true");
-  const [isLoading, setIsLoading] = useState(true); 
+  const navigate = useNavigate();
+  const initial = readAuthFromStorage();
 
-useEffect(() => {
-  const initAuth = async () => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
+  const [token, setToken] = useState<string | null>(initial.token);
+  const [email, setEmail] = useState<string | null>(initial.email);
+  const [isPartner, setIsPartner] = useState<boolean>(initial.isPartner);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
     setIsLoading(false);
-  };
+  }, []);
 
-  initAuth();
-}, [token]);
-
-  const handleLogin = (newToken: string | null, newEmail: string | null, newIsPartner: boolean | null) => {
-    if (newToken) {
-      localStorage.setItem("token", newToken);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+  const syncAuthState = useCallback(
+    (
+      newToken: string | null,
+      newEmail: string | null,
+      newIsPartner: boolean | null,
+    ) => {
+      writeAuthToStorage(newToken, newEmail, newIsPartner);
       setToken(newToken);
-    } else {
-      localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
-      setToken(null);
-    }
-    
-    if (newEmail) {
-      localStorage.setItem("email", newEmail);
       setEmail(newEmail);
-    } else {
-      localStorage.removeItem("email");
-      setEmail(null);
-    }
-    
-    if (newIsPartner !== null) {
-      localStorage.setItem("isPartner", newIsPartner ? "true" : "false");
-      setIsPartner(newIsPartner);
-    } else {
-      localStorage.removeItem("isPartner");
-      setIsPartner(false);
-    }
-  };
+      setIsPartner(newIsPartner ?? false);
+    },
+    [],
+  );
 
-  const handleLogout = () => {
-    handleLogin(null, null, null);
-  };
+  const handleLogin = useCallback(
+    (
+      newToken: string | null,
+      newEmail: string | null,
+      newIsPartner: boolean | null,
+    ) => {
+      syncAuthState(newToken, newEmail, newIsPartner);
+    },
+    [syncAuthState],
+  );
+
+  const handleLogout = useCallback(
+    (options?: LogoutOptions) => {
+      clearAuthStorage();
+      setToken(null);
+      setEmail(null);
+      setIsPartner(false);
+
+      const redirectTo =
+        options?.redirectTo === undefined ? "/login" : options.redirectTo;
+
+      if (redirectTo) {
+        navigate(redirectTo, {
+          replace: true,
+          state: options?.message ? { authMessage: options.message } : undefined,
+        });
+      }
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    setUnauthorizedHandler((message) => {
+      handleLogout({
+        redirectTo: "/login",
+        message: message || AUTH_SESSION_EXPIRED_MESSAGE,
+      });
+    });
+
+    return () => setUnauthorizedHandler(null);
+  }, [handleLogout]);
 
   return (
     <AuthContext.Provider
@@ -71,7 +115,7 @@ useEffect(() => {
         email,
         isPartner,
         handleLogout,
-        isLoading, // Udostępniamy stan ładowania
+        isLoading,
       }}
     >
       {children}

@@ -18,9 +18,8 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
 
  
   const logout = () => {
-    handleLogout();
-    navigate("/");
-  }
+    handleLogout({ redirectTo: "/" });
+  };
 
 
   const handleProfileClick = () => {

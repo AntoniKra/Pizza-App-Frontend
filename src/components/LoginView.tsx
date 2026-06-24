@@ -19,6 +19,8 @@ const LoginView = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const authMessage = location.state?.authMessage as string | undefined;
+
   const initialRole = location.state?.role || "user";
   const [activeTab, setActiveTab] = useState<"user" | "partner">(initialRole);
 
@@ -177,6 +179,12 @@ const LoginView = () => {
                 : "Zapisuj ulubione pizze i oceniaj lokale"}
             </p>
           </div>
+
+          {authMessage && (
+            <div className="bg-amber-500/10 border border-amber-500/50 text-amber-300 p-3 rounded-xl mb-6 text-sm text-center">
+              {authMessage}
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl mb-6 text-sm text-center animate-pulse">
