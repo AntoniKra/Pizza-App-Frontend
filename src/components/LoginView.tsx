@@ -14,6 +14,7 @@ import { getAuth } from "../api/endpoints/auth/auth";
 import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 import NeonInput from "./NeonInput";
+import { FormAlert, FieldError } from "./FormError";
 
 const LoginView = () => {
   const navigate = useNavigate();
@@ -34,17 +35,20 @@ const LoginView = () => {
   const [lastName, setLastName] = useState("");
 
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const {handleLogin} = useAuth();
 
   useEffect(() => {
     setError("");
+    setFieldErrors({});
   }, [activeTab, isLogin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     setIsLoading(true);
 
     try {
@@ -63,6 +67,9 @@ const LoginView = () => {
       } else {
         if (password !== confirmPassword) {
           setError("Hasła nie są identyczne!");
+          setFieldErrors({
+            confirmPassword: "Hasła muszą być takie same",
+          });
           setIsLoading(false);
           return;
         }
@@ -178,11 +185,7 @@ const LoginView = () => {
             </p>
           </div>
 
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl mb-6 text-sm text-center animate-pulse">
-              {error}
-            </div>
-          )}
+          <FormAlert message={error} className="mb-6 justify-center" />
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* --- 4. NEON INPUTS (Komponent wielokrotnego użytku wewnątrz) --- */}
@@ -252,8 +255,17 @@ const LoginView = () => {
                   icon={CheckCircle}
                   type="password"
                   value={confirmPassword}
-                  onChange={setConfirmPassword}
+                  onChange={(value) => {
+                    setConfirmPassword(value);
+                    setFieldErrors((prev) => {
+                      if (!prev.confirmPassword) return prev;
+                      const next = { ...prev };
+                      delete next.confirmPassword;
+                      return next;
+                    });
+                  }}
                 />
+                <FieldError message={fieldErrors.confirmPassword} />
               </div>
             )}
 
@@ -278,6 +290,7 @@ const LoginView = () => {
                 onClick={() => {
                   setIsLogin(!isLogin);
                   setError("");
+                  setFieldErrors({});
                 }}
                 className="text-[#FF6B6B] font-bold hover:text-white transition-colors ml-1"
               >
