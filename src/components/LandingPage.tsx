@@ -45,9 +45,7 @@ const LandingPage = ({ onCitySelect }: LandingPageProps) => {
           name: matchedCity.name,
         });
       } else {
-        navigate("/search", {
-          state: { cityId: matchedCity.id, cityName: matchedCity.name },
-        });
+        navigate(`/search?cityId=${matchedCity.id}`);
       }
     } else {
       alert("Wybierz miasto z listy!");
