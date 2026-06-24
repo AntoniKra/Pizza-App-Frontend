@@ -16,6 +16,7 @@ import Header from "./components/Header";
 import AddBrandView from "./components/AddBrandView";
 import EditPizzaView from "./components/EditPizzaView";
 import RestaurantMenuView from "./components/RestaurantMenuView";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 
 // --- DANE PIZZ ---
@@ -146,28 +147,56 @@ function App() {
           path="/restaurant"
           element={<RestaurantView menu={restaurantMenu} />}
         />
-        <Route path="/account" element={<AccountView />} />
-        <Route path="/add-brand" element={<AddBrandView />} />
-        <Route path="/restaurant-menu/:id" element={<RestaurantMenuView />} />
-        <Route path="/edit-pizza/:id" element={<EditPizzaView />} />
+        <Route path="/account" element={
+          <ProtectedRoute requirePartner>
+            <AccountView />
+          </ProtectedRoute>
+        } />
+        <Route path="/add-brand" element={
+          <ProtectedRoute requirePartner>
+            <AddBrandView />
+          </ProtectedRoute>
+        } />
+        <Route path="/restaurant-menu/:id" element={
+          <ProtectedRoute requirePartner>
+            <RestaurantMenuView />
+          </ProtectedRoute>
+        } />
+        <Route path="/edit-pizza/:id" element={
+          <ProtectedRoute requirePartner>
+            <EditPizzaView />
+          </ProtectedRoute>
+        } />
 
-        {/* --- POPRAWIONA TRASA ADD-PIZZA (Usunięto onAdd) --- */}
-        <Route path="/add-pizza" element={<AddPizzaView />} />
-        {/* --- TRASA PODGLĄDU (Tutaj przekazujemy onConfirm) --- */}
+        <Route path="/add-pizza" element={
+          <ProtectedRoute requirePartner>
+            <AddPizzaView />
+          </ProtectedRoute>
+        } />
         <Route
           path="/pizza-preview"
-          element={<NewPizzaPreviewView onConfirm={handleAddPizza} />}
+          element={
+            <ProtectedRoute requirePartner>
+              <NewPizzaPreviewView onConfirm={handleAddPizza} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/manage-restaurants"
           element={
-            <ManageRestaurantsView
-              restaurants={myRestaurants}
-              onDelete={handleDeleteRestaurant}
-            />
+            <ProtectedRoute requirePartner>
+              <ManageRestaurantsView
+                restaurants={myRestaurants}
+                onDelete={handleDeleteRestaurant}
+              />
+            </ProtectedRoute>
           }
         />
-        <Route path="/add-restaurant" element={<AddRestaurantView />} />
+        <Route path="/add-restaurant" element={
+          <ProtectedRoute requirePartner>
+            <AddRestaurantView />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   );
