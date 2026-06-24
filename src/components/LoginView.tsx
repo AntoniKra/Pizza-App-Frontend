@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, type Location } from "react-router-dom";
 import {
   ArrowLeft,
   Lock,
@@ -14,6 +14,7 @@ import { getAuth } from "../api/endpoints/auth/auth";
 import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 import NeonInput from "./NeonInput";
+import { isPartnerPath } from "./ProtectedRoute";
 
 const LoginView = () => {
   const navigate = useNavigate();
@@ -56,10 +57,26 @@ const LoginView = () => {
           password: password,
         });
 
-        handleLogin(response.token!, response.email!,response.isOwner || false);
+        handleLogin(response.token!, response.email!, response.isOwner || false);
         alert("Zalogowano pomyślnie!");
-        if (isPartner) navigate("/account");
-        else navigate("/");
+
+        const from = location.state?.from as Location | undefined;
+        const isOwner = response.isOwner || false;
+
+        if (from?.pathname) {
+          if (isPartnerPath(from.pathname) && !isOwner) {
+            navigate("/", { replace: true });
+          } else {
+            navigate(`${from.pathname}${from.search ?? ""}`, {
+              replace: true,
+              state: from.state,
+            });
+          }
+        } else if (isOwner) {
+          navigate("/account");
+        } else {
+          navigate("/");
+        }
       } else {
         if (password !== confirmPassword) {
           setError("Hasła nie są identyczne!");
