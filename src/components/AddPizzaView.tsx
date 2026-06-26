@@ -4,9 +4,9 @@ import { ArrowLeft, CheckCircle, Flame, Plus, DollarSign, ImagePlus, X, Loader2 
 
 // API
 import { customInstance } from "../api/axiosConfig";
-import { getIngredient } from "../api/endpoints/ingredient/ingredient";
-import { getLookUp } from "../api/endpoints/look-up/look-up"; 
-import type { IngredientDto, LookUpItemDto } from "../api/model";
+import { getIngredient } from "../api/generated/ingredient/ingredient";
+import { getLookUp } from "../api/generated/look-up/look-up"; 
+import type { IngredientDto, LookUpItemDto } from "../api/generated/models";
 
 // Jeśli nie masz pliku OptionTile, dodaję prostą definicję poniżej (możesz to przenieść do osobnego pliku)
 const OptionTile = ({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) => (

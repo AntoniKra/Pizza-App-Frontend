@@ -13,10 +13,10 @@ import {
 
 // API
 import { customInstance } from "../api/axiosConfig";
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import { getIngredient } from "../api/endpoints/ingredient/ingredient";
-import { getLookUp } from "../api/endpoints/look-up/look-up";
-import type { IngredientDto, LookUpItemDto, PizzaDetailsDto } from "../api/model";
+import { getPizza } from "../api/generated/pizza/pizza";
+import { getIngredient } from "../api/generated/ingredient/ingredient";
+import { getLookUp } from "../api/generated/look-up/look-up";
+import type { IngredientDto, LookUpItemDto, PizzaDetailsDto } from "../api/generated/models";
 
 // Helper UI Component
 const OptionTile = ({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) => (

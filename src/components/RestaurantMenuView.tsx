@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 
 // API
-import { getMenu } from "../api/endpoints/menu/menu";
+import { getMenu } from "../api/generated/menu/menu";
 // Importujemy usera getPizza do usuwania pizzy
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import type { MenuListItemDto, MenuDetailsDto, CreateMenuDto, PizzaSearchResultDto } from "../api/model";
+import { getPizza } from "../api/generated/pizza/pizza";
+import type { MenuListItemDto, MenuDetailsDto, CreateMenuDto, PizzaSearchResultDto } from "../api/generated/models";
 
 const RestaurantMenuView = () => {
   const navigate = useNavigate();

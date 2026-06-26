@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Store, ChevronRight, MapPin, Image as ImageIcon } from "lucide-react";
-import type { BrandDto, BrandDetailsDto } from "../api/model";
-import { getBrand } from "../api/endpoints/brand/brand";
+import type { BrandDto, BrandDetailsDto } from "../api/generated/models";
+import { getBrand } from "../api/generated/brand/brand";
 
 function AccountView() {
   const navigate = useNavigate();

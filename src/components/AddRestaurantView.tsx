@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 
 // Importy API
-import { getPizzeria } from "../api/endpoints/pizzeria/pizzeria";
-import { getCity } from "../api/endpoints/city/city";
-import type { CityDto } from "../api/model";
+import { getPizzeria } from "../api/generated/pizzeria/pizzeria";
+import { getCity } from "../api/generated/city/city";
+import type { CityDto } from "../api/generated/models";
 
 // Generowanie slotów czasowych co 30 min
 const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
