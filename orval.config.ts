@@ -2,7 +2,9 @@ import { defineConfig } from 'orval';
 
 export default defineConfig({
   pizzaApi: {
-    // Używamy nieszyfrowanego portu, aby ominąć błąd certyfikatu Node.js
+    // Backend publikuje OpenAPI pod HTTPS na porcie 7115.
+    // Jeśli Orval uruchamiany z Node nie ufa lokalnemu certyfikatowi dev,
+    // ustaw NODE_TLS_REJECT_UNAUTHORIZED=0 albo zaufaj certyfikatowi ASP.NET.
     input: 'https://localhost:7115/openapi/v1.json',
     output: {
       mode: 'tags-split',
@@ -10,6 +12,10 @@ export default defineConfig({
       schemas: 'src/api/generated/models',
       client: 'axios',
       override: {
+        formData: {
+          path: 'src/api/customFormData.ts',
+          name: 'customFormData',
+        },
         mutator: {
           path: 'src/api/axiosConfig.ts',
           name: 'customInstance',

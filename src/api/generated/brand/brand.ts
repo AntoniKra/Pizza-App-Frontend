@@ -11,6 +11,7 @@ import type {
 } from '.././models';
 
 import { customInstance } from '../../axiosConfig';
+import { customFormData } from '../../customFormData';
 
 
 
@@ -41,18 +42,11 @@ const getApiBrandGetAll = (
     }
   const postApiBrand = (
     postApiBrandBody: PostApiBrandBody,
- ) => {const formUrlEncoded = new URLSearchParams();
-if(postApiBrandBody.Name !== undefined) {
- formUrlEncoded.append(`Name`, postApiBrandBody.Name);
- }
-if(postApiBrandBody.LogoFile !== undefined) {
- formUrlEncoded.append(`LogoFile`, postApiBrandBody.LogoFile);
- }
-
+ ) => {const formData = customFormData(postApiBrandBody)
       return customInstance<void>(
       {url: `/api/Brand`, method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
-       data: formUrlEncoded
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
     },
       );
     }
