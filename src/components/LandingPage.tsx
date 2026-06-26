@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, User } from "lucide-react";
-import { getCity } from "../api/endpoints/city/city";
-import type { CityDto } from "../api/model";
+import { getCity } from "../api/generated/city/city";
+import type { CityDto } from "../api/generated/models";
 import { useAuth } from "../hooks/useAuth";
 
 interface LandingPageProps {

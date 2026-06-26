@@ -13,84 +13,18 @@ import type {
 } from '.././models';
 
 import { customInstance } from '../../axiosConfig';
+import { customFormData } from '../../customFormData';
 
 
 
   export const getPizza = () => {
 const postApiPizza = (
     postApiPizzaBody: PostApiPizzaBody,
- ) => {const formUrlEncoded = new URLSearchParams();
-if(postApiPizzaBody.IngredientIds !== undefined) {
- postApiPizzaBody.IngredientIds.forEach(value => formUrlEncoded.append(`IngredientIds`, value));
- }
-if(postApiPizzaBody.Name !== undefined) {
- formUrlEncoded.append(`Name`, postApiPizzaBody.Name);
- }
-if(postApiPizzaBody.Description !== undefined) {
- formUrlEncoded.append(`Description`, postApiPizzaBody.Description);
- }
-if(postApiPizzaBody.Price !== undefined) {
- formUrlEncoded.append(`Price`, postApiPizzaBody.Price.toString())
- }
-if(postApiPizzaBody.ImageUrl !== undefined) {
- formUrlEncoded.append(`ImageUrl`, postApiPizzaBody.ImageUrl);
- }
-if(postApiPizzaBody.ImageFile !== undefined) {
- formUrlEncoded.append(`ImageFile`, postApiPizzaBody.ImageFile);
- }
-if(postApiPizzaBody['Style.Id'] !== undefined) {
- formUrlEncoded.append(`Style.Id`, postApiPizzaBody['Style.Id']);
- }
-if(postApiPizzaBody['Style.Name'] !== undefined) {
- formUrlEncoded.append(`Style.Name`, postApiPizzaBody['Style.Name']);
- }
-if(postApiPizzaBody['BaseSauce.Id'] !== undefined) {
- formUrlEncoded.append(`BaseSauce.Id`, postApiPizzaBody['BaseSauce.Id']);
- }
-if(postApiPizzaBody['BaseSauce.Name'] !== undefined) {
- formUrlEncoded.append(`BaseSauce.Name`, postApiPizzaBody['BaseSauce.Name']);
- }
-if(postApiPizzaBody['Dough.Id'] !== undefined) {
- formUrlEncoded.append(`Dough.Id`, postApiPizzaBody['Dough.Id']);
- }
-if(postApiPizzaBody['Dough.Name'] !== undefined) {
- formUrlEncoded.append(`Dough.Name`, postApiPizzaBody['Dough.Name']);
- }
-if(postApiPizzaBody['Thickness.Id'] !== undefined) {
- formUrlEncoded.append(`Thickness.Id`, postApiPizzaBody['Thickness.Id']);
- }
-if(postApiPizzaBody['Thickness.Name'] !== undefined) {
- formUrlEncoded.append(`Thickness.Name`, postApiPizzaBody['Thickness.Name']);
- }
-if(postApiPizzaBody['Shape.Id'] !== undefined) {
- formUrlEncoded.append(`Shape.Id`, postApiPizzaBody['Shape.Id']);
- }
-if(postApiPizzaBody['Shape.Name'] !== undefined) {
- formUrlEncoded.append(`Shape.Name`, postApiPizzaBody['Shape.Name']);
- }
-if(postApiPizzaBody.DiameterCm !== undefined) {
- formUrlEncoded.append(`DiameterCm`, postApiPizzaBody.DiameterCm.toString())
- }
-if(postApiPizzaBody.WidthCm !== undefined) {
- formUrlEncoded.append(`WidthCm`, postApiPizzaBody.WidthCm.toString())
- }
-if(postApiPizzaBody.LengthCm !== undefined) {
- formUrlEncoded.append(`LengthCm`, postApiPizzaBody.LengthCm.toString())
- }
-if(postApiPizzaBody.WeightGrams !== undefined) {
- formUrlEncoded.append(`WeightGrams`, postApiPizzaBody.WeightGrams.toString())
- }
-if(postApiPizzaBody.Kcal !== undefined) {
- formUrlEncoded.append(`Kcal`, postApiPizzaBody.Kcal.toString())
- }
-if(postApiPizzaBody.MenuId !== undefined) {
- formUrlEncoded.append(`MenuId`, postApiPizzaBody.MenuId);
- }
-
+ ) => {const formData = customFormData(postApiPizzaBody)
       return customInstance<void>(
       {url: `/api/Pizza`, method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
-       data: formUrlEncoded
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
     },
       );
     }
@@ -113,75 +47,11 @@ if(postApiPizzaBody.MenuId !== undefined) {
   const putApiPizzaId = (
     id: string,
     putApiPizzaIdBody: PutApiPizzaIdBody,
- ) => {const formUrlEncoded = new URLSearchParams();
-if(putApiPizzaIdBody.Name !== undefined) {
- formUrlEncoded.append(`Name`, putApiPizzaIdBody.Name);
- }
-if(putApiPizzaIdBody.Description !== undefined) {
- formUrlEncoded.append(`Description`, putApiPizzaIdBody.Description);
- }
-if(putApiPizzaIdBody.Price !== undefined) {
- formUrlEncoded.append(`Price`, putApiPizzaIdBody.Price.toString())
- }
-if(putApiPizzaIdBody.ImageUrl !== undefined) {
- formUrlEncoded.append(`ImageUrl`, putApiPizzaIdBody.ImageUrl);
- }
-if(putApiPizzaIdBody.ImageFile !== undefined) {
- formUrlEncoded.append(`ImageFile`, putApiPizzaIdBody.ImageFile);
- }
-if(putApiPizzaIdBody.WeightGrams !== undefined) {
- formUrlEncoded.append(`WeightGrams`, putApiPizzaIdBody.WeightGrams.toString())
- }
-if(putApiPizzaIdBody.Kcal !== undefined) {
- formUrlEncoded.append(`Kcal`, putApiPizzaIdBody.Kcal.toString())
- }
-if(putApiPizzaIdBody['Style.Id'] !== undefined) {
- formUrlEncoded.append(`Style.Id`, putApiPizzaIdBody['Style.Id']);
- }
-if(putApiPizzaIdBody['Style.Name'] !== undefined) {
- formUrlEncoded.append(`Style.Name`, putApiPizzaIdBody['Style.Name']);
- }
-if(putApiPizzaIdBody['BaseSauce.Id'] !== undefined) {
- formUrlEncoded.append(`BaseSauce.Id`, putApiPizzaIdBody['BaseSauce.Id']);
- }
-if(putApiPizzaIdBody['BaseSauce.Name'] !== undefined) {
- formUrlEncoded.append(`BaseSauce.Name`, putApiPizzaIdBody['BaseSauce.Name']);
- }
-if(putApiPizzaIdBody['Dough.Id'] !== undefined) {
- formUrlEncoded.append(`Dough.Id`, putApiPizzaIdBody['Dough.Id']);
- }
-if(putApiPizzaIdBody['Dough.Name'] !== undefined) {
- formUrlEncoded.append(`Dough.Name`, putApiPizzaIdBody['Dough.Name']);
- }
-if(putApiPizzaIdBody['Thickness.Id'] !== undefined) {
- formUrlEncoded.append(`Thickness.Id`, putApiPizzaIdBody['Thickness.Id']);
- }
-if(putApiPizzaIdBody['Thickness.Name'] !== undefined) {
- formUrlEncoded.append(`Thickness.Name`, putApiPizzaIdBody['Thickness.Name']);
- }
-if(putApiPizzaIdBody['Shape.Id'] !== undefined) {
- formUrlEncoded.append(`Shape.Id`, putApiPizzaIdBody['Shape.Id']);
- }
-if(putApiPizzaIdBody['Shape.Name'] !== undefined) {
- formUrlEncoded.append(`Shape.Name`, putApiPizzaIdBody['Shape.Name']);
- }
-if(putApiPizzaIdBody.DiameterCm !== undefined) {
- formUrlEncoded.append(`DiameterCm`, putApiPizzaIdBody.DiameterCm.toString())
- }
-if(putApiPizzaIdBody.WidthCm !== undefined) {
- formUrlEncoded.append(`WidthCm`, putApiPizzaIdBody.WidthCm.toString())
- }
-if(putApiPizzaIdBody.LengthCm !== undefined) {
- formUrlEncoded.append(`LengthCm`, putApiPizzaIdBody.LengthCm.toString())
- }
-if(putApiPizzaIdBody.IngredientIds !== undefined) {
- putApiPizzaIdBody.IngredientIds.forEach(value => formUrlEncoded.append(`IngredientIds`, value));
- }
-
+ ) => {const formData = customFormData(putApiPizzaIdBody)
       return customInstance<void>(
       {url: `/api/Pizza/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
-       data: formUrlEncoded
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
     },
       );
     }

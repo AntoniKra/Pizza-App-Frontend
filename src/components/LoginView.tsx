@@ -9,11 +9,14 @@ import {
   CheckCircle,
   ChefHat,
   Utensils,
+  Chrome,
 } from "lucide-react";
-import { getAuth } from "../api/endpoints/auth/auth";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import { getAuth } from "../api/generated/auth/auth";
 import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 import NeonInput from "./NeonInput";
+import type { LoginResponseDto } from "../api/generated/models";
 
 const LoginView = () => {
   const navigate = useNavigate();
@@ -35,12 +38,45 @@ const LoginView = () => {
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const {handleLogin} = useAuth();
 
   useEffect(() => {
     setError("");
   }, [activeTab, isLogin]);
+
+  const finishLogin = (response: LoginResponseDto) => {
+    const token = response.token ?? null;
+    const userEmail = response.email ?? null;
+    const isOwner = response.isOwner ?? false;
+
+    handleLogin(token, userEmail, isOwner);
+    alert("Zalogowano pomyślnie!");
+    navigate(isOwner ? "/account" : "/");
+  };
+
+  const getErrorMessage = (
+    err: unknown,
+    unauthorizedMessage: string,
+    badRequestMessage = "Wystąpił błąd.",
+  ) => {
+    if (err instanceof AxiosError) {
+      if (err.response?.status === 401) {
+        return unauthorizedMessage;
+      }
+
+      if (typeof err.response?.data === "string") {
+        return err.response.data;
+      }
+
+      if (err.response) {
+        return badRequestMessage;
+      }
+    }
+
+    return "Błąd połączenia z serwerem.";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,10 +92,7 @@ const LoginView = () => {
           password: password,
         });
 
-        handleLogin(response.token!, response.email!,response.isOwner || false);
-        alert("Zalogowano pomyślnie!");
-        if (isPartner) navigate("/account");
-        else navigate("/");
+        finishLogin(response);
       } else {
         if (password !== confirmPassword) {
           setError("Hasła nie są identyczne!");
@@ -78,24 +111,44 @@ const LoginView = () => {
             setIsLogin(true);
           }
         } catch (err: unknown) {
-          if((err instanceof AxiosError)){
-          if (err.response?.status === 401) {
-            setError("Błędny email lub hasło.");
-          } else if (err.response?.data) {
-            setError(
-              typeof err.response.data === "string"
-                ? err.response.data
-                : "Wystąpił błąd.",
-            );
-          } else {
-            setError("Błąd połączenia z serwerem.");
-          }
-          }
-        
+          setError(getErrorMessage(err, "Błędny email lub hasło."));
         } finally {
           setIsLoading(false);
         }
       };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setError("Nie udało się pobrać tokenu Google.");
+      return;
+    }
+
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const { postApiAuthGoogleLogin } = getAuth();
+      const response = await postApiAuthGoogleLogin({
+        idToken: credentialResponse.credential,
+      });
+
+      finishLogin(response);
+    } catch (err: unknown) {
+      setError(
+        getErrorMessage(
+          err,
+          "Logowanie Google zostało odrzucone.",
+          "Nie udało się potwierdzić logowania Google.",
+        ),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Logowanie Google zostało anulowane lub nie powiodło się.");
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-[#FF6B6B] selection:text-white">
@@ -268,6 +321,45 @@ const LoginView = () => {
                   ? "Zaloguj się"
                   : "Zarejestruj się"}
             </button>
+
+            {isLogin && (
+              <>
+                <div className="relative flex items-center justify-center py-2">
+                  <div className="absolute inset-x-0 border-t border-white/10" />
+                  <span className="relative bg-[#181818] px-4 text-xs uppercase tracking-[0.3em] text-gray-500">
+                    lub
+                  </span>
+                </div>
+
+                {googleClientId ? (
+                  <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      text="signin_with"
+                      shape="pill"
+                      theme="filled_black"
+                      width="330"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 text-sm font-semibold text-gray-400 opacity-70"
+                  >
+                    <Chrome size={18} />
+                    Zaloguj przez Google
+                  </button>
+                )}
+
+                {!googleClientId && (
+                  <p className="text-center text-xs text-amber-400">
+                    Ustaw zmienną VITE_GOOGLE_CLIENT_ID, aby włączyć logowanie Google.
+                  </p>
+                )}
+              </>
+            )}
           </form>
 
           <div className="mt-8 text-center">
