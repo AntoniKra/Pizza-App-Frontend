@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Sidebar from "./Sidebar";
-import { getPizza } from "../api/endpoints/pizza/pizza";
+import { getPizza } from "../api/generated/pizza/pizza";
 import {
   type PizzaFiltersDto,
   type PizzaSearchCriteriaDto,
   type PizzaSearchResultDto,
   type LookUpItemDto,
-} from "../api/model";
-import { getLookUp } from "../api/endpoints/look-up/look-up";
+} from "../api/generated/models";
+import { getLookUp } from "../api/generated/look-up/look-up";
 
 function PizzaSearch() {
   const navigate = useNavigate();

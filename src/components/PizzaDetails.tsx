@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getPizza } from "../api/endpoints/pizza/pizza";
-import type { PizzaDetailsDto } from "../api/model";
+import { getPizza } from "../api/generated/pizza/pizza";
+import type { PizzaDetailsDto } from "../api/generated/models";
 import { Loader2, ChefHat, Ruler, Scale, Flame } from "lucide-react";
 
 const PizzaDetails = () => {

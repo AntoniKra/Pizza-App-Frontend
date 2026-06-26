@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import type {
   LookUpItemDto,
   PizzaFiltersDto,
-  PizzaSearchCriteriaDto, // <-- To jest poprawny typ
-} from "../api/model";
+  PizzaSearchCriteriaDto,
+} from "../api/generated/models";
 
 interface SidebarProps {
   onFilterChange: (filters: PizzaSearchCriteriaDto) => void; // <-- Zmiana typu tutaj
