@@ -21,6 +21,7 @@ export * from './createPizzeriaDto';
 export * from './createWorkScheduleDto';
 export * from './getApiLookUpEnumAllParams';
 export * from './getApiLookUpEnumParams';
+export * from './googleLoginDto';
 export * from './iFormFile';
 export * from './ingredientDto';
 export * from './loginDto';

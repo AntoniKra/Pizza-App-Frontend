@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  GoogleLoginDto,
   LoginDto,
   LoginResponseDto,
   RegisterDto
@@ -35,6 +36,17 @@ const postApiAuthRegister = (
     },
       );
     }
-  return {postApiAuthRegister,postApiAuthLogin}};
+  const postApiAuthGoogleLogin = (
+    googleLoginDto: GoogleLoginDto,
+ ) => {
+      return customInstance<LoginResponseDto>(
+      {url: `/api/Auth/GoogleLogin`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: googleLoginDto
+    },
+      );
+    }
+  return {postApiAuthRegister,postApiAuthLogin,postApiAuthGoogleLogin}};
 export type PostApiAuthRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuth>['postApiAuthRegister']>>>
 export type PostApiAuthLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuth>['postApiAuthLogin']>>>
+export type PostApiAuthGoogleLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAuth>['postApiAuthGoogleLogin']>>>
