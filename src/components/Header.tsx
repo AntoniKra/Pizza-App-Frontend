@@ -29,14 +29,27 @@ const Header: React.FC<HeaderProps> = ({ onSearch, address, cityId }) => {
     } 
   };
 
-  // Funkcja pomocnicza do nawigacji z zachowaniem miasta
+  // Funkcja pomocnicza do nawigacji z zachowaniem miasta w URL params
   const navigateWithCity = (path: string) => {
-    navigate(path, {
-      state: {
-        cityId: cityId, // Przekazujemy ID miasta
-        cityName: address, // Przekazujemy nazwę miasta
-      },
-    });
+    // Fallback: jeśli cityId prop nie jest dostępny, próbuj localStorage
+    let finalCityId = cityId;
+    if (!finalCityId) {
+      const savedCity = localStorage.getItem("pizza_city");
+      if (savedCity) {
+        try {
+          finalCityId = JSON.parse(savedCity).id;
+        } catch (e) {
+          console.warn("Nie udało się parsować pizza_city z localStorage", e);
+        }
+      }
+    }
+    
+    if (finalCityId) {
+      navigate(`${path}?cityId=${finalCityId}`);
+    } else {
+      // Jeśli nadal brakuje miasta, nawiguj i pokaż komunikat
+      navigate(path);
+    }
   };
 
   return (

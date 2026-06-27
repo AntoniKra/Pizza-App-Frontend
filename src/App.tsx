@@ -16,7 +16,6 @@ import AddBrandView from "./components/AddBrandView";
 import EditPizzaView from "./components/EditPizzaView";
 import RestaurantMenuView from "./components/RestaurantMenuView";
 import Loader from "./components/Loader";
-import ErrorState from "./components/ErrorState";
 import { useAuth } from "./hooks/useAuth";
 import { customInstance } from "./api/axiosConfig"; // Dodany import do strzałów API
 import { getPizza } from "./api/generated/pizza/pizza";
@@ -27,9 +26,8 @@ function App() {
   const [restaurantMenu, setRestaurantMenu] = useState<PizzaSearchResultDto[]>([]);
   const [myRestaurants, setMyRestaurants] = useState<PizzeriaSimpleDto[]>([]);
   
-  // Nowe stany ładowania i błędów zdefiniowane w zadaniu
+  // Nowe stany ładowania zdefiniowane w zadaniu
   const [isDataLoading, setIsDataLoading] = useState(true);
-  const [dataError, setDataError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,20 +43,36 @@ function App() {
 
   // POBIERANIE DANYCH Z API
   const fetchAppData = useCallback(async () => {
+    // NIE POBIERAJ DANYCH, JEŚLI NIE JESTEŚMY ZALOGOWANI
+    const token = localStorage.getItem("token"); // lub sprawdź swój stan Auth
+    if (!token) {
+        setIsDataLoading(false);
+        return;
+    }
+
     try {
       setIsDataLoading(true);
-      setDataError(null);
 
-      const menuResponse = await getPizza().getApiPizzaGetAll();
-      const restaurantsResponse = await customInstance<PizzeriaSimpleDto[]>({ url: "/api/Pizzeria/GetAll", method: "GET" });
+      // Złapmy potencjalne błędy już na poziomie pojedynczych zapytań
+      const menuResponse = await getPizza().getApiPizzaGetAll().catch(err => {
+          console.warn("Nie udało się pobrać menu:", err);
+          return [];
+      });
+      
+      const restaurantsResponse = await customInstance<PizzeriaSimpleDto[]>({ 
+          url: "/api/Pizzeria/GetAll", 
+          method: "GET" 
+      }).catch(err => {
+          console.warn("Nie udało się pobrać pizzerii:", err);
+          return [];
+      });
 
       setRestaurantMenu(Array.isArray(menuResponse) ? menuResponse : []);
       setMyRestaurants(Array.isArray(restaurantsResponse) ? restaurantsResponse : []);
+      
     } catch (error) {
-      console.error("Błąd pobierania danych:", error);
-      setDataError("Wystąpił problem podczas pobierania danych z serwera.");
-      setRestaurantMenu([]);
-      setMyRestaurants([]);
+      // Ten catch złapie już tylko grube błędy (np. całkowity brak połączenia z siecią)
+      console.error("Krytyczny błąd pobierania danych:", error);
     } finally {
       setIsDataLoading(false);
     }
@@ -68,20 +82,17 @@ function App() {
     fetchAppData();
   }, [fetchAppData]);
 
-  const handleCitySelect = (city: { id: string; name: string }) => {
-    setSelectedCity(city);
-    localStorage.setItem("pizza_city", JSON.stringify(city));
-    navigate("/search", { state: { cityId: city.id, cityName: city.name } });
-  };
+ const handleCitySelect = (city: { id: string; name: string }) => {
+  setSelectedCity(city);
+  localStorage.setItem("pizza_city", JSON.stringify(city));
+  console.log("Nawiguję do miasta:", city.id); 
+  navigate(`/search?cityId=${city.id}`);
+};
 
   const handleHeaderSearch = (term: string) => {
-    navigate("/search", {
-      state: {
-        searchTerm: term,
-        cityId: selectedCity?.id,
-        cityName: selectedCity?.name,
-      },
-    });
+    const cityQuery = selectedCity?.id ? `cityId=${selectedCity.id}` : "";
+    const termQuery = term ? `&searchTerm=${term}` : ""; 
+    navigate(`/search?${cityQuery}${termQuery}`);
   };
 
   const handleAddPizza = (newPizza: PizzaSearchResultDto) => {
@@ -95,11 +106,6 @@ function App() {
   // Obsługa stanu Loading z Auth oraz z pobierania danych
   if (isLoading || isDataLoading) {
     return <Loader message="Pobieranie danych z serwera..." />;
-  }
-
-  // Obsługa stanu Error
-  if (dataError) {
-    return <ErrorState message={dataError} onButtonClick={fetchAppData} />;
   }
 
   return (
