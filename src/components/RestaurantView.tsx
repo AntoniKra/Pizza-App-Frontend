@@ -2,7 +2,6 @@ import { useState } from "react";
 import { RestaurantHero, MenuCard, RightSidebar } from "./RestaurantComponents";
 import type { Pizza } from "../data/mockPizzas";
 
-// Teraz komponent przyjmuje props 'menu'
 interface RestaurantViewProps {
   menu: Pizza[];
 }
@@ -39,7 +38,6 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
             </div>
 
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* UŻYWAMY DANYCH PRZEKAZANYCH Z APP.TSX */}
               {activeTab === "Pizze" &&
                 menu.map((pizza) => <MenuCard key={pizza.id} data={pizza} />)}
 
@@ -55,7 +53,12 @@ const RestaurantView = ({ menu }: RestaurantViewProps) => {
           </div>
 
           <div className="hidden lg:block">
-            <RightSidebar />
+            <RightSidebar
+              address="Al. Jerozolimskie 54, Warszawa"
+              latitude={52.20064825424179}
+              longitude={20.931893529706343}
+              restaurantName="Pizza Hut"
+            />
           </div>
         </div>
       </main>
