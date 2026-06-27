@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig, type AxiosResponse, AxiosError } from 'axios';
+import { isAuthRequestUrl, notifyUnauthorized } from '../context/authSession';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:7115',
@@ -28,10 +29,12 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    const requestUrl = error.config?.url;
+
+    if (error.response?.status === 401 && !isAuthRequestUrl(requestUrl)) {
+      notifyUnauthorized();
     }
+
     return Promise.reject(error);
   }
 );
