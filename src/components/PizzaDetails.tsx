@@ -40,11 +40,20 @@ const PizzaDetails = () => {
   }
 
   if (!pizza || error) {
+    const handleBackToSearch = () => {
+      const savedCity = localStorage.getItem("pizza_city");
+      if (savedCity) {
+        const cityId = JSON.parse(savedCity).id;
+        navigate(`/search?cityId=${cityId}`);
+      } else {
+        navigate("/search");
+      }
+    };
     return (
       <ErrorState
         message={error || "Nie udało się pobrać szczegółów pizzy."}
         buttonLabel="Wróć do wyszukiwarki"
-        onButtonClick={() => navigate("/search")}
+        onButtonClick={handleBackToSearch}
       />
     );
   }
